@@ -1,0 +1,503 @@
+openapi: 3.0.3
+info:
+  title: Facilio REST Assets Tools API
+  version: 5.0.0
+  description: "The Facilio REST API gives you programmatic access to Facilio's Connected CMMS — the unified platform for managing property operations at portfolio scale.\n\nBuild integrations that connect Facilio with your ERP, accounting systems, BMS, IoT platforms, and other business tools. Automate work order creation from external triggers, synchronize asset data across systems, push tenant and vendor records from your CRM, or pull maintenance data into your reporting dashboards.\n\n**What you can do with this API:**\n- **Work Orders & Service Requests** — Create, assign, track, and close maintenance tasks programmatically\n- **Assets** — Manage your equipment registry, track asset lifecycle, and sync with external asset management systems\n- **Portfolio (Sites, Buildings, Floors, Spaces)** — Maintain your facility hierarchy and space data\n- **People (Tenants, Vendors, Clients)** — Synchronize contacts and stakeholder records\n- **Inventory (Item Types, Tool Types, Items & Tools, Services, Storerooms)** — Master data, per-storeroom item/tool balances (read), per-bin quantities by item or tool record, quantity adjustments, and warehouse locations\n- **Procurement (Quotes, Purchase Requests, Purchase Orders, Receivable receiving, Invoices)** — Procurement with line items; receive against a PO via receivable APIs\n- **Credit Notes (Vendor Credits, Client Credits)** — Manage credit notes for refunds and transaction adjustments with line items\n- **Inventory Requests** — Track material requisitions from work orders to storerooms\n- **Custom Modules** — Manage your organization's custom modules — record types you define for the data and workflows that are specific to your business\n- **Schema Discovery** — List all accessible modules and inspect field schemas (name, type, required, readOnly, lookup target) via `GET /modules` and `GET /{moduleName}/metadata`\n- **Attachments & Comments** — Attach documents, photos, and notes to work orders and service requests\n- **Picklists** — Discover available values for status, priority, category, and other configurable fields\n\nThe API follows REST conventions with JSON request/response bodies, standard HTTP methods (GET, POST, PATCH, DELETE), and consistent error handling across all endpoints.\n\n## Base URL\n\n```\nhttps://{region}.facilioapis.com/{app_name}/api/v5\n```\n\n| Variable | Description | Values |\n|----------|-------------|--------|\n| `region` | Your deployment region | `us`, `au`, `ae`, `uk`, `us-azure`, `sa` |\n| `app_name` | `maintenance` for API Key auth, `developer` for OAuth2 auth | `maintenance`, `developer` |\n\n## Authentication\n\nAll API requests must be authenticated using one of the following methods:\n\n### API Key (Personal Access Token)\nGenerate an API key from your Facilio account settings and pass it in the `x-api-key` header.\nThe key inherits the permissions of the user who created it.\n\n```\nx-api-key: your-api-key-here\n```\n\n### OAuth2\nFor developer app integrations. Supports **authorization_code** and **password** grant types.\n\n| Endpoint | URL |\n|----------|-----|\n| Authorize | `https://{region}.facilioapis.com/identity/oauth2/authorize` |\n| Token | `https://{region}.facilioapis.com/identity/oauth2/token` |\n| Refresh | `https://{region}.facilioapis.com/identity/oauth2/token` (with `grant_type=refresh_token`) |\n| Revoke | `https://{region}.facilioapis.com/identity/oauth2/revoke` |\n\nPass the access token as:\n```\nAuthorization: Bearer oauth2 <access_token>\n```\n\n---\n\n## List Operations\n\nAll list endpoints (`GET /{module}`) support these query parameters:\n\n| Parameter | Type | Default | Description |\n|-----------|------|---------|-------------|\n| `page` | integer | 1 | Page number (1-based) |\n| `pageSize` | integer | 50 | Number of records per page. Maximum is 200. |\n| `select` | string | — | Comma-separated field names to include in the response. If omitted, module default fields are returned. |\n| `expand` | string | — | Comma-separated lookup field names to expand with full details (max 5). By default, lookup fields return only `{id}`. |\n| `search` | string | — | Free-text search on the module's primary field (e.g. subject for work orders, name for assets). |\n| `sortBy` | string | — | Field name to sort by. Only sortable fields are accepted (see each module's documentation). |\n| `sortOrder` | string | `desc` | Sort direction: `asc` (ascending) or `desc` (descending). |\n| `count` | boolean | false | When `true`, the response includes a `count` field with the total number of matching records. |\n| `view` | string | — | Name of a saved view. Applies the view's columns, filters, and sort order. |\n| `changed` | string | — | UTC timestamp for delta sync (format: `yyyy-MM-dd'T'HH:mm:ss'Z'`). Returns records created or modified after this time. |\n\n---\n\n## Filtering\n\nApply filters by adding query parameters to any list endpoint. Filters are combined with AND logic.\n\n**Exact match:**\n```\nGET /workorder?status=Submitted&priority=High\n```\n\n**Operator match:**\n```\nGET /workorder?subject(contains)=HVAC&createdTime(after)=2026-01-01T00:00:00Z\n```\n\n### Operators by Field Type\n\n| Field Type | Example Fields | Operators | Value Format |\n|------------|----------------|-----------|--------------|\n| String | subject, name, description | `is`, `isn_t`, `contains`, `doesn_t_contain`, `starts_with`, `ends_with` | Text string |\n| Number | serialNumber, area, noOfTasks | `equals`, `not_equals`, `greater_than`, `less_than`, `greater_than_equal`, `less_than_equal`, `between` | Number (for `between`: two comma-separated values) |\n| Date/DateTime | createdTime, dueDate, scheduledStart | `is`, `isn_t`, `before`, `after`, `between`, `today`, `yesterday`, `current_week`, `last_week`, `current_month`, `last_month` | UTC `yyyy-MM-dd'T'HH:mm:ss'Z'` (value-less operators like `today` need no value) |\n| Boolean | highRisk, decommission | `equals`, `is` | `true` or `false` |\n| Lookup | resource, site, assignedTo, createdBy | `is`, `isn_t` | Record ID (integer) |\n| Picklist | status, priority, category, type | `is`, `isn_t` | Display name string (e.g. `Submitted`) or ID |\n| Enum | sourceType, urgency | `is`, `isn_t` | Display name string or index |\n| All types | Any field | `is_empty`, `is_not_empty` | No value needed |\n\n**Multiple values (OR within a field):**\n```\nGET /workorder?priority=High,Medium\n```\n\n---\n\n## Delta Sync\n\nFor incremental data synchronization, use the `changed` parameter to fetch only records that have been created or modified since your last sync:\n\n```\nGET /workorder?changed=2026-02-01T00:00:00Z\n```\n\nThis checks both the created time and modified time of each record (OR condition), so you get both new and updated records. You can combine `changed` with other filters.\n\n---\n\n## Custom Fields\n\nCustom fields are user-defined fields added via Facilio setup. They follow the naming pattern `{field_name}_{module}` (e.g. `po_reference_workorder`, `client_type_site`, `warranty_info_asset`).\n\n| Operation | Behavior |\n|-----------|----------|\n| **Single record GET** | Custom fields are automatically included in the response |\n| **List GET** | Custom fields are excluded by default. Use `?select=subject,po_reference_workorder` to include specific ones |\n| **Create / Update** | Pass custom fields in the request body alongside system fields |\n| **Filtering** | Custom fields can be used as filter parameters |\n| **Sorting** | Custom fields of primitive types (string, number, date) can be used with `sortBy` |\n\n> **Note:** Large text (BIG_STRING) custom fields are always excluded from list responses to prevent excessive memory usage. They are only available on single record GET.\n\n**Example — Create a work order with custom fields:**\n```json\n{\n  \"data\": {\n    \"subject\": \"HVAC Repair\",\n    \"siteId\": 10,\n    \"po_reference_workorder\": \"PO-2026-001\",\n    \"cost_estimate_workorder\": 1500.00\n  }\n}\n```\n\n---\n\n## Lookup fields in responses\n\nA **lookup** links your record to another record or to a controlled list (site, assignee, tenant, status, and so on). The JSON shape depends on which endpoint you call.\n\n### Lists (`GET /{module}`)\n\nBy default, each lookup is compact: `{ \"id\": <number> }`.\n\nTo load more detail on specific lookups, use `?expand=` with a comma-separated list of **lookup field names** (maximum **5** fields).\n\n### Single record, create, and update\n\nOn **GET** by id, **POST** create, and **PATCH** update, lookups that appear in the response are usually **expanded** into a small object instead of only an id.\n\nWhat you get is decided by **what the field points to**:\n\n- **Standard business records** in this API (for example site, tenant, asset, work order): the fields that module normally exposes, **including custom fields** you added on that target record. If the expanded object itself contains another lookup, that inner lookup stays compact: `{ \"id\" }` only.\n- **People and shared reference data** (for example `users`, `people`, `location`, `resource`): a **short, fixed list** of fields the API publishes — e.g. users typically include `id`, `name`, `email`, and `phone` when present. Internal database columns are not returned.\n- **Your org’s custom module** as the target: that module’s usual fields **plus** its custom fields.\n- **Any other target** not covered above: **`id`** and **`name`** only.\n\nSome fields behave as **picklists** (status, priority, category, type, …). They often return a **single text or id value** (e.g. `\"Submitted\"`) instead of a nested object. Check `GET /{moduleName}/metadata` for the field’s `dataType` and picklist details.\n\nProperties that are null are omitted from the JSON body.\n\n---\n\n## Response Format\n\n**Success — single record:**\n```json\n{\n  \"success\": true,\n  \"data\": { \"id\": 1, \"subject\": \"WO-1\", \"status\": \"Submitted\" }\n}\n```\n\n**Success — list:**\n```json\n{\n  \"success\": true,\n  \"data\": [ { \"id\": 1, ... }, { \"id\": 2, ... } ],\n  \"pagination\": { \"page\": 1, \"pageSize\": 50 },\n  \"count\": 120\n}\n```\n\n**Error:**\n```json\n{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"VALIDATION_ERROR\",\n    \"message\": \"A specified field does not exist or is not accessible\"\n  }\n}\n```\n\n---\n\n## Error Codes\n\n| Code | HTTP | Description |\n|------|------|-------------|\n| `UNAUTHORIZED` | 401 | Missing or invalid authentication |\n| `FORBIDDEN` | 403 | Insufficient permissions for this operation |\n| `MODULE_NOT_FOUND` | 404 | Module does not exist or is not accessible in this app |\n| `RECORD_NOT_FOUND` | 404 | Record with the given ID was not found |\n| `API_NOT_FOUND` | 404 | The API endpoint does not exist |\n| `VIEW_NOT_FOUND` | 404 | The specified saved view was not found |\n| `PICKLIST_NOT_FOUND` | 404 | The specified picklist field was not found |\n| `VALIDATION_ERROR` | 400 | Request body or parameters failed validation |\n| `INVALID_FIELD` | 400 | A specified field does not exist or is not accessible |\n| `INVALID_FILTER` | 400 | Filter syntax is invalid or operator not supported for field type |\n| `EXPAND_LIMIT_EXCEEDED` | 400 | More than 5 fields specified in `expand` parameter |\n| `METHOD_NOT_ALLOWED` | 405 | HTTP method not supported for this endpoint |\n| `CREATE_NOT_ALLOWED` | 403 | Create operation is disabled for this module |\n| `UPDATE_NOT_ALLOWED` | 403 | Update operation is disabled for this module |\n| `DELETE_NOT_ALLOWED` | 403 | Delete operation is disabled for this module |\n| `MODULE_NOT_ENABLED` | 403 | Module is not enabled for this organization |\n| `RATE_LIMITED` | 429 | Rate limit exceeded |\n| `INTERNAL_ERROR` | 500 | Unexpected server error |\n\n---\n\n## Rate Limiting\n\n- **Limit:** 100 requests per minute per API key / OAuth2 token\n- **Response:** HTTP 429 Too Many Requests when exceeded\n- **Recommendation:** Implement exponential backoff when receiving 429 responses\n\n---\n\n## HTTP Method Override\n\nSome systems only support POST and GET requests. To use PATCH, or DELETE through a POST request,\ninclude the `X-HTTP-Method-Override` header with the desired method.\n\n```\nPOST /workorder/13\nX-HTTP-Method-Override: PATCH\nContent-Type: application/json\n\n{ \"data\": { \"priority\": \"Low\" } }\n```\n\nThis is equivalent to `PATCH /workorder/13`. Supported override values: `PATCH`, `DELETE`.\nThe override header is only honored on POST requests.\n\n---\n\n## Field Types and Limits\n\n| Field Type | Max Length | Description |\n|------------|-----------|-------------|\n| String | 255 characters | Short text fields (e.g. subject, name, email) |\n| Large Text | 2,000 characters | Medium text fields (e.g. description) |\n| Big String | 32,000 characters | Long text fields (custom large text fields). Excluded from list API responses. |\n| Number | — | Integer or decimal values |\n| Date / DateTime | — | UTC format: `yyyy-MM-dd'T'HH:mm:ss'Z'` |\n| Boolean | — | `true` or `false` |\n| Lookup | — | Reference to another record. Pass the record ID on create/update. Returns `{id}` on list unless `?expand=` is used. On single-record GET (and typical create/update responses), expanded shape follows **Lookup fields in responses** above — not a single fixed `{id, name, email}` for every field. |\n| Picklist | — | Enumerated values (status, priority, category, type). Pass display name string (e.g. `\"High\"`) or numeric ID. |\n| Enum | — | System enum values. Pass display name string or index. |\n\nValues exceeding the maximum length will be rejected with a `VALIDATION_ERROR`.\n\n---\n\n## Additional Notes\n\n- **Skipping Workflows:** By default, workflow rules (automations, notifications, approvals) execute when you create or update a record. To skip them, pass the header `X-Execute-Workflows: false`. This is useful for bulk data imports or migrations where triggering automations is not desired.\n- **Picklist Fields:** Fields like status, priority, category, and type accept and return display name strings (e.g. `\"Submitted\"`, `\"High\"`, `\"Energy\"`). You can also pass the numeric ID.\n- **Lookup Fields:** On list API, lookup fields return `{id}` only unless `?expand=` is used. On single record GET (and create/update responses), lookups are expanded automatically; the property set depends on the lookup target module — see **Lookup fields in responses**.\n"
+  contact:
+    name: Facilio Support
+    url: https://facilio.com
+  license:
+    name: Proprietary
+servers:
+- url: https://{region}.facilioapis.com/{app_name}/api/v5
+  variables:
+    region:
+      description: Regional deployment
+      default: us
+      enum:
+      - us
+      - au
+      - ae
+      - uk
+      - us-azure
+      - sa
+    app_name:
+      description: '''maintenance'' for API Key, ''developer'' for OAuth2'
+      default: maintenance
+      enum:
+      - maintenance
+      - developer
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Tools
+  description: Tool balances per storeroom (read-only list, detail, and bin list); non-rotating quantity changes use the tool adjustment endpoint.
+paths:
+  /tool:
+    get:
+      tags:
+      - Tools
+      summary: List tools
+      operationId: listStockedTools
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/select'
+      - $ref: '#/components/parameters/expand'
+      - $ref: '#/components/parameters/search'
+      - $ref: '#/components/parameters/count'
+      - $ref: '#/components/parameters/changed'
+      - name: sortBy
+        in: query
+        schema:
+          type: string
+          enum:
+          - id
+          - quantity
+          - currentQuantity
+          - rate
+          - sysCreatedTime
+          - sysModifiedTime
+      - name: sortOrder
+        in: query
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: desc
+      responses:
+        '200':
+          description: List of tool records
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 1
+                  toolType:
+                    id: 1
+                  storeRoom:
+                    id: 1
+                  currentQuantity: 10.0
+                pagination:
+                  page: 1
+                  pageSize: 50
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /tool/{id}:
+    get:
+      tags:
+      - Tools
+      summary: Get a tool
+      operationId: getStockedTool
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      - $ref: '#/components/parameters/select'
+      - $ref: '#/components/parameters/expand'
+      responses:
+        '200':
+          description: Tool record
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 1
+                  toolType:
+                    id: 1
+                  storeRoom:
+                    id: 1
+                  currentQuantity: 10.0
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /tool/{id}/bin:
+    get:
+      tags:
+      - Tools
+      summary: List bins and on-hand quantities for a tool
+      description: Returns bins with quantities for the tool id in the path (the same id as `GET /tool/{id}`).
+      operationId: listToolBins
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Tool record id (not tool type id).
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Bin rows
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 3
+                  name: Shelf-A
+                  quantity: 2.0
+                  isVirtualBin: false
+                - id: 2
+                  name: Virtual
+                  quantity: 8.0
+                  isVirtualBin: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /tool/adjustment:
+    post:
+      tags:
+      - Tools
+      summary: Adjust tool quantity (non-rotating types)
+      description: 'Same pattern as **`POST /item/adjustment`** for tools. **Rotating** tool types are rejected.
+
+        Requires **UPDATE** on the tool module.
+
+        '
+      operationId: toolAdjustment
+      parameters:
+      - name: executeWorkflows
+        in: query
+        schema:
+          type: boolean
+          default: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  $ref: '#/components/schemas/ToolAdjustment'
+            example:
+              data:
+                adjustmentType: decrease
+                quantity: 2
+                toolType: 1
+                storeRoom: 1
+                bin: A-1
+      responses:
+        '200':
+          description: Adjustment applied
+          content:
+            application/json:
+              example:
+                success: true
+                message: Adjustment posted
+                data:
+                  id: 1
+                  currentQuantity: 8.0
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /tool/metadata:
+    get:
+      tags:
+      - Tools
+      summary: Get tool field schema
+      operationId: getStockedToolMetadata
+      parameters:
+      - $ref: '#/components/parameters/includeAllowedValues'
+      responses:
+        '200':
+          description: Field schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModuleMetaResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  parameters:
+    includeAllowedValues:
+      name: includeAllowedValues
+      in: query
+      description: 'When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).
+
+        Default `false` keeps the original metadata payload (no enrichment, no extra DB calls).
+
+        Use this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.
+
+        '
+      schema:
+        type: boolean
+        default: false
+    search:
+      name: search
+      in: query
+      description: Free-text search on the primary field (subject, name, etc.)
+      schema:
+        type: string
+    pageSize:
+      name: pageSize
+      in: query
+      description: Records per page (max 200)
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
+    select:
+      name: select
+      in: query
+      description: Comma-separated field names to include in the response
+      schema:
+        type: string
+    count:
+      name: count
+      in: query
+      description: Include total record count in response
+      schema:
+        type: boolean
+        default: false
+    expand:
+      name: expand
+      in: query
+      description: 'Comma-separated lookup field names to expand on **list** endpoints (max 5).
+
+        Expanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).
+
+        '
+      schema:
+        type: string
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
+    changed:
+      name: changed
+      in: query
+      description: 'Delta sync: returns records created/modified after this UTC timestamp'
+      schema:
+        type: string
+        format: date-time
+  schemas:
+    FacilioModule:
+      type: object
+      description: A single entry in the module catalogue returned by GET /modules.
+      properties:
+        name:
+          type: string
+          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
+        displayName:
+          type: string
+          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
+        description:
+          type: string
+          description: Module description as configured in Facilio Setup. Omitted when blank.
+        isCustom:
+          type: boolean
+          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
+    ModuleMetaResponse:
+      type: object
+      description: Response body for GET /{moduleName}/metadata.
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            module:
+              $ref: '#/components/schemas/FacilioModule'
+            fields:
+              type: array
+              description: 'Ordered list of fields for the module.
+
+                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
+
+                Custom modules return all fields.
+
+                '
+              items:
+                $ref: '#/components/schemas/FacilioField'
+    FacilioField:
+      type: object
+      description: Schema descriptor for a single field within a module.
+      properties:
+        name:
+          type: string
+          description: Field name used in API requests and responses (e.g. `subject`, `po_reference_workorder`)
+        displayName:
+          type: string
+          description: Human-readable field label
+        dataType:
+          type: string
+          description: 'Field data type. Common values:
+
+            `STRING`, `NUMBER`, `DECIMAL`, `BOOLEAN`,
+
+            `DATE`, `DATE_TIME`,
+
+            `BIG_STRING` (large text, excluded from list responses),
+
+            `LOOKUP` (reference to another record — see `lookupModuleName`),
+
+            `MULTI_LOOKUP` (multi-reference — see `lookupModuleName`),
+
+            `ENUM`, `SYSTEM_ENUM`, `STRING_SYSTEM_ENUM` (picklist types)
+
+            '
+          example: STRING
+        required:
+          type: boolean
+          description: '`true` if this field must be provided on record creation'
+        readOnly:
+          type: boolean
+          description: '`true` if this field cannot be set or modified via the API (e.g. auto-generated system fields)'
+        isCustom:
+          type: boolean
+          description: '`true` for fields added by your organization; `false` for standard built-in fields'
+        sortable:
+          type: boolean
+          description: '`true` if this field can be used as a `sortBy` value on the list API'
+        lookupModuleName:
+          type: string
+          description: Present only on `LOOKUP` and `MULTI_LOOKUP` fields. The name of the target module (e.g. `site`, `users`, `ticketstatus`).
+        max_length:
+          type: integer
+          description: 'Maximum number of characters accepted by the V5 write API for text-style fields.
+
+            Present only when the field''s `dataType` is one of:
+
+            `STRING` (255), `LARGE_TEXT` (2000), `BIG_STRING` (32000).
+
+            Omitted for all other data types.
+
+            '
+          example: 255
+        allowed_values:
+          type: array
+          description: 'List of acceptable write values for picklist-capable fields. Present **only when the request includes `?includeAllowedValues=true`** AND the field is one of:
+
+            `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, or a `LOOKUP` targeting a system picklist module (e.g. `ticketstatus`, `ticketpriority`, `ticketcategory`, `tickettype`).
+
+            Each entry uses `{label, value}`; the `value` is the canonical form accepted by create/update payloads.
+
+            '
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+                description: Display label as shown in the UI
+              value:
+                type: string
+                description: Canonical value accepted by create/update for this field and filtering
+    ToolAdjustment:
+      type: object
+      required:
+      - adjustmentType
+      - quantity
+      - toolType
+      - storeRoom
+      properties:
+        adjustmentType:
+          type: string
+          description: '`increase` or `decrease`'
+        quantity:
+          type: number
+          format: double
+          exclusiveMinimum: 0
+        toolType:
+          description: Tool type id — pass the number directly (object with `id` is also accepted).
+        storeRoom:
+          description: Storeroom id — pass the number directly (object with `id` is also accepted).
+        bin:
+          description: Optional bin — bin name as a string, bin id as a number, or an object with `id` or `name`.
+        unitPrice:
+          type: number
+          format: double
+          description: Increase only — purchased tool unit price
+        purchasedDate:
+          description: Epoch ms or ISO string for purchasedTool costDate on increase
+        remarks:
+          type: string
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+  responses:
+    BadRequest:
+      description: Validation error — missing required fields, invalid field values, or malformed request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: VALIDATION_ERROR
+              message: 'Required field(s) missing: name'
+    Unauthorized:
+      description: Missing or invalid authentication credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Missing or invalid authentication credentials
+    NotFound:
+      description: Record or module not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: RECORD_NOT_FOUND
+              message: Record with the given ID was not found
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Personal access token
+    oauth2:
+      type: oauth2
+      description: Supports authorization_code and password grant types
+      flows:
+        authorizationCode:
+          authorizationUrl: https://us.facilioapis.com/identity/oauth2/authorize
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}
+        password:
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}
