@@ -1,0 +1,32 @@
+generated: '2026-07-19'
+method: derived
+source: openapi/facilio-openapi-original.yaml
+format: custom-envelope
+envelope:
+  shape: '{ "success": false, "error": { "code": "STRING", "message": "STRING" } }'
+  success_field: success
+  error_object: error
+  code_field: code          # machine-readable
+  message_field: message    # human-readable
+  content_type: application/json
+  note: >-
+    Facilio uses a proprietary error envelope, not RFC 9457 problem+json. Codes
+    below are the ones the OpenAPI documents in shared response examples; the
+    live API may return additional module-specific codes.
+problems:
+- status: 400
+  code: VALIDATION_ERROR
+  title: Validation error
+  detail: Missing required fields, invalid field values, or malformed request body
+  example_message: 'Required field(s) missing: name'
+  source_response: '#/components/responses/BadRequest'
+- status: 401
+  code: UNAUTHORIZED
+  title: Unauthorized
+  detail: Missing or invalid authentication credentials
+  source_response: '#/components/responses/Unauthorized'
+- status: 404
+  code: RECORD_NOT_FOUND
+  title: Not found
+  detail: Record or module with the given ID was not found
+  source_response: '#/components/responses/NotFound'

@@ -1,0 +1,45 @@
+# Facilio
+
+> Facilio is a connected operations platform for facility, property, and asset management, built around an AI-powered CMMS. It exposes a versioned REST API (v5), a FOQL query language, embeddable Connected Apps, and a hosted Model Context Protocol (MCP) server so external systems and AI agents can query and act on work orders, assets, service requests, tenants, vendors, and portfolio data using the caller's existing Facilio permissions.
+
+## APIs
+
+- [Facilio REST API v5 — Reference](https://facilio.com/developers/docs/api-reference/): Work orders, service requests, assets, portfolio hierarchy, people, inventory, and purchasing. OpenAPI 3.0.3.
+- [OpenAPI v5 specification](https://static.facilio.com/developers/api/v5/openapi.yaml): Machine-readable spec (126 paths, 213 operations, 35 resource groups).
+- Base URL: https://{region}.facilioapis.com/{app_name}/api/v5 (region: us, au, ae, uk, us-azure, sa)
+
+## Agents / MCP
+
+- [Facilio MCP server](https://facilio.com/ai-suite/mcp/): Hosted at https://mcp.facilio.com/mcp (streamable-http, OAuth2). Destructive actions require explicit user confirmation; all queries logged to the audit trail.
+- [MCP server card](https://facilio.com/.well-known/mcp/server-card.json)
+- [MCP OAuth authorization server metadata](https://mcp.facilio.com/.well-known/oauth-authorization-server)
+- [API catalog (RFC 9727)](https://facilio.com/.well-known/api-catalog)
+
+## Auth
+
+- API key: `x-api-key` header (app_name `maintenance`).
+- OAuth2: authorization_code + password grants (app_name `developer`); identity endpoints at https://us.facilioapis.com/identity/oauth2/.
+
+## Docs
+
+- [Developer portal](https://facilio.com/developers/)
+- [Developer docs](https://facilio.com/developers/docs/)
+- [FOQL query language](https://facilio.com/developers/docs/foql/index/)
+- [Connected Apps SDK](https://facilio.com/developers/docs/connected-apps/index/)
+- [Facilio SDK for Salesforce](https://facilio.com/developers/docs/sdk/facilio-sdk-for-salesforce/)
+
+## Conventions
+
+- Response envelope: `{ success, data, pagination }`; errors `{ success:false, error:{ code, message } }`.
+- Pagination: `page` + `pageSize` (max 200); `?count=true` for total.
+- Sparse fields (`select`), lookup expansion (`expand`), free-text `search`, delta sync (`changed`), saved views (`view`).
+- Datetimes: milliseconds since epoch.
+
+## Company
+
+- [Website](https://facilio.com)
+- [Pricing](https://facilio.com/pricing/)
+- [Blog](https://facilio.com/blog/)
+- [Security](https://facilio.com/security/) — responsible disclosure to security@facilio.com; SOC 2 Type II, ISO 27001, GDPR.
+- [Terms of Service](https://facilio.com/terms-of-service/)
+- [Privacy Policy](https://facilio.com/privacy-policy/)

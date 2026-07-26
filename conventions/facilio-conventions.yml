@@ -1,0 +1,56 @@
+generated: '2026-07-19'
+method: searched
+source: openapi/facilio-openapi-original.yaml
+docs: https://facilio.com/developers/docs/api-reference/
+summary: >-
+  Cross-cutting request/response semantics for the Facilio REST API v5, derived
+  from the published OpenAPI and the developer docs. JSON over HTTPS, a uniform
+  {success,data,pagination} envelope, page-based pagination, sparse fieldsets,
+  lookup expansion, delta sync, and a custom error envelope.
+authentication:
+  styles: [api-key, oauth2]
+  api_key_header: x-api-key
+  ref: authentication/facilio-authentication.yml
+versioning:
+  scheme: uri-path
+  current: v5
+  base_path: /{app_name}/api/v5
+  ref: lifecycle/facilio-lifecycle.yml
+response_envelope:
+  success_field: success            # boolean on every response
+  data_field: data                  # object (single) or array (list)
+  error_field: error                # {code, message} on failures
+  ref: errors/facilio-problem-types.yml
+pagination:
+  style: page-number
+  params:
+    page: Page number (1-based)
+    pageSize: Records per page (max 200)
+  response_fields:
+    pagination: {page, pageSize}
+    count: Total record count, only when ?count=true is passed
+sparse_fields:
+  select: Comma-separated field names to include in the response
+metadata:
+  view: Query by saved view name (?view=)
+  metadata_endpoints: Per-module *_metadata operations expose field definitions and allowed values
+expansion:
+  expand: Comma-separated lookup field names to expand on list endpoints
+search:
+  search: Free-text search on the primary field (subject, name, etc.)
+delta_sync:
+  changed: Returns records created/modified after a given UTC timestamp (incremental sync)
+sorting:
+  sortBy: Field to sort by (only sortable fields accepted)
+  sortOrder: asc | desc
+data_formats:
+  datetimes: Milliseconds since epoch (per Connected Apps SDK convention)
+idempotency:
+  supported: false
+  note: >-
+    The v5 REST API does not document an idempotency-key header; no
+    Idempotency-Key parameter appears in the OpenAPI. Writes are not advertised
+    as idempotent. (No Idempotency pointer emitted — would be fabrication.)
+rate_limiting:
+  documented: false
+  note: No rate-limit headers or quota policy documented in the OpenAPI or reference.

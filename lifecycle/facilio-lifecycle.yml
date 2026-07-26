@@ -1,0 +1,22 @@
+generated: '2026-07-19'
+method: searched
+source: openapi/facilio-openapi-original.yaml
+versioning:
+  scheme: uri-path
+  current: v5
+  base_path_template: https://{region}.facilioapis.com/{app_name}/api/v5
+  docs: https://facilio.com/developers/docs/api-reference/
+regions:
+  hosts: [us, au, ae, uk, us-azure, sa]
+  note: Regional data residency; each region is a separate host under facilioapis.com
+deprecation:
+  policy_url: null
+  sunset_header: false
+  note: No published deprecation policy or RFC 8594 Sunset/Deprecation header support found.
+sla:
+  url: null
+  uptime_target: null
+status_page:
+  url: null
+  note: No public status page found (no status.facilio.com; MCP docs do not link one).
+deprecated_operations: []

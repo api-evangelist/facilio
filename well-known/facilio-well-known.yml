@@ -1,0 +1,51 @@
+generated: '2026-07-19'
+method: searched
+hosts:
+- host: https://facilio.com
+  documents:
+  - path: /.well-known/api-catalog        # RFC 9727 API catalog (linkset)
+    status: 200
+    file: facilio-api-catalog.json
+  - path: /.well-known/mcp/server-card.json  # MCP server card
+    status: 200
+    file: facilio-mcp-server-card.json
+  - path: /.well-known/security.txt        # RFC 9116
+    status: 403
+    note: WAF (Cloudflare) blocks unauthenticated fetch; no published security.txt confirmed
+  - path: /.well-known/openid-configuration
+    status: 403
+  - path: /.well-known/oauth-authorization-server
+    status: 403
+  - path: /.well-known/ai-plugin.json
+    status: 403
+- host: https://mcp.facilio.com
+  documents:
+  - path: /.well-known/oauth-authorization-server  # RFC 8414
+    status: 200
+    file: facilio-mcp-oauth-authorization-server.json
+  - path: /.well-known/oauth-protected-resource     # RFC 9728
+    status: 404
+- host: https://app.facilio.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+catalog:
+  standard: RFC 9727 (api-catalog)
+  entries:
+  - href: https://static.facilio.com/developers/api/v5/openapi.yaml
+    type: application/vnd.oai.openapi
+    title: Facilio REST API v5 — OpenAPI Specification
+  - href: https://facilio.com/developers/docs/api-reference/
+    type: text/html
+    title: Facilio REST API Reference Documentation
+  - href: https://facilio.com/.well-known/mcp/server-card.json
+    type: application/json
+    title: Facilio MCP Server
+  - href: https://mcp.facilio.com/.well-known/oauth-authorization-server
+    type: application/json
+    title: Facilio MCP — OAuth 2.0 Authorization Server Metadata
+  - href: https://mcp.facilio.com/.well-known/oauth-protected-resource
+    type: application/json
+    title: Facilio MCP — OAuth 2.0 Protected Resource Metadata

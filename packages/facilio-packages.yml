@@ -1,0 +1,33 @@
+generated: '2026-07-19'
+method: searched
+source: https://facilio.com/developers/docs/
+note: >-
+  Facilio's published, first-party developer libraries are hosted SDKs, not
+  entries on public language registries (npm/PyPI/Maven/etc. searches surfaced no
+  official facilio server-client packages). The Connected Apps SDK is a hosted
+  JavaScript library loaded from static.facilio.com; a dedicated SDK exists for
+  Salesforce. Registry probes (npm/PyPI) returned no first-party REST client.
+packages:
+- language: javascript
+  registry: hosted
+  name: Facilio Connected Apps SDK (beta)
+  url: https://static.facilio.com/apps-sdk/beta/facilio_apps_sdk.min.js
+  install: '<script src="https://static.facilio.com/apps-sdk/beta/facilio_apps_sdk.min.js"></script>'
+  official: true
+  description: >-
+    JavaScript SDK for building embedded Connected Apps that run inside the
+    Facilio iframe/webview; auth is automatic (no API keys). Beta is required
+    for Revive customers and mobile.
+- language: javascript
+  registry: hosted
+  name: Facilio Connected Apps SDK (latest/legacy)
+  url: https://static.facilio.com/apps-sdk/latest/facilio_apps_sdk.min.js
+  install: '<script src="https://static.facilio.com/apps-sdk/latest/facilio_apps_sdk.min.js"></script>'
+  official: true
+  description: Standard (legacy) build of the Connected Apps SDK.
+- language: apex
+  registry: docs
+  name: Facilio SDK for Salesforce
+  url: https://facilio.com/developers/docs/sdk/facilio-sdk-for-salesforce/
+  official: true
+  description: First-party SDK for integrating Facilio with Salesforce.

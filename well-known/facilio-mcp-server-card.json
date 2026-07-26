@@ -1,0 +1,37 @@
+{
+  "serverInfo": {
+    "name": "Facilio",
+    "version": "1.0.0",
+    "vendor": {
+      "name": "Facilio Inc.",
+      "url": "https://facilio.com"
+    },
+    "description": "Connected operations platform for facility, property, and asset management. The Facilio MCP server lets agents query and act on work orders, assets, service requests, tenants, vendors, and portfolio data using the caller's existing Facilio permissions.",
+    "documentation": "https://facilio.com/ai-suite/mcp/",
+    "supportContact": "support@facilio.com",
+    "termsOfService": "https://facilio.com/terms-of-service/",
+    "privacyPolicy": "https://facilio.com/privacy-policy/"
+  },
+  "endpoint": "https://mcp.facilio.com/mcp",
+  "transport": "streamable-http",
+  "protocolVersion": "2025-06-18",
+  "apiCatalog": {
+    "href": "https://facilio.com/.well-known/api-catalog",
+    "type": "application/linkset+json",
+    "profile": "https://www.rfc-editor.org/info/rfc9727"
+  },
+  "capabilities": {
+    "tools": {},
+    "resources": {},
+    "prompts": {}
+  },
+  "auth": {
+    "type": "oauth2",
+    "authorizationServers": ["https://mcp.facilio.com"],
+    "scopes": ["api"],
+    "metadata": {
+      "authorizationServer": "https://mcp.facilio.com/.well-known/oauth-authorization-server",
+      "protectedResource": "https://mcp.facilio.com/.well-known/oauth-protected-resource"
+    }
+  }
+}

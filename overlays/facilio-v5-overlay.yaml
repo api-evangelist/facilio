@@ -1,0 +1,26 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Facilio REST API v5
+  version: 1.0.0
+extends: openapi/facilio-openapi-original.yaml
+actions:
+- target: $.info
+  update:
+    x-apievangelist-enriched: '2026-07-19'
+    x-apievangelist-mcp-server: https://mcp.facilio.com/mcp
+    x-apievangelist-api-catalog: https://facilio.com/.well-known/api-catalog
+    x-apievangelist-artifacts:
+      authentication: authentication/facilio-authentication.yml
+      scopes: scopes/facilio-scopes.yml
+      conventions: conventions/facilio-conventions.yml
+      errors: errors/facilio-problem-types.yml
+      lifecycle: lifecycle/facilio-lifecycle.yml
+      conformance: conformance/facilio-conformance.yml
+      data_model: data-model/facilio-data-model.yml
+      mcp: mcp/facilio-mcp.yml
+      skills: skills/_index.yml
+- target: $.info
+  update:
+    x-apievangelist-error-envelope: '{ success: false, error: { code, message } }'
+    x-apievangelist-pagination: page-number (page, pageSize; max 200)
+    x-apievangelist-delta-sync: 'changed query param (records modified after UTC timestamp)'

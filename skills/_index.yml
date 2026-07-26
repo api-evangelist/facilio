@@ -1,0 +1,16 @@
+generated: '2026-07-19'
+method: generated
+source: openapi/facilio-openapi-original.yaml
+skills:
+- file: facilio-create-work-order.md
+  name: Create and track a maintenance work order
+  api: openapi/facilio-openapi-original.yaml
+  operations: [getProfile, getWorkOrderMetadata, createWorkOrder, getWorkOrder, updateWorkOrder, addWorkOrderComment, listWorkOrders]
+- file: facilio-triage-service-request.md
+  name: Triage a tenant service request
+  api: openapi/facilio-openapi-original.yaml
+  operations: [listServiceRequests, getServiceRequest, getServiceRequestMetadata, updateServiceRequest, createWorkOrder]
+- file: facilio-sync-assets.md
+  name: Sync assets with an external system
+  api: openapi/facilio-openapi-original.yaml
+  operations: [getAssetMetadata, listAssets, getAsset, createAsset, updateAsset]

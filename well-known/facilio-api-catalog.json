@@ -1,0 +1,40 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://facilio.com/.well-known/api-catalog",
+      "profile": [
+        { "href": "https://www.rfc-editor.org/info/rfc9727" }
+      ]
+    },
+    {
+      "anchor": "https://facilio.com",
+      "api-catalog": [
+        {
+          "href": "https://static.facilio.com/developers/api/v5/openapi.yaml",
+          "type": "application/vnd.oai.openapi",
+          "title": "Facilio REST API v5 — OpenAPI Specification"
+        },
+        {
+          "href": "https://facilio.com/developers/docs/api-reference/",
+          "type": "text/html",
+          "title": "Facilio REST API Reference Documentation"
+        },
+        {
+          "href": "https://facilio.com/.well-known/mcp/server-card.json",
+          "type": "application/json",
+          "title": "Facilio MCP Server"
+        },
+        {
+          "href": "https://mcp.facilio.com/.well-known/oauth-authorization-server",
+          "type": "application/json",
+          "title": "Facilio MCP — OAuth 2.0 Authorization Server Metadata"
+        },
+        {
+          "href": "https://mcp.facilio.com/.well-known/oauth-protected-resource",
+          "type": "application/json",
+          "title": "Facilio MCP — OAuth 2.0 Protected Resource Metadata"
+        }
+      ]
+    }
+  ]
+}

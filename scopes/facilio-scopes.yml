@@ -1,0 +1,56 @@
+generated: '2026-07-19'
+method: searched
+source: openapi/facilio-openapi-original.yaml
+docs: https://mcp.facilio.com/.well-known/oauth-authorization-server
+notes: >-
+  The Facilio REST API OpenAPI declares an oauth2 scheme with empty scope maps
+  (coarse-grained bearer access). The granular published scope surface lives on
+  Facilio's hosted MCP OAuth 2.0 Authorization Server (https://mcp.facilio.com),
+  captured verbatim below from its RFC 8414 authorization-server metadata
+  (well-known/facilio-mcp-oauth-authorization-server.json).
+schemes:
+- name: oauth2
+  source: openapi/facilio-openapi-original.yaml
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://us.facilioapis.com/identity/oauth2/authorize
+    tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+  - flow: password
+    tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+- name: mcp-oauth2
+  source: https://mcp.facilio.com/.well-known/oauth-authorization-server
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://mcp.facilio.com/authorize
+    tokenUrl: https://mcp.facilio.com/token
+scopes:
+- scope: openid
+  description: OpenID Connect authentication
+  flows: [authorizationCode]
+  sources: [https://mcp.facilio.com/.well-known/oauth-authorization-server]
+- scope: email
+  description: Access the authenticated user's email
+  flows: [authorizationCode]
+  sources: [https://mcp.facilio.com/.well-known/oauth-authorization-server]
+- scope: profile
+  description: Access the authenticated user's basic profile
+  flows: [authorizationCode]
+  sources: [https://mcp.facilio.com/.well-known/oauth-authorization-server]
+- scope: connections:actions.execute.read
+  description: Execute read-only actions/queries through Facilio connections
+  flows: [authorizationCode]
+  sources: [https://mcp.facilio.com/.well-known/oauth-authorization-server]
+- scope: connections:actions.execute.write
+  description: Execute write actions (create/update) through Facilio connections
+  flows: [authorizationCode]
+  sources: [https://mcp.facilio.com/.well-known/oauth-authorization-server]
+- scope: connections:actions.execute.destructive
+  description: >-
+    Execute destructive actions (delete); the MCP server requires explicit user
+    confirmation before performing these
+  flows: [authorizationCode]
+  sources: [https://mcp.facilio.com/.well-known/oauth-authorization-server]
+- scope: api
+  description: Coarse-grained API access scope advertised by the MCP server card
+  flows: [authorizationCode]
+  sources: [https://facilio.com/.well-known/mcp/server-card.json]

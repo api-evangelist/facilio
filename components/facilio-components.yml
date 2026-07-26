@@ -1,0 +1,27 @@
+generated: '2026-07-19'
+method: searched
+source: https://facilio.com/developers/docs/connected-apps/index/
+summary: >-
+  Facilio ships a client-side, embeddable application platform ("Connected Apps")
+  plus "Vibe" for standalone web apps. Connected Apps render inside the Facilio
+  iframe/webview and are built against the Facilio Apps SDK, which provides data
+  access, widgets, events, and triggers with automatic in-app authentication.
+families:
+- name: Connected Apps
+  kind: embedded-app-platform
+  docs: https://facilio.com/developers/docs/connected-apps/index/
+  loader:
+    beta: https://static.facilio.com/apps-sdk/beta/facilio_apps_sdk.min.js
+    latest: https://static.facilio.com/apps-sdk/latest/facilio_apps_sdk.min.js
+  global: window.facilioApp
+  init: FacilioAppSDK.init() (callback) or FacilioAppSDK.initSync() (async/await)
+  capabilities:
+  - Data access to Facilio modules/records via the SDK
+  - Widgets and UI surfaces embedded in the Facilio app
+  - App lifecycle events (app.loaded) and triggers
+  - Automatic authentication inside the Facilio iframe/webview (no API keys)
+  notes: Prefer the beta SDK for new development; required for Revive customers and mobile.
+- name: Vibe
+  kind: standalone-web-app-sdk
+  docs: https://facilio.com/developers/docs/
+  description: SDK for building standalone web apps on the Facilio platform.

@@ -1,0 +1,44 @@
+generated: '2026-07-19'
+method: searched
+status: published
+source: https://facilio.com/.well-known/mcp/server-card.json
+docs: https://facilio.com/ai-suite/mcp/
+server:
+  name: Facilio
+  version: '1.0.0'
+  vendor: Facilio Inc.
+  description: >-
+    Connected operations platform for facility, property, and asset management.
+    The Facilio MCP server lets agents query and act on work orders, assets,
+    service requests, tenants, vendors, and portfolio data using the caller's
+    existing Facilio permissions. Destructive actions require explicit user
+    confirmation and every query is logged to the existing Facilio audit trail.
+  endpoint: https://mcp.facilio.com/mcp
+  transport: streamable-http
+  protocol_version: '2025-06-18'
+  regions: [US, EU, UK, AU, AE, SA, US-Azure]
+  support_contact: support@facilio.com
+capabilities:
+  tools: true
+  resources: true
+  prompts: true
+auth:
+  type: oauth2
+  authorization_servers: [https://mcp.facilio.com]
+  authorization_server_metadata: https://mcp.facilio.com/.well-known/oauth-authorization-server
+  dynamic_client_registration: true       # registration_endpoint present
+  pkce: [S256]
+  scopes:
+  - openid
+  - email
+  - profile
+  - connections:actions.execute.read
+  - connections:actions.execute.write
+  - connections:actions.execute.destructive
+example_prompts:
+- "Show overdue service requests across Tower A, owner-escalatable"
+- "Which sites are trending over budget this month?"
+- "Draft a monthly operations summary for the ownership group"
+api_catalog:
+  href: https://facilio.com/.well-known/api-catalog
+  profile: https://www.rfc-editor.org/info/rfc9727
