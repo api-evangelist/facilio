@@ -1,0 +1,1756 @@
+{
+  "item": [
+    {
+      "id": "1ade945f-d1b0-496a-92b2-85e43338ddd7",
+      "name": "Assets",
+      "description": {
+        "content": "Assets represent the equipment, machines, and devices in your facilities — HVAC units, elevators, generators, fire panels, and more. Track their lifecycle, location, warranty, and maintenance history.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "82cd5f53-3993-4557-bc35-a6ddf2100f8f",
+          "name": "List assets",
+          "request": {
+            "name": "List assets",
+            "description": {
+              "content": "Returns a paginated list of assets. Supports filtering by any field (e.g. `?category=HVAC&site(is)=10`).",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "asset"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number (1-based)"
+                },
+                {
+                  "disabled": false,
+                  "key": "pageSize",
+                  "value": "50",
+                  "description": "Records per page (max 200)"
+                },
+                {
+                  "disabled": false,
+                  "key": "select",
+                  "value": "<string>",
+                  "description": "Comma-separated field names to include in the response"
+                },
+                {
+                  "disabled": false,
+                  "key": "expand",
+                  "value": "<string>",
+                  "description": "Comma-separated lookup field names to expand on **list** endpoints (max 5).\nExpanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).\n"
+                },
+                {
+                  "disabled": false,
+                  "key": "search",
+                  "value": "<string>",
+                  "description": "Free-text search on the primary field (subject, name, etc.)"
+                },
+                {
+                  "disabled": false,
+                  "key": "count",
+                  "value": "false",
+                  "description": "Include total record count in response"
+                },
+                {
+                  "disabled": false,
+                  "key": "view",
+                  "value": "<string>",
+                  "description": "Saved view name"
+                },
+                {
+                  "disabled": false,
+                  "key": "changed",
+                  "value": "<dateTime>",
+                  "description": "Delta sync: returns records created/modified after this UTC timestamp"
+                },
+                {
+                  "disabled": false,
+                  "key": "sortBy",
+                  "value": "<string>"
+                },
+                {
+                  "disabled": false,
+                  "key": "sortOrder",
+                  "value": "asc"
+                }
+              ],
+              "variable": [
+                {
+                  "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                  "type": "any",
+                  "value": "{{region}}",
+                  "key": "region"
+                },
+                {
+                  "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                  "type": "any",
+                  "value": "{{app_name}}",
+                  "key": "app_name"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "1264a753-745a-4bb2-90ea-de674ee4c03d",
+              "name": "List of assets",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "asset"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "50"
+                    },
+                    {
+                      "key": "select",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "expand",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "search",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "count",
+                      "value": "false"
+                    },
+                    {
+                      "key": "view",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "changed",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sortBy",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "sortOrder",
+                      "value": "asc"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": 14,\n      \"name\": \"AHU-01\",\n      \"category\": \"HVAC\",\n      \"type\": \"Air Handling Unit\",\n      \"siteId\": {\n        \"id\": 10\n      },\n      \"moduleState\": \"Active\",\n      \"sysCreatedTime\": \"2026-01-15T10:00:00Z\"\n    },\n    {\n      \"id\": 15,\n      \"name\": \"AHU-02\",\n      \"category\": \"HVAC\",\n      \"type\": \"Air Handling Unit\",\n      \"siteId\": {\n        \"id\": 10\n      },\n      \"moduleState\": \"Active\",\n      \"sysCreatedTime\": \"2026-01-15T10:05:00Z\"\n    }\n  ],\n  \"pagination\": {\n    \"page\": 1,\n    \"pageSize\": 50\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "d88a2743-7d9b-4b94-b585-5743b9a628db",
+              "name": "Missing or invalid authentication credentials",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "asset"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "50"
+                    },
+                    {
+                      "key": "select",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "expand",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "search",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "count",
+                      "value": "false"
+                    },
+                    {
+                      "key": "view",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "changed",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sortBy",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "sortOrder",
+                      "value": "asc"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"UNAUTHORIZED\",\n    \"message\": \"Missing or invalid authentication credentials\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "47e38f10-e92e-42a0-ac1a-e684ecca87ef",
+          "name": "Create an asset",
+          "request": {
+            "name": "Create an asset",
+            "description": {
+              "content": "Creates a new asset. Category and type accept picklist display names or IDs.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "asset"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                  "type": "any",
+                  "value": "{{region}}",
+                  "key": "region"
+                },
+                {
+                  "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                  "type": "any",
+                  "value": "{{app_name}}",
+                  "key": "app_name"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"serialNumber\": \"<string>\",\n    \"tagNumber\": \"<string>\",\n    \"qrVal\": \"<string>\",\n    \"category\": \"<string>\",\n    \"type\": \"<string>\",\n    \"siteId\": \"<integer>\",\n    \"space\": \"<integer>\",\n    \"moduleState\": \"<string>\",\n    \"manufacturer\": \"<string>\",\n    \"model\": \"<string>\",\n    \"department\": \"<string>\",\n    \"purchasedDate\": \"<dateTime>\",\n    \"warrantyExpiryDate\": \"<dateTime>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "02fa9fff-a704-47e9-bb69-046f8a8f9179",
+              "name": "Asset created",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "asset"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"name\": \"AHU-03\",\n    \"category\": \"HVAC\",\n    \"type\": \"Air Handling Unit\",\n    \"siteId\": 10,\n    \"manufacturer\": \"Carrier\",\n    \"model\": \"39M\",\n    \"serialNumber\": \"SN-2026-003\",\n    \"warranty_info_asset\": \"2 year full warranty\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 16,\n    \"name\": \"AHU-03\",\n    \"category\": \"HVAC\",\n    \"siteId\": {\n      \"id\": 10,\n      \"name\": \"Headquarters\"\n    },\n    \"sysCreatedTime\": \"2026-02-14T10:00:00Z\"\n  },\n  \"message\": \"Record created\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "30f21596-e0fa-4928-961c-5ed465b91e9c",
+              "name": "Validation error — missing required fields, invalid field values, or malformed request body",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "asset"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"name\": \"AHU-03\",\n    \"category\": \"HVAC\",\n    \"type\": \"Air Handling Unit\",\n    \"siteId\": 10,\n    \"manufacturer\": \"Carrier\",\n    \"model\": \"39M\",\n    \"serialNumber\": \"SN-2026-003\",\n    \"warranty_info_asset\": \"2 year full warranty\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"VALIDATION_ERROR\",\n    \"message\": \"Required field(s) missing: name\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "48b55266-c9aa-4c05-b169-65362ab936c6",
+              "name": "Missing or invalid authentication credentials",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "asset"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"name\": \"AHU-03\",\n    \"category\": \"HVAC\",\n    \"type\": \"Air Handling Unit\",\n    \"siteId\": 10,\n    \"manufacturer\": \"Carrier\",\n    \"model\": \"39M\",\n    \"serialNumber\": \"SN-2026-003\",\n    \"warranty_info_asset\": \"2 year full warranty\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"UNAUTHORIZED\",\n    \"message\": \"Missing or invalid authentication credentials\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "8e3adc9c-1f4f-4a25-9989-5b17b5831125",
+          "name": "Get an asset",
+          "request": {
+            "name": "Get an asset",
+            "description": {
+              "content": "Returns a single asset with all system and custom fields.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "asset",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "select",
+                  "value": "<string>",
+                  "description": "Comma-separated field names to include in the response"
+                },
+                {
+                  "disabled": false,
+                  "key": "expand",
+                  "value": "<string>",
+                  "description": "Comma-separated lookup field names to expand on **list** endpoints (max 5).\nExpanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).\n"
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "id",
+                  "description": "(Required) Record ID"
+                },
+                {
+                  "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                  "type": "any",
+                  "value": "{{region}}",
+                  "key": "region"
+                },
+                {
+                  "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                  "type": "any",
+                  "value": "{{app_name}}",
+                  "key": "app_name"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "d4195d56-1cb7-4d96-8200-858462071e34",
+              "name": "Asset details",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "asset",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "select",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "expand",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 14,\n    \"name\": \"AHU-01\",\n    \"description\": \"Air Handling Unit in Building A\",\n    \"serialNumber\": \"SN-2026-001\",\n    \"category\": \"HVAC\",\n    \"type\": \"Air Handling Unit\",\n    \"siteId\": {\n      \"id\": 10,\n      \"name\": \"Headquarters\"\n    },\n    \"space\": {\n      \"id\": 20,\n      \"name\": \"Mechanical Room\"\n    },\n    \"moduleState\": \"Active\",\n    \"manufacturer\": \"Carrier\",\n    \"model\": \"39M\",\n    \"department\": \"Facilities\",\n    \"sysCreatedTime\": \"2026-01-15T10:00:00Z\",\n    \"sysCreatedBy\": {\n      \"id\": 1,\n      \"name\": \"Alex Johnson\",\n      \"email\": \"alex.johnson@example.com\"\n    },\n    \"warranty_info_asset\": \"2 year full warranty\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "b6b43e81-8401-4881-a0c9-8006a4fd0620",
+              "name": "Missing or invalid authentication credentials",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "asset",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "select",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "expand",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"UNAUTHORIZED\",\n    \"message\": \"Missing or invalid authentication credentials\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "b7e43656-654f-4ef3-a83f-98db8f029ca3",
+              "name": "Record or module not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "asset",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "select",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "expand",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"RECORD_NOT_FOUND\",\n    \"message\": \"Record with the given ID was not found\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "62c3c245-86bc-4aed-89d8-8a0d3a1d3f9c",
+          "name": "Update an asset",
+          "request": {
+            "name": "Update an asset",
+            "description": {
+              "content": "Updates an existing asset. Only included fields are changed.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "asset",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "id",
+                  "description": "(Required) Record ID"
+                },
+                {
+                  "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                  "type": "any",
+                  "value": "{{region}}",
+                  "key": "region"
+                },
+                {
+                  "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                  "type": "any",
+                  "value": "{{app_name}}",
+                  "key": "app_name"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"serialNumber\": \"<string>\",\n    \"tagNumber\": \"<string>\",\n    \"qrVal\": \"<string>\",\n    \"category\": \"<string>\",\n    \"type\": \"<string>\",\n    \"siteId\": \"<integer>\",\n    \"space\": \"<integer>\",\n    \"moduleState\": \"<string>\",\n    \"manufacturer\": \"<string>\",\n    \"model\": \"<string>\",\n    \"department\": \"<string>\",\n    \"purchasedDate\": \"<dateTime>\",\n    \"warrantyExpiryDate\": \"<dateTime>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "8c3e200d-f656-418d-8d81-fbe58222ee22",
+              "name": "Asset updated",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "asset",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"name\": \"AHU-01 (Updated)\",\n    \"model\": \"39M-R2\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 14,\n    \"name\": \"AHU-01 (Updated)\"\n  },\n  \"message\": \"Record updated\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "e38c67e3-8d57-4abf-8d8f-7804537673f1",
+              "name": "Validation error — missing required fields, invalid field values, or malformed request body",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "asset",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"name\": \"AHU-01 (Updated)\",\n    \"model\": \"39M-R2\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"VALIDATION_ERROR\",\n    \"message\": \"Required field(s) missing: name\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "31ed2d41-3cbf-4688-8924-1f78ef17e339",
+              "name": "Missing or invalid authentication credentials",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "asset",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"name\": \"AHU-01 (Updated)\",\n    \"model\": \"39M-R2\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"UNAUTHORIZED\",\n    \"message\": \"Missing or invalid authentication credentials\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "0b18dfd7-0d22-4c18-a808-d9cae004e7a4",
+              "name": "Record or module not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "asset",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"name\": \"AHU-01 (Updated)\",\n    \"model\": \"39M-R2\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"RECORD_NOT_FOUND\",\n    \"message\": \"Record with the given ID was not found\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "fc90f224-72e4-4712-b967-2e92875f89ac",
+          "name": "Delete an asset",
+          "request": {
+            "name": "Delete an asset",
+            "description": {
+              "content": "Permanently deletes an asset.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "asset",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "id",
+                  "description": "(Required) Record ID"
+                },
+                {
+                  "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                  "type": "any",
+                  "value": "{{region}}",
+                  "key": "region"
+                },
+                {
+                  "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                  "type": "any",
+                  "value": "{{app_name}}",
+                  "key": "app_name"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "DELETE",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "367977a8-9a59-4300-b0ec-450f1e1d871b",
+              "name": "Asset deleted",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "asset",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Record deleted\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "dac45568-0428-4d33-92e7-9187b858a487",
+              "name": "Missing or invalid authentication credentials",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "asset",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"UNAUTHORIZED\",\n    \"message\": \"Missing or invalid authentication credentials\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "f2eaa458-7285-43a9-b65f-0691c1be57d2",
+              "name": "Record or module not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "asset",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"RECORD_NOT_FOUND\",\n    \"message\": \"Record with the given ID was not found\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "fbcce313-b8a2-407f-a66a-24dfde63d879",
+          "name": "Get asset field schema",
+          "request": {
+            "name": "Get asset field schema",
+            "description": {
+              "content": "Returns the field schema for the asset module, including all declared system fields and any org-specific custom fields with their data type, required/readOnly flags, and lookup targets.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "asset",
+                "metadata"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "includeAllowedValues",
+                  "value": "false",
+                  "description": "When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).\nDefault `false` keeps the original metadata payload (no enrichment, no extra DB calls).\nUse this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.\n"
+                }
+              ],
+              "variable": [
+                {
+                  "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                  "type": "any",
+                  "value": "{{region}}",
+                  "key": "region"
+                },
+                {
+                  "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                  "type": "any",
+                  "value": "{{app_name}}",
+                  "key": "app_name"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "2025462e-6630-4a0a-abe2-51121960ddab",
+              "name": "Field schema retrieved successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "asset",
+                    "metadata"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "includeAllowedValues",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"module\": {\n      \"name\": \"string\",\n      \"displayName\": \"string\",\n      \"description\": \"string\",\n      \"isCustom\": true\n    },\n    \"fields\": [\n      {\n        \"name\": \"string\",\n        \"displayName\": \"string\",\n        \"dataType\": \"STRING\",\n        \"required\": true,\n        \"readOnly\": true,\n        \"isCustom\": false,\n        \"sortable\": true,\n        \"lookupModuleName\": \"string\",\n        \"max_length\": 255,\n        \"allowed_values\": [\n          {\n            \"label\": \"string\",\n            \"value\": \"string\"\n          },\n          {\n            \"label\": \"string\",\n            \"value\": \"string\"\n          }\n        ]\n      },\n      {\n        \"name\": \"string\",\n        \"displayName\": \"string\",\n        \"dataType\": \"STRING\",\n        \"required\": false,\n        \"readOnly\": false,\n        \"isCustom\": true,\n        \"sortable\": true,\n        \"lookupModuleName\": \"string\",\n        \"max_length\": 255,\n        \"allowed_values\": [\n          {\n            \"label\": \"string\",\n            \"value\": \"string\"\n          },\n          {\n            \"label\": \"string\",\n            \"value\": \"string\"\n          }\n        ]\n      }\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "4c73be19-9075-4af0-b01f-3d60bcc95e6a",
+              "name": "Missing or invalid authentication credentials",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "asset",
+                    "metadata"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "includeAllowedValues",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"UNAUTHORIZED\",\n    \"message\": \"Missing or invalid authentication credentials\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "d154643f-1b5f-41e7-b055-3a814311e7a4",
+              "name": "Record or module not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "asset",
+                    "metadata"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "includeAllowedValues",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"RECORD_NOT_FOUND\",\n    \"message\": \"Record with the given ID was not found\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "description": {
+        "content": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+        "type": "text/plain"
+      },
+      "type": "any",
+      "value": "us",
+      "key": "region"
+    },
+    {
+      "description": {
+        "content": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+        "type": "text/plain"
+      },
+      "type": "any",
+      "value": "maintenance",
+      "key": "app_name"
+    },
+    {
+      "type": "string",
+      "value": "https://{{region}}.facilioapis.com/{{app_name}}/api/v5",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "x-api-key"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}"
+      },
+      {
+        "key": "in",
+        "value": "header"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "c991b1af-5d3d-4a26-98b1-d1acbc0d3b6e",
+    "name": "Facilio REST Assets API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Facilio REST API gives you programmatic access to Facilio's Connected CMMS — the unified platform for managing property operations at portfolio scale.\n\nBuild integrations that connect Facilio with your ERP, accounting systems, BMS, IoT platforms, and other business tools. Automate work order creation from external triggers, synchronize asset data across systems, push tenant and vendor records from your CRM, or pull maintenance data into your reporting dashboards.\n\n**What you can do with this API:**\n- **Work Orders & Service Requests** — Create, assign, track, and close maintenance tasks programmatically\n- **Assets** — Manage your equipment registry, track asset lifecycle, and sync with external asset management systems\n- **Portfolio (Sites, Buildings, Floors, Spaces)** — Maintain your facility hierarchy and space data\n- **People (Tenants, Vendors, Clients)** — Synchronize contacts and stakeholder records\n- **Inventory (Item Types, Tool Types, Items & Tools, Services, Storerooms)** — Master data, per-storeroom item/tool balances (read), per-bin quantities by item or tool record, quantity adjustments, and warehouse locations\n- **Procurement (Quotes, Purchase Requests, Purchase Orders, Receivable receiving, Invoices)** — Procurement with line items; receive against a PO via receivable APIs\n- **Credit Notes (Vendor Credits, Client Credits)** — Manage credit notes for refunds and transaction adjustments with line items\n- **Inventory Requests** — Track material requisitions from work orders to storerooms\n- **Custom Modules** — Manage your organization's custom modules — record types you define for the data and workflows that are specific to your business\n- **Schema Discovery** — List all accessible modules and inspect field schemas (name, type, required, readOnly, lookup target) via `GET /modules` and `GET /{moduleName}/metadata`\n- **Attachments & Comments** — Attach documents, photos, and notes to work orders and service requests\n- **Picklists** — Discover available values for status, priority, category, and other configurable fields\n\nThe API follows REST conventions with JSON request/response bodies, standard HTTP methods (GET, POST, PATCH, DELETE), and consistent error handling across all endpoints.\n\n## Base URL\n\n```\nhttps://{region}.facilioapis.com/{app_name}/api/v5\n```\n\n| Variable | Description | Values |\n|----------|-------------|--------|\n| `region` | Your deployment region | `us`, `au`, `ae`, `uk`, `us-azure`, `sa` |\n| `app_name` | `maintenance` for API Key auth, `developer` for OAuth2 auth | `maintenance`, `developer` |\n\n## Authentication\n\nAll API requests must be authenticated using one of the following methods:\n\n### API Key (Personal Access Token)\nGenerate an API key from your Facilio account settings and pass it in the `x-api-key` header.\nThe key inherits the permissions of the user who created it.\n\n```\nx-api-key: your-api-key-here\n```\n\n### OAuth2\nFor developer app integrations. Supports **authorization_code** and **password** grant types.\n\n| Endpoint | URL |\n|----------|-----|\n| Authorize | `https://{region}.facilioapis.com/identity/oauth2/authorize` |\n| Token | `https://{region}.facilioapis.com/identity/oauth2/token` |\n| Refresh | `https://{region}.facilioapis.com/identity/oauth2/token` (with `grant_type=refresh_token`) |\n| Revoke | `https://{region}.facilioapis.com/identity/oauth2/revoke` |\n\nPass the access token as:\n```\nAuthorization: Bearer oauth2 <access_token>\n```\n\n---\n\n## List Operations\n\nAll list endpoints (`GET /{module}`) support these query parameters:\n\n| Parameter | Type | Default | Description |\n|-----------|------|---------|-------------|\n| `page` | integer | 1 | Page number (1-based) |\n| `pageSize` | integer | 50 | Number of records per page. Maximum is 200. |\n| `select` | string | — | Comma-separated field names to include in the response. If omitted, module default fields are returned. |\n| `expand` | string | — | Comma-separated lookup field names to expand with full details (max 5). By default, lookup fields return only `{id}`. |\n| `search` | string | — | Free-text search on the module's primary field (e.g. subject for work orders, name for assets). |\n| `sortBy` | string | — | Field name to sort by. Only sortable fields are accepted (see each module's documentation). |\n| `sortOrder` | string | `desc` | Sort direction: `asc` (ascending) or `desc` (descending). |\n| `count` | boolean | false | When `true`, the response includes a `count` field with the total number of matching records. |\n| `view` | string | — | Name of a saved view. Applies the view's columns, filters, and sort order. |\n| `changed` | string | — | UTC timestamp for delta sync (format: `yyyy-MM-dd'T'HH:mm:ss'Z'`). Returns records created or modified after this time. |\n\n---\n\n## Filtering\n\nApply filters by adding query parameters to any list endpoint. Filters are combined with AND logic.\n\n**Exact match:**\n```\nGET /workorder?status=Submitted&priority=High\n```\n\n**Operator match:**\n```\nGET /workorder?subject(contains)=HVAC&createdTime(after)=2026-01-01T00:00:00Z\n```\n\n### Operators by Field Type\n\n| Field Type | Example Fields | Operators | Value Format |\n|------------|----------------|-----------|--------------|\n| String | subject, name, description | `is`, `isn_t`, `contains`, `doesn_t_contain`, `starts_with`, `ends_with` | Text string |\n| Number | serialNumber, area, noOfTasks | `equals`, `not_equals`, `greater_than`, `less_than`, `greater_than_equal`, `less_than_equal`, `between` | Number (for `between`: two comma-separated values) |\n| Date/DateTime | createdTime, dueDate, scheduledStart | `is`, `isn_t`, `before`, `after`, `between`, `today`, `yesterday`, `current_week`, `last_week`, `current_month`, `last_month` | UTC `yyyy-MM-dd'T'HH:mm:ss'Z'` (value-less operators like `today` need no value) |\n| Boolean | highRisk, decommission | `equals`, `is` | `true` or `false` |\n| Lookup | resource, site, assignedTo, createdBy | `is`, `isn_t` | Record ID (integer) |\n| Picklist | status, priority, category, type | `is`, `isn_t` | Display name string (e.g. `Submitted`) or ID |\n| Enum | sourceType, urgency | `is`, `isn_t` | Display name string or index |\n| All types | Any field | `is_empty`, `is_not_empty` | No value needed |\n\n**Multiple values (OR within a field):**\n```\nGET /workorder?priority=High,Medium\n```\n\n---\n\n## Delta Sync\n\nFor incremental data synchronization, use the `changed` parameter to fetch only records that have been created or modified since your last sync:\n\n```\nGET /workorder?changed=2026-02-01T00:00:00Z\n```\n\nThis checks both the created time and modified time of each record (OR condition), so you get both new and updated records. You can combine `changed` with other filters.\n\n---\n\n## Custom Fields\n\nCustom fields are user-defined fields added via Facilio setup. They follow the naming pattern `{field_name}_{module}` (e.g. `po_reference_workorder`, `client_type_site`, `warranty_info_asset`).\n\n| Operation | Behavior |\n|-----------|----------|\n| **Single record GET** | Custom fields are automatically included in the response |\n| **List GET** | Custom fields are excluded by default. Use `?select=subject,po_reference_workorder` to include specific ones |\n| **Create / Update** | Pass custom fields in the request body alongside system fields |\n| **Filtering** | Custom fields can be used as filter parameters |\n| **Sorting** | Custom fields of primitive types (string, number, date) can be used with `sortBy` |\n\n> **Note:** Large text (BIG_STRING) custom fields are always excluded from list responses to prevent excessive memory usage. They are only available on single record GET.\n\n**Example — Create a work order with custom fields:**\n```json\n{\n  \"data\": {\n    \"subject\": \"HVAC Repair\",\n    \"siteId\": 10,\n    \"po_reference_workorder\": \"PO-2026-001\",\n    \"cost_estimate_workorder\": 1500.00\n  }\n}\n```\n\n---\n\n## Lookup fields in responses\n\nA **lookup** links your record to another record or to a controlled list (site, assignee, tenant, status, and so on). The JSON shape depends on which endpoint you call.\n\n### Lists (`GET /{module}`)\n\nBy default, each lookup is compact: `{ \"id\": <number> }`.\n\nTo load more detail on specific lookups, use `?expand=` with a comma-separated list of **lookup field names** (maximum **5** fields).\n\n### Single record, create, and update\n\nOn **GET** by id, **POST** create, and **PATCH** update, lookups that appear in the response are usually **expanded** into a small object instead of only an id.\n\nWhat you get is decided by **what the field points to**:\n\n- **Standard business records** in this API (for example site, tenant, asset, work order): the fields that module normally exposes, **including custom fields** you added on that target record. If the expanded object itself contains another lookup, that inner lookup stays compact: `{ \"id\" }` only.\n- **People and shared reference data** (for example `users`, `people`, `location`, `resource`): a **short, fixed list** of fields the API publishes — e.g. users typically include `id`, `name`, `email`, and `phone` when present. Internal database columns are not returned.\n- **Your org’s custom module** as the target: that module’s usual fields **plus** its custom fields.\n- **Any other target** not covered above: **`id`** and **`name`** only.\n\nSome fields behave as **picklists** (status, priority, category, type, …). They often return a **single text or id value** (e.g. `\"Submitted\"`) instead of a nested object. Check `GET /{moduleName}/metadata` for the field’s `dataType` and picklist details.\n\nProperties that are null are omitted from the JSON body.\n\n---\n\n## Response Format\n\n**Success — single record:**\n```json\n{\n  \"success\": true,\n  \"data\": { \"id\": 1, \"subject\": \"WO-1\", \"status\": \"Submitted\" }\n}\n```\n\n**Success — list:**\n```json\n{\n  \"success\": true,\n  \"data\": [ { \"id\": 1, ... }, { \"id\": 2, ... } ],\n  \"pagination\": { \"page\": 1, \"pageSize\": 50 },\n  \"count\": 120\n}\n```\n\n**Error:**\n```json\n{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"VALIDATION_ERROR\",\n    \"message\": \"A specified field does not exist or is not accessible\"\n  }\n}\n```\n\n---\n\n## Error Codes\n\n| Code | HTTP | Description |\n|------|------|-------------|\n| `UNAUTHORIZED` | 401 | Missing or invalid authentication |\n| `FORBIDDEN` | 403 | Insufficient permissions for this operation |\n| `MODULE_NOT_FOUND` | 404 | Module does not exist or is not accessible in this app |\n| `RECORD_NOT_FOUND` | 404 | Record with the given ID was not found |\n| `API_NOT_FOUND` | 404 | The API endpoint does not exist |\n| `VIEW_NOT_FOUND` | 404 | The specified saved view was not found |\n| `PICKLIST_NOT_FOUND` | 404 | The specified picklist field was not found |\n| `VALIDATION_ERROR` | 400 | Request body or parameters failed validation |\n| `INVALID_FIELD` | 400 | A specified field does not exist or is not accessible |\n| `INVALID_FILTER` | 400 | Filter syntax is invalid or operator not supported for field type |\n| `EXPAND_LIMIT_EXCEEDED` | 400 | More than 5 fields specified in `expand` parameter |\n| `METHOD_NOT_ALLOWED` | 405 | HTTP method not supported for this endpoint |\n| `CREATE_NOT_ALLOWED` | 403 | Create operation is disabled for this module |\n| `UPDATE_NOT_ALLOWED` | 403 | Update operation is disabled for this module |\n| `DELETE_NOT_ALLOWED` | 403 | Delete operation is disabled for this module |\n| `MODULE_NOT_ENABLED` | 403 | Module is not enabled for this organization |\n| `RATE_LIMITED` | 429 | Rate limit exceeded |\n| `INTERNAL_ERROR` | 500 | Unexpected server error |\n\n---\n\n## Rate Limiting\n\n- **Limit:** 100 requests per minute per API key / OAuth2 token\n- **Response:** HTTP 429 Too Many Requests when exceeded\n- **Recommendation:** Implement exponential backoff when receiving 429 responses\n\n---\n\n## HTTP Method Override\n\nSome systems only support POST and GET requests. To use PATCH, or DELETE through a POST request,\ninclude the `X-HTTP-Method-Override` header with the desired method.\n\n```\nPOST /workorder/13\nX-HTTP-Method-Override: PATCH\nContent-Type: application/json\n\n{ \"data\": { \"priority\": \"Low\" } }\n```\n\nThis is equivalent to `PATCH /workorder/13`. Supported override values: `PATCH`, `DELETE`.\nThe override header is only honored on POST requests.\n\n---\n\n## Field Types and Limits\n\n| Field Type | Max Length | Description |\n|------------|-----------|-------------|\n| String | 255 characters | Short text fields (e.g. subject, name, email) |\n| Large Text | 2,000 characters | Medium text fields (e.g. description) |\n| Big String | 32,000 characters | Long text fields (custom large text fields). Excluded from list API responses. |\n| Number | — | Integer or decimal values |\n| Date / DateTime | — | UTC format: `yyyy-MM-dd'T'HH:mm:ss'Z'` |\n| Boolean | — | `true` or `false` |\n| Lookup | — | Reference to another record. Pass the record ID on create/update. Returns `{id}` on list unless `?expand=` is used. On single-record GET (and typical create/update responses), expanded shape follows **Lookup fields in responses** above — not a single fixed `{id, name, email}` for every field. |\n| Picklist | — | Enumerated values (status, priority, category, type). Pass display name string (e.g. `\"High\"`) or numeric ID. |\n| Enum | — | System enum values. Pass display name string or index. |\n\nValues exceeding the maximum length will be rejected with a `VALIDATION_ERROR`.\n\n---\n\n## Additional Notes\n\n- **Skipping Workflows:** By default, workflow rules (automations, notifications, approvals) execute when you create or update a record. To skip them, pass the header `X-Execute-Workflows: false`. This is useful for bulk data imports or migrations where triggering automations is not desired.\n- **Picklist Fields:** Fields like status, priority, category, and type accept and return display name strings (e.g. `\"Submitted\"`, `\"High\"`, `\"Energy\"`). You can also pass the numeric ID.\n- **Lookup Fields:** On list API, lookup fields return `{id}` only unless `?expand=` is used. On single record GET (and create/update responses), lookups are expanded automatically; the property set depends on the lookup target module — see **Lookup fields in responses**.\n\n\nContact Support:\n Name: Facilio Support",
+      "type": "text/plain"
+    }
+  }
+}

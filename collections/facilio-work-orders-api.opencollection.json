@@ -1,0 +1,362 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Facilio REST Assets Work Orders API",
+    "version": "5.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-api-key",
+      "value": "{{x-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Work Orders",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List work orders",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/workorder",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number (1-based)"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Records per page (max 200)"
+              },
+              {
+                "name": "select",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated field names to include in the response"
+              },
+              {
+                "name": "expand",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated lookup field names to expand on **list** endpoints (max 5).\nExpanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).\n"
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Free-text search on the primary field (subject, name, etc.)"
+              },
+              {
+                "name": "count",
+                "value": "",
+                "type": "query",
+                "description": "Include total record count in response"
+              },
+              {
+                "name": "view",
+                "value": "",
+                "type": "query",
+                "description": "Saved view name"
+              },
+              {
+                "name": "changed",
+                "value": "",
+                "type": "query",
+                "description": "Delta sync: returns records created/modified after this UTC timestamp"
+              },
+              {
+                "name": "sortBy",
+                "value": "",
+                "type": "query",
+                "description": "Field to sort by (only sortable fields accepted)"
+              },
+              {
+                "name": "sortOrder",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of work orders. Supports filtering, sorting, field selection, and saved views.\nBy default, returns module-configured fields. Use `?select=` to customize.\nCustom fields can be included via `?select=subject,po_reference_workorder`.\n"
+        },
+        {
+          "info": {
+            "name": "Create a work order",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/workorder",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new work order. Requires `subject` and `site` at minimum.\nPicklist fields (priority, category, type) accept display name strings (e.g. `\"High\"`) or numeric IDs.\nCustom fields can be passed alongside system fields.\n"
+        },
+        {
+          "info": {
+            "name": "Get a work order",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/workorder/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              },
+              {
+                "name": "select",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated field names to include in the response"
+              },
+              {
+                "name": "expand",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated lookup field names to expand on **list** endpoints (max 5).\nExpanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).\n"
+              }
+            ]
+          },
+          "docs": "Returns a single work order with all system fields, custom fields, and expanded lookup fields.\nLookup expansion follows **Lookup fields in responses** in the API overview.\n"
+        },
+        {
+          "info": {
+            "name": "Update a work order",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/workorder/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates an existing work order. Only the fields included in the request body are updated;\nomitted fields remain unchanged. Picklist fields accept display name strings or IDs.\n"
+        },
+        {
+          "info": {
+            "name": "Delete a work order",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/workorder/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              }
+            ]
+          },
+          "docs": "Permanently deletes a work order. This action cannot be undone."
+        },
+        {
+          "info": {
+            "name": "List work order tasks",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/workorder/:id/tasks",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              }
+            ]
+          },
+          "docs": "Returns checklist tasks for the work order, with each task including its photos."
+        },
+        {
+          "info": {
+            "name": "Create work order task",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/workorder/:id/tasks",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a checklist task under the given work order."
+        },
+        {
+          "info": {
+            "name": "Get work order task",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/workorder/:id/tasks/:taskId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              },
+              {
+                "name": "taskId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Returns a single checklist task with photos."
+        },
+        {
+          "info": {
+            "name": "Update or complete work order task",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/workorder/:id/tasks/:taskId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              },
+              {
+                "name": "taskId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates task fields. Set `status=closed` to complete the task and `status=open` to reopen."
+        },
+        {
+          "info": {
+            "name": "Delete work order task",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/workorder/:id/tasks/:taskId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              },
+              {
+                "name": "taskId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete work order task"
+        },
+        {
+          "info": {
+            "name": "Upload work order task photo",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/workorder/:id/tasks/:taskId/photos",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              },
+              {
+                "name": "taskId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "attachment",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "type",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Uploads a task photo with type `before` or `after`. Only image files are accepted."
+        },
+        {
+          "info": {
+            "name": "Get work order field schema",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/workorder/metadata",
+            "params": [
+              {
+                "name": "includeAllowedValues",
+                "value": "",
+                "type": "query",
+                "description": "When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).\nDefault `false` keeps the original metadata payload (no enrichment, no extra DB calls).\nUse this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.\n"
+              }
+            ]
+          },
+          "docs": "Returns the field schema for the workorder module, including all declared system fields and any org-specific custom fields with their data type, required/readOnly flags, and lookup targets."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

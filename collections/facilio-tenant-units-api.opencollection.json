@@ -1,0 +1,152 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Facilio REST Assets Tenant Units API",
+    "version": "5.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-api-key",
+      "value": "{{x-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Tenant Units",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List tenant units",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/tenantunit",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number (1-based)"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Records per page (max 200)"
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Free-text search on the primary field (subject, name, etc.)"
+              }
+            ]
+          },
+          "docs": "Returns tenant unit (space) assignments."
+        },
+        {
+          "info": {
+            "name": "Create a tenant unit",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/tenantunit",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Assigns a space to a tenant. `name` and `site` are required on create."
+        },
+        {
+          "info": {
+            "name": "Get a tenant unit",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/tenantunit/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              }
+            ]
+          },
+          "docs": "Get a tenant unit"
+        },
+        {
+          "info": {
+            "name": "Update a tenant unit",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/tenantunit/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a tenant unit"
+        },
+        {
+          "info": {
+            "name": "Delete a tenant unit",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/tenantunit/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              }
+            ]
+          },
+          "docs": "Delete a tenant unit"
+        },
+        {
+          "info": {
+            "name": "Get tenant unit field schema",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/tenantunit/metadata",
+            "params": [
+              {
+                "name": "includeAllowedValues",
+                "value": "",
+                "type": "query",
+                "description": "When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).\nDefault `false` keeps the original metadata payload (no enrichment, no extra DB calls).\nUse this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.\n"
+              }
+            ]
+          },
+          "docs": "Returns the field schema for the tenantunit module, including all declared system fields and any org-specific custom fields with their data type, required/readOnly flags, and lookup targets."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,205 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Facilio REST Assets Receivables API",
+    "version": "5.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-api-key",
+      "value": "{{x-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Receivables",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List receivables",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/receivable",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number (1-based)"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Records per page (max 200)"
+              },
+              {
+                "name": "select",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated field names to include in the response"
+              },
+              {
+                "name": "expand",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated lookup field names to expand on **list** endpoints (max 5).\nExpanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).\n"
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Free-text search on the primary field (subject, name, etc.)"
+              },
+              {
+                "name": "count",
+                "value": "",
+                "type": "query",
+                "description": "Include total record count in response"
+              },
+              {
+                "name": "changed",
+                "value": "",
+                "type": "query",
+                "description": "Delta sync: returns records created/modified after this UTC timestamp"
+              },
+              {
+                "name": "poId",
+                "value": "",
+                "type": "query",
+                "description": "Purchase order id — returns receivable(s) for that PO (typically one row)."
+              },
+              {
+                "name": "sortBy",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "sortOrder",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Returns receivable records. Filter by purchase order with **`?poId={purchaseOrderId}`** (lookup id).\nStandard list parameters (`page`, `pageSize`, `select`, etc.) apply.\n"
+        },
+        {
+          "info": {
+            "name": "Get a receivable",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/receivable/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              },
+              {
+                "name": "select",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated field names to include in the response"
+              },
+              {
+                "name": "expand",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated lookup field names to expand on **list** endpoints (max 5).\nExpanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).\n"
+              }
+            ]
+          },
+          "docs": "Single receivable with linked PO summary fields. Child **`receipts`** array lists receipt rows for this receivable.\n"
+        },
+        {
+          "info": {
+            "name": "Add a receipt line",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/receivable/:id/addreceipt",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              },
+              {
+                "name": "executeWorkflows",
+                "value": "",
+                "type": "query",
+                "description": "When false, configured automations are not run for this request (default true)."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Record how much was received against a purchase order line for this receivable. Send the line item reference and quantity in the body (see examples)."
+        },
+        {
+          "info": {
+            "name": "Stock received PO lines into the storeroom",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/receivable/:id/stock",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              },
+              {
+                "name": "executeWorkflows",
+                "value": "",
+                "type": "query",
+                "description": "When false, configured automations are not run for this request (default true)."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update storeroom inventory for item and tool lines that have already been received on this receivable. Send the rows in the request body (see examples). Requires update access on receivables."
+        },
+        {
+          "info": {
+            "name": "Get receivable field schema",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/receivable/metadata",
+            "params": [
+              {
+                "name": "includeAllowedValues",
+                "value": "",
+                "type": "query",
+                "description": "When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).\nDefault `false` keeps the original metadata payload (no enrichment, no extra DB calls).\nUse this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.\n"
+              }
+            ]
+          },
+          "docs": "Field schema for the receivable module (system + custom fields)."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

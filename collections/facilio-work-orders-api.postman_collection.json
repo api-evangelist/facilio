@@ -1,0 +1,3808 @@
+{
+  "item": [
+    {
+      "id": "b2fe26f8-3ab0-41f7-91e3-547d0ba859b8",
+      "name": "Work Orders",
+      "description": {
+        "content": "Work orders represent maintenance tasks, repairs, and scheduled jobs across your facilities. Track them from creation through assignment, execution, and closure. Assign to staff or teams, set priorities and due dates, and monitor progress.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "b593a50b-56b2-4fc5-8255-bdfeb499ebb8",
+          "name": "List work orders",
+          "request": {
+            "name": "List work orders",
+            "description": {
+              "content": "Returns a paginated list of work orders. Supports filtering, sorting, field selection, and saved views.\nBy default, returns module-configured fields. Use `?select=` to customize.\nCustom fields can be included via `?select=subject,po_reference_workorder`.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "workorder"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number (1-based)"
+                },
+                {
+                  "disabled": false,
+                  "key": "pageSize",
+                  "value": "50",
+                  "description": "Records per page (max 200)"
+                },
+                {
+                  "disabled": false,
+                  "key": "select",
+                  "value": "<string>",
+                  "description": "Comma-separated field names to include in the response"
+                },
+                {
+                  "disabled": false,
+                  "key": "expand",
+                  "value": "<string>",
+                  "description": "Comma-separated lookup field names to expand on **list** endpoints (max 5).\nExpanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).\n"
+                },
+                {
+                  "disabled": false,
+                  "key": "search",
+                  "value": "<string>",
+                  "description": "Free-text search on the primary field (subject, name, etc.)"
+                },
+                {
+                  "disabled": false,
+                  "key": "count",
+                  "value": "false",
+                  "description": "Include total record count in response"
+                },
+                {
+                  "disabled": false,
+                  "key": "view",
+                  "value": "<string>",
+                  "description": "Saved view name"
+                },
+                {
+                  "disabled": false,
+                  "key": "changed",
+                  "value": "<dateTime>",
+                  "description": "Delta sync: returns records created/modified after this UTC timestamp"
+                },
+                {
+                  "disabled": false,
+                  "key": "sortBy",
+                  "value": "<string>",
+                  "description": "Field to sort by (only sortable fields accepted)"
+                },
+                {
+                  "disabled": false,
+                  "key": "sortOrder",
+                  "value": "desc"
+                }
+              ],
+              "variable": [
+                {
+                  "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                  "type": "any",
+                  "value": "{{region}}",
+                  "key": "region"
+                },
+                {
+                  "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                  "type": "any",
+                  "value": "{{app_name}}",
+                  "key": "app_name"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "77f9a7ec-9103-4102-9f59-6433d7950361",
+              "name": "Paginated list of work orders",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "50"
+                    },
+                    {
+                      "key": "select",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "expand",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "search",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "count",
+                      "value": "false"
+                    },
+                    {
+                      "key": "view",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "changed",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sortBy",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "sortOrder",
+                      "value": "desc"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": 13,\n      \"serialNumber\": 13,\n      \"subject\": \"HVAC Repair - Building A\",\n      \"status\": \"Submitted\",\n      \"priority\": \"High\",\n      \"category\": \"Energy\",\n      \"type\": \"Corrective\",\n      \"sourceType\": \"Web Work Order\",\n      \"siteId\": {\n        \"id\": 10\n      },\n      \"resource\": {\n        \"id\": 14\n      },\n      \"scheduledStart\": \"2026-02-12T16:27:24Z\",\n      \"noOfAttachments\": 0,\n      \"createdTime\": \"2026-02-12T16:27:24Z\",\n      \"createdBy\": {\n        \"id\": 1\n      },\n      \"modifiedTime\": \"2026-02-12T16:27:24Z\"\n    },\n    {\n      \"id\": 14,\n      \"serialNumber\": 14,\n      \"subject\": \"Plumbing leak in Floor 2\",\n      \"status\": \"Work in Progress\",\n      \"priority\": \"Medium\",\n      \"category\": \"Plumbing\",\n      \"createdTime\": \"2026-02-13T09:15:00Z\",\n      \"createdBy\": {\n        \"id\": 2\n      }\n    }\n  ],\n  \"pagination\": {\n    \"page\": 1,\n    \"pageSize\": 50\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "839e066e-44d8-4bc2-8a81-73209ca40f47",
+              "name": "Missing or invalid authentication credentials",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "50"
+                    },
+                    {
+                      "key": "select",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "expand",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "search",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "count",
+                      "value": "false"
+                    },
+                    {
+                      "key": "view",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "changed",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "sortBy",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "sortOrder",
+                      "value": "desc"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"UNAUTHORIZED\",\n    \"message\": \"Missing or invalid authentication credentials\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "626799f9-4e41-4342-af75-f98d8ca18ebf",
+          "name": "Create a work order",
+          "request": {
+            "name": "Create a work order",
+            "description": {
+              "content": "Creates a new work order. Requires `subject` and `site` at minimum.\nPicklist fields (priority, category, type) accept display name strings (e.g. `\"High\"`) or numeric IDs.\nCustom fields can be passed alongside system fields.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "workorder"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                  "type": "any",
+                  "value": "{{region}}",
+                  "key": "region"
+                },
+                {
+                  "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                  "type": "any",
+                  "value": "{{app_name}}",
+                  "key": "app_name"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"subject\": \"<string>\",\n    \"siteId\": \"<integer>\",\n    \"description\": \"<string>\",\n    \"status\": \"<string>\",\n    \"priority\": \"<string>\",\n    \"category\": \"<string>\",\n    \"type\": \"<string>\",\n    \"resource\": \"<integer>\",\n    \"assignedTo\": \"<integer>\",\n    \"assignmentGroup\": \"<integer>\",\n    \"vendor\": \"<integer>\",\n    \"client\": \"<integer>\",\n    \"tenant\": \"<integer>\",\n    \"requestedBy\": \"<integer>\",\n    \"actualWorkDuration\": \"<number>\",\n    \"actualWorkStart\": \"<dateTime>\",\n    \"actualWorkEnd\": \"<dateTime>\",\n    \"estimatedWorkDuration\": \"<number>\",\n    \"scheduledStart\": \"<dateTime>\",\n    \"estimatedEnd\": \"<dateTime>\",\n    \"responseDueDate\": \"<dateTime>\",\n    \"dueDate\": \"<dateTime>\",\n    \"highRisk\": \"<boolean>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "188762aa-116f-4297-84da-0de82d9b449c",
+              "name": "Work order created successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"subject\": \"HVAC Repair - Building A\",\n    \"siteId\": 10,\n    \"priority\": \"High\",\n    \"category\": \"Energy\",\n    \"description\": \"AC unit not cooling properly on Floor 3\",\n    \"assignedTo\": 5,\n    \"dueDate\": \"2026-02-15T17:00:00Z\",\n    \"po_reference_workorder\": \"PO-2026-001\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 15,\n    \"serialNumber\": 15,\n    \"subject\": \"HVAC Repair - Building A\",\n    \"status\": \"Submitted\",\n    \"priority\": \"High\",\n    \"category\": \"Energy\",\n    \"siteId\": {\n      \"id\": 10,\n      \"name\": \"Headquarters\"\n    },\n    \"createdTime\": \"2026-02-14T10:00:00Z\",\n    \"createdBy\": {\n      \"id\": 1,\n      \"name\": \"Alex Johnson\",\n      \"email\": \"alex.johnson@example.com\"\n    }\n  },\n  \"message\": \"Record created\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "488e8620-c227-436f-ad94-78f3bb8708d3",
+              "name": "Validation error — missing required fields, invalid field values, or malformed request body",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"subject\": \"HVAC Repair - Building A\",\n    \"siteId\": 10,\n    \"priority\": \"High\",\n    \"category\": \"Energy\",\n    \"description\": \"AC unit not cooling properly on Floor 3\",\n    \"assignedTo\": 5,\n    \"dueDate\": \"2026-02-15T17:00:00Z\",\n    \"po_reference_workorder\": \"PO-2026-001\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"VALIDATION_ERROR\",\n    \"message\": \"Required field(s) missing: name\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "b6b73a13-b14e-4855-bce4-2ac0a7883c50",
+              "name": "Missing or invalid authentication credentials",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"subject\": \"HVAC Repair - Building A\",\n    \"siteId\": 10,\n    \"priority\": \"High\",\n    \"category\": \"Energy\",\n    \"description\": \"AC unit not cooling properly on Floor 3\",\n    \"assignedTo\": 5,\n    \"dueDate\": \"2026-02-15T17:00:00Z\",\n    \"po_reference_workorder\": \"PO-2026-001\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"UNAUTHORIZED\",\n    \"message\": \"Missing or invalid authentication credentials\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "17cf9b4c-ea84-4a9a-ac10-5e2f7438859c",
+          "name": "Get a work order",
+          "request": {
+            "name": "Get a work order",
+            "description": {
+              "content": "Returns a single work order with all system fields, custom fields, and expanded lookup fields.\nLookup expansion follows **Lookup fields in responses** in the API overview.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "workorder",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "select",
+                  "value": "<string>",
+                  "description": "Comma-separated field names to include in the response"
+                },
+                {
+                  "disabled": false,
+                  "key": "expand",
+                  "value": "<string>",
+                  "description": "Comma-separated lookup field names to expand on **list** endpoints (max 5).\nExpanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).\n"
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "id",
+                  "description": "(Required) Record ID"
+                },
+                {
+                  "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                  "type": "any",
+                  "value": "{{region}}",
+                  "key": "region"
+                },
+                {
+                  "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                  "type": "any",
+                  "value": "{{app_name}}",
+                  "key": "app_name"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "1120679f-44e0-4d18-ae87-0d0d0f42ddce",
+              "name": "Work order details",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "select",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "expand",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 13,\n    \"serialNumber\": 13,\n    \"subject\": \"HVAC Repair - Building A\",\n    \"description\": \"AC unit not cooling properly on Floor 3\",\n    \"status\": \"Submitted\",\n    \"priority\": \"High\",\n    \"category\": \"Energy\",\n    \"type\": \"Corrective\",\n    \"sourceType\": \"Web Work Order\",\n    \"resource\": {\n      \"id\": 14,\n      \"name\": \"AHU-01\"\n    },\n    \"siteId\": {\n      \"id\": 10,\n      \"name\": \"Headquarters\"\n    },\n    \"assignedTo\": {\n      \"id\": 5,\n      \"name\": \"John Smith\",\n      \"email\": \"john@facilio.com\"\n    },\n    \"tenant\": {\n      \"id\": 90,\n      \"name\": \"TechStart Inc\"\n    },\n    \"scheduledStart\": \"2026-02-12T16:27:24Z\",\n    \"dueDate\": \"2026-02-15T17:00:00Z\",\n    \"noOfAttachments\": 2,\n    \"noOfTasks\": 3,\n    \"createdTime\": \"2026-02-12T16:27:24Z\",\n    \"createdBy\": {\n      \"id\": 1,\n      \"name\": \"Alex Johnson\",\n      \"email\": \"alex.johnson@example.com\"\n    },\n    \"modifiedTime\": \"2026-02-13T09:30:00Z\",\n    \"po_reference_workorder\": \"PO-2026-001\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "f14bef94-0c8e-42a6-a050-664b375d2b69",
+              "name": "Missing or invalid authentication credentials",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "select",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "expand",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"UNAUTHORIZED\",\n    \"message\": \"Missing or invalid authentication credentials\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "77cbf52a-a85d-44e2-8120-f3b55480ed08",
+              "name": "Record or module not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "select",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "expand",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"RECORD_NOT_FOUND\",\n    \"message\": \"Record with the given ID was not found\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "fa4af094-9961-4bea-98dd-7c23e9a20d53",
+          "name": "Update a work order",
+          "request": {
+            "name": "Update a work order",
+            "description": {
+              "content": "Updates an existing work order. Only the fields included in the request body are updated;\nomitted fields remain unchanged. Picklist fields accept display name strings or IDs.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "workorder",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "id",
+                  "description": "(Required) Record ID"
+                },
+                {
+                  "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                  "type": "any",
+                  "value": "{{region}}",
+                  "key": "region"
+                },
+                {
+                  "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                  "type": "any",
+                  "value": "{{app_name}}",
+                  "key": "app_name"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"subject\": \"<string>\",\n    \"siteId\": \"<integer>\",\n    \"description\": \"<string>\",\n    \"status\": \"<string>\",\n    \"priority\": \"<string>\",\n    \"category\": \"<string>\",\n    \"type\": \"<string>\",\n    \"resource\": \"<integer>\",\n    \"assignedTo\": \"<integer>\",\n    \"assignmentGroup\": \"<integer>\",\n    \"vendor\": \"<integer>\",\n    \"client\": \"<integer>\",\n    \"tenant\": \"<integer>\",\n    \"requestedBy\": \"<integer>\",\n    \"actualWorkDuration\": \"<number>\",\n    \"actualWorkStart\": \"<dateTime>\",\n    \"actualWorkEnd\": \"<dateTime>\",\n    \"estimatedWorkDuration\": \"<number>\",\n    \"scheduledStart\": \"<dateTime>\",\n    \"estimatedEnd\": \"<dateTime>\",\n    \"responseDueDate\": \"<dateTime>\",\n    \"dueDate\": \"<dateTime>\",\n    \"highRisk\": \"<boolean>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "fba1b665-3980-4494-a0b5-0342fd36085b",
+              "name": "Work order updated successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"priority\": \"Low\",\n    \"status\": \"Work in Progress\",\n    \"assignedTo\": 7\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 13,\n    \"subject\": \"HVAC Repair - Building A\",\n    \"status\": \"Work in Progress\",\n    \"priority\": \"Low\",\n    \"assignedTo\": {\n      \"id\": 7,\n      \"name\": \"Jane Doe\",\n      \"email\": \"jane@facilio.com\"\n    },\n    \"modifiedTime\": \"2026-02-14T11:00:00Z\"\n  },\n  \"message\": \"Record updated\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "1ecd8221-b9f9-41bd-87d1-56e3d5a3b824",
+              "name": "Validation error — missing required fields, invalid field values, or malformed request body",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"priority\": \"Low\",\n    \"status\": \"Work in Progress\",\n    \"assignedTo\": 7\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"VALIDATION_ERROR\",\n    \"message\": \"Required field(s) missing: name\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "5fe508d0-7ef2-4499-a85b-0e3c5652285b",
+              "name": "Missing or invalid authentication credentials",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"priority\": \"Low\",\n    \"status\": \"Work in Progress\",\n    \"assignedTo\": 7\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"UNAUTHORIZED\",\n    \"message\": \"Missing or invalid authentication credentials\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "b94d2e12-98c1-4811-9972-cd67e7137d95",
+              "name": "Record or module not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"priority\": \"Low\",\n    \"status\": \"Work in Progress\",\n    \"assignedTo\": 7\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"RECORD_NOT_FOUND\",\n    \"message\": \"Record with the given ID was not found\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "556f9a05-72ae-4b58-8d40-9a33fe858122",
+          "name": "Delete a work order",
+          "request": {
+            "name": "Delete a work order",
+            "description": {
+              "content": "Permanently deletes a work order. This action cannot be undone.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "workorder",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "id",
+                  "description": "(Required) Record ID"
+                },
+                {
+                  "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                  "type": "any",
+                  "value": "{{region}}",
+                  "key": "region"
+                },
+                {
+                  "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                  "type": "any",
+                  "value": "{{app_name}}",
+                  "key": "app_name"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "DELETE",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "5dcd42e6-ee1f-42b6-ac3d-62764401280b",
+              "name": "Work order deleted",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Record deleted\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a966140b-1a15-4d8d-bf01-cdb760b637c4",
+              "name": "Missing or invalid authentication credentials",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"UNAUTHORIZED\",\n    \"message\": \"Missing or invalid authentication credentials\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "76655438-77b6-424f-8336-25dbccf5abab",
+              "name": "Record or module not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"RECORD_NOT_FOUND\",\n    \"message\": \"Record with the given ID was not found\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "859aa44a-9202-46ab-9a51-2f3f8bcdd9a4",
+          "name": "List work order tasks",
+          "request": {
+            "name": "List work order tasks",
+            "description": {
+              "content": "Returns checklist tasks for the work order, with each task including its photos.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "workorder",
+                ":id",
+                "tasks"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "id",
+                  "description": "(Required) Record ID"
+                },
+                {
+                  "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                  "type": "any",
+                  "value": "{{region}}",
+                  "key": "region"
+                },
+                {
+                  "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                  "type": "any",
+                  "value": "{{app_name}}",
+                  "key": "app_name"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "655d7ecc-f485-4e17-bb39-66d527932db0",
+              "name": "List of work order tasks",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id",
+                    "tasks"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": 801,\n      \"subject\": \"Verify compressor pressure\",\n      \"description\": \"Check suction and discharge pressure\",\n      \"status\": \"open\",\n      \"photos\": [\n        {\n          \"id\": 1101,\n          \"fileName\": \"before.jpg\",\n          \"contentType\": \"image/jpeg\",\n          \"type\": \"before\"\n        }\n      ]\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "4ea8b687-92dc-4f56-a848-fef4a6994df3",
+              "name": "Missing or invalid authentication credentials",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id",
+                    "tasks"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"UNAUTHORIZED\",\n    \"message\": \"Missing or invalid authentication credentials\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "6ace9b0d-57ac-435a-a6ef-0ae3f3de84bb",
+              "name": "Record or module not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id",
+                    "tasks"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"RECORD_NOT_FOUND\",\n    \"message\": \"Record with the given ID was not found\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "dcec633e-e2eb-44d2-b119-2d72df2b1282",
+          "name": "Create work order task",
+          "request": {
+            "name": "Create work order task",
+            "description": {
+              "content": "Creates a checklist task under the given work order.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "workorder",
+                ":id",
+                "tasks"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "id",
+                  "description": "(Required) Record ID"
+                },
+                {
+                  "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                  "type": "any",
+                  "value": "{{region}}",
+                  "key": "region"
+                },
+                {
+                  "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                  "type": "any",
+                  "value": "{{app_name}}",
+                  "key": "app_name"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"subject\": \"<string>\",\n    \"description\": \"<string>\",\n    \"status\": \"<string>\",\n    \"photos\": [\n      {\n        \"type\": \"<string>\"\n      },\n      {\n        \"type\": \"<string>\"\n      }\n    ]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "fa523e85-936d-45dc-bbc1-c632dddda4ad",
+              "name": "Task created",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id",
+                    "tasks"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"subject\": \"Inspect condenser coil\",\n    \"description\": \"Capture before/after photos\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 802,\n    \"subject\": \"Inspect condenser coil\",\n    \"status\": \"open\",\n    \"photos\": []\n  },\n  \"message\": \"Task created\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "6dab788b-7f76-41fd-b635-6e27f9cd61dc",
+              "name": "Validation error — missing required fields, invalid field values, or malformed request body",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id",
+                    "tasks"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"subject\": \"Inspect condenser coil\",\n    \"description\": \"Capture before/after photos\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"VALIDATION_ERROR\",\n    \"message\": \"Required field(s) missing: name\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "14db8a42-46ef-4b4d-8c11-d2e23f5df9aa",
+              "name": "Missing or invalid authentication credentials",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id",
+                    "tasks"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"subject\": \"Inspect condenser coil\",\n    \"description\": \"Capture before/after photos\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"UNAUTHORIZED\",\n    \"message\": \"Missing or invalid authentication credentials\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a48b7410-83c6-43be-b21f-e76cc50f003d",
+              "name": "Record or module not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id",
+                    "tasks"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"subject\": \"Inspect condenser coil\",\n    \"description\": \"Capture before/after photos\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"RECORD_NOT_FOUND\",\n    \"message\": \"Record with the given ID was not found\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "1ad51354-c32e-4dcb-afb7-6ec0e3e549f5",
+          "name": "Get work order task",
+          "request": {
+            "name": "Get work order task",
+            "description": {
+              "content": "Returns a single checklist task with photos.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "workorder",
+                ":id",
+                "tasks",
+                ":taskId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "id",
+                  "description": "(Required) Record ID"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "taskId",
+                  "description": "(Required) "
+                },
+                {
+                  "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                  "type": "any",
+                  "value": "{{region}}",
+                  "key": "region"
+                },
+                {
+                  "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                  "type": "any",
+                  "value": "{{app_name}}",
+                  "key": "app_name"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "fe8716a5-dfd8-4859-af4b-4167143c562b",
+              "name": "Task details",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id",
+                    "tasks",
+                    ":taskId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "taskId",
+                      "description": "(Required) "
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": {\n    \"id\": 2403,\n    \"subject\": \"<string>\",\n    \"description\": \"<string>\",\n    \"status\": \"<string>\",\n    \"createdTime\": \"1947-11-22T19:41:21.010Z\",\n    \"modifiedTime\": \"1974-07-23T13:26:22.638Z\",\n    \"photos\": [\n      {\n        \"id\": 1054,\n        \"fileName\": \"string\",\n        \"fileSize\": 6563,\n        \"contentType\": \"string\",\n        \"type\": \"<string>\",\n        \"createdTime\": \"1966-05-08T12:14:19.212Z\"\n      },\n      {\n        \"id\": 7620,\n        \"fileName\": \"string\",\n        \"fileSize\": 9875,\n        \"contentType\": \"string\",\n        \"type\": \"<string>\",\n        \"createdTime\": \"2013-02-01T19:01:47.178Z\"\n      }\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "9c9a14d6-f7a6-459f-a545-a41176743e7a",
+              "name": "Missing or invalid authentication credentials",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id",
+                    "tasks",
+                    ":taskId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "taskId",
+                      "description": "(Required) "
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"UNAUTHORIZED\",\n    \"message\": \"Missing or invalid authentication credentials\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "0610c2a7-0a99-4186-8193-6af46bc9b011",
+              "name": "Record or module not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id",
+                    "tasks",
+                    ":taskId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "taskId",
+                      "description": "(Required) "
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"RECORD_NOT_FOUND\",\n    \"message\": \"Record with the given ID was not found\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "3a7488af-e5da-46f9-9119-438210fdc9ab",
+          "name": "Update or complete work order task",
+          "request": {
+            "name": "Update or complete work order task",
+            "description": {
+              "content": "Updates task fields. Set `status=closed` to complete the task and `status=open` to reopen.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "workorder",
+                ":id",
+                "tasks",
+                ":taskId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "id",
+                  "description": "(Required) Record ID"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "taskId",
+                  "description": "(Required) "
+                },
+                {
+                  "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                  "type": "any",
+                  "value": "{{region}}",
+                  "key": "region"
+                },
+                {
+                  "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                  "type": "any",
+                  "value": "{{app_name}}",
+                  "key": "app_name"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"subject\": \"<string>\",\n    \"description\": \"<string>\",\n    \"status\": \"<string>\",\n    \"photos\": [\n      {\n        \"type\": \"<string>\"\n      },\n      {\n        \"type\": \"<string>\"\n      }\n    ]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "de550573-59d6-4f72-be32-29bfafa886d5",
+              "name": "Task updated",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id",
+                    "tasks",
+                    ":taskId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "taskId",
+                      "description": "(Required) "
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"status\": \"closed\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Task updated\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "2ebc062d-7930-446c-8ef8-f649ec9efd40",
+              "name": "Validation error — missing required fields, invalid field values, or malformed request body",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id",
+                    "tasks",
+                    ":taskId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "taskId",
+                      "description": "(Required) "
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"status\": \"closed\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"VALIDATION_ERROR\",\n    \"message\": \"Required field(s) missing: name\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "27bb5cc6-82c0-41c1-8065-0fdabec2088b",
+              "name": "Missing or invalid authentication credentials",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id",
+                    "tasks",
+                    ":taskId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "taskId",
+                      "description": "(Required) "
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"status\": \"closed\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"UNAUTHORIZED\",\n    \"message\": \"Missing or invalid authentication credentials\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "5c003519-59b2-4640-9947-5b4f7969f167",
+              "name": "Record or module not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id",
+                    "tasks",
+                    ":taskId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "taskId",
+                      "description": "(Required) "
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"data\": {\n    \"status\": \"closed\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"RECORD_NOT_FOUND\",\n    \"message\": \"Record with the given ID was not found\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "a3511f77-de48-4674-8548-e848332bdd9a",
+          "name": "Delete work order task",
+          "request": {
+            "name": "Delete work order task",
+            "description": {},
+            "url": {
+              "path": [
+                "workorder",
+                ":id",
+                "tasks",
+                ":taskId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "id",
+                  "description": "(Required) Record ID"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "taskId",
+                  "description": "(Required) "
+                },
+                {
+                  "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                  "type": "any",
+                  "value": "{{region}}",
+                  "key": "region"
+                },
+                {
+                  "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                  "type": "any",
+                  "value": "{{app_name}}",
+                  "key": "app_name"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "DELETE",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "724ade8e-7a50-4a8f-aafa-af2343a4dd1b",
+              "name": "Task deleted",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id",
+                    "tasks",
+                    ":taskId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "taskId",
+                      "description": "(Required) "
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Record deleted\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "0bde6259-465b-472c-8820-d2a30459af1a",
+              "name": "Missing or invalid authentication credentials",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id",
+                    "tasks",
+                    ":taskId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "taskId",
+                      "description": "(Required) "
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"UNAUTHORIZED\",\n    \"message\": \"Missing or invalid authentication credentials\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "3633cedb-9188-4004-a6d9-b23155065df7",
+              "name": "Record or module not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id",
+                    "tasks",
+                    ":taskId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "taskId",
+                      "description": "(Required) "
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"RECORD_NOT_FOUND\",\n    \"message\": \"Record with the given ID was not found\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "4e5af9c3-d995-4bae-8e65-8ddb327b6d72",
+          "name": "Upload work order task photo",
+          "request": {
+            "name": "Upload work order task photo",
+            "description": {
+              "content": "Uploads a task photo with type `before` or `after`. Only image files are accepted.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "workorder",
+                ":id",
+                "tasks",
+                ":taskId",
+                "photos"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "id",
+                  "description": "(Required) Record ID"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "taskId",
+                  "description": "(Required) "
+                },
+                {
+                  "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                  "type": "any",
+                  "value": "{{region}}",
+                  "key": "region"
+                },
+                {
+                  "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                  "type": "any",
+                  "value": "{{app_name}}",
+                  "key": "app_name"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "attachment",
+                  "type": "file",
+                  "description": "(Required) Image file only (jpeg, png, gif, webp, bmp, tiff, heic/heif)"
+                },
+                {
+                  "key": "type",
+                  "value": "<string>",
+                  "type": "text",
+                  "description": "(Required)  (This can only be one of before,after)"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "a4dfbb56-67ec-4d83-b051-792351f43759",
+              "name": "Attachment uploaded",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id",
+                    "tasks",
+                    ":taskId",
+                    "photos"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "taskId",
+                      "description": "(Required) "
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) Image file only (jpeg, png, gif, webp, bmp, tiff, heic/heif)",
+                        "type": "text/plain"
+                      },
+                      "key": "attachment",
+                      "value": "<binary>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required)  (This can only be one of before,after)",
+                        "type": "text/plain"
+                      },
+                      "key": "type",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"data\": [\n    {\n      \"id\": 8830,\n      \"fileName\": \"string\",\n      \"fileSize\": 937,\n      \"contentType\": \"string\",\n      \"type\": \"<string>\",\n      \"createdTime\": \"2003-06-21T12:20:25.731Z\"\n    },\n    {\n      \"id\": 847,\n      \"fileName\": \"string\",\n      \"fileSize\": 2743,\n      \"contentType\": \"string\",\n      \"type\": \"<string>\",\n      \"createdTime\": \"1952-11-23T13:59:01.253Z\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "5b413b15-b907-43f3-9de9-0b264715843c",
+              "name": "Validation error — missing required fields, invalid field values, or malformed request body",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id",
+                    "tasks",
+                    ":taskId",
+                    "photos"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "taskId",
+                      "description": "(Required) "
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) Image file only (jpeg, png, gif, webp, bmp, tiff, heic/heif)",
+                        "type": "text/plain"
+                      },
+                      "key": "attachment",
+                      "value": "<binary>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required)  (This can only be one of before,after)",
+                        "type": "text/plain"
+                      },
+                      "key": "type",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"VALIDATION_ERROR\",\n    \"message\": \"Required field(s) missing: name\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "963e76ff-2e82-4861-8a1b-901c1e56a30d",
+              "name": "Missing or invalid authentication credentials",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id",
+                    "tasks",
+                    ":taskId",
+                    "photos"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "taskId",
+                      "description": "(Required) "
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) Image file only (jpeg, png, gif, webp, bmp, tiff, heic/heif)",
+                        "type": "text/plain"
+                      },
+                      "key": "attachment",
+                      "value": "<binary>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required)  (This can only be one of before,after)",
+                        "type": "text/plain"
+                      },
+                      "key": "type",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"UNAUTHORIZED\",\n    \"message\": \"Missing or invalid authentication credentials\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "543c6154-6773-4c29-a2c8-1c6e1934b2fe",
+              "name": "Record or module not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    ":id",
+                    "tasks",
+                    ":taskId",
+                    "photos"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "id",
+                      "description": "(Required) Record ID"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "taskId",
+                      "description": "(Required) "
+                    },
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) Image file only (jpeg, png, gif, webp, bmp, tiff, heic/heif)",
+                        "type": "text/plain"
+                      },
+                      "key": "attachment",
+                      "value": "<binary>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "(Required)  (This can only be one of before,after)",
+                        "type": "text/plain"
+                      },
+                      "key": "type",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"RECORD_NOT_FOUND\",\n    \"message\": \"Record with the given ID was not found\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "e6cf9b73-0026-46da-8bd5-d3347e36403a",
+          "name": "Get work order field schema",
+          "request": {
+            "name": "Get work order field schema",
+            "description": {
+              "content": "Returns the field schema for the workorder module, including all declared system fields and any org-specific custom fields with their data type, required/readOnly flags, and lookup targets.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "workorder",
+                "metadata"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "includeAllowedValues",
+                  "value": "false",
+                  "description": "When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).\nDefault `false` keeps the original metadata payload (no enrichment, no extra DB calls).\nUse this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.\n"
+                }
+              ],
+              "variable": [
+                {
+                  "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                  "type": "any",
+                  "value": "{{region}}",
+                  "key": "region"
+                },
+                {
+                  "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                  "type": "any",
+                  "value": "{{app_name}}",
+                  "key": "app_name"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "5d1df996-67db-497a-93bc-f0490f8b74de",
+              "name": "Field schema retrieved successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    "metadata"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "includeAllowedValues",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"module\": {\n      \"name\": \"string\",\n      \"displayName\": \"string\",\n      \"description\": \"string\",\n      \"isCustom\": false\n    },\n    \"fields\": [\n      {\n        \"name\": \"string\",\n        \"displayName\": \"string\",\n        \"dataType\": \"STRING\",\n        \"required\": false,\n        \"readOnly\": true,\n        \"isCustom\": false,\n        \"sortable\": true,\n        \"lookupModuleName\": \"string\",\n        \"max_length\": 255,\n        \"allowed_values\": [\n          {\n            \"label\": \"string\",\n            \"value\": \"string\"\n          },\n          {\n            \"label\": \"string\",\n            \"value\": \"string\"\n          }\n        ]\n      },\n      {\n        \"name\": \"string\",\n        \"displayName\": \"string\",\n        \"dataType\": \"STRING\",\n        \"required\": false,\n        \"readOnly\": false,\n        \"isCustom\": true,\n        \"sortable\": false,\n        \"lookupModuleName\": \"string\",\n        \"max_length\": 255,\n        \"allowed_values\": [\n          {\n            \"label\": \"string\",\n            \"value\": \"string\"\n          },\n          {\n            \"label\": \"string\",\n            \"value\": \"string\"\n          }\n        ]\n      }\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a2c607ce-e815-4696-bea8-11c3721b6f16",
+              "name": "Missing or invalid authentication credentials",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    "metadata"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "includeAllowedValues",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"UNAUTHORIZED\",\n    \"message\": \"Missing or invalid authentication credentials\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "5fe3d124-dfe2-4156-a42d-c071cf4b11bb",
+              "name": "Record or module not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "workorder",
+                    "metadata"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "includeAllowedValues",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "description": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+                      "type": "any",
+                      "value": "{{region}}",
+                      "key": "region"
+                    },
+                    {
+                      "description": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+                      "type": "any",
+                      "value": "{{app_name}}",
+                      "key": "app_name"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"RECORD_NOT_FOUND\",\n    \"message\": \"Record with the given ID was not found\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "description": {
+        "content": "Regional deployment (This can only be one of us,au,ae,uk,us-azure,sa)",
+        "type": "text/plain"
+      },
+      "type": "any",
+      "value": "us",
+      "key": "region"
+    },
+    {
+      "description": {
+        "content": "'maintenance' for API Key, 'developer' for OAuth2 (This can only be one of maintenance,developer)",
+        "type": "text/plain"
+      },
+      "type": "any",
+      "value": "maintenance",
+      "key": "app_name"
+    },
+    {
+      "type": "string",
+      "value": "https://{{region}}.facilioapis.com/{{app_name}}/api/v5",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "x-api-key"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}"
+      },
+      {
+        "key": "in",
+        "value": "header"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "bfc184df-4e9d-4d3e-abca-f1f07062a3d7",
+    "name": "Facilio REST Assets Work Orders API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Facilio REST API gives you programmatic access to Facilio's Connected CMMS — the unified platform for managing property operations at portfolio scale.\n\nBuild integrations that connect Facilio with your ERP, accounting systems, BMS, IoT platforms, and other business tools. Automate work order creation from external triggers, synchronize asset data across systems, push tenant and vendor records from your CRM, or pull maintenance data into your reporting dashboards.\n\n**What you can do with this API:**\n- **Work Orders & Service Requests** — Create, assign, track, and close maintenance tasks programmatically\n- **Assets** — Manage your equipment registry, track asset lifecycle, and sync with external asset management systems\n- **Portfolio (Sites, Buildings, Floors, Spaces)** — Maintain your facility hierarchy and space data\n- **People (Tenants, Vendors, Clients)** — Synchronize contacts and stakeholder records\n- **Inventory (Item Types, Tool Types, Items & Tools, Services, Storerooms)** — Master data, per-storeroom item/tool balances (read), per-bin quantities by item or tool record, quantity adjustments, and warehouse locations\n- **Procurement (Quotes, Purchase Requests, Purchase Orders, Receivable receiving, Invoices)** — Procurement with line items; receive against a PO via receivable APIs\n- **Credit Notes (Vendor Credits, Client Credits)** — Manage credit notes for refunds and transaction adjustments with line items\n- **Inventory Requests** — Track material requisitions from work orders to storerooms\n- **Custom Modules** — Manage your organization's custom modules — record types you define for the data and workflows that are specific to your business\n- **Schema Discovery** — List all accessible modules and inspect field schemas (name, type, required, readOnly, lookup target) via `GET /modules` and `GET /{moduleName}/metadata`\n- **Attachments & Comments** — Attach documents, photos, and notes to work orders and service requests\n- **Picklists** — Discover available values for status, priority, category, and other configurable fields\n\nThe API follows REST conventions with JSON request/response bodies, standard HTTP methods (GET, POST, PATCH, DELETE), and consistent error handling across all endpoints.\n\n## Base URL\n\n```\nhttps://{region}.facilioapis.com/{app_name}/api/v5\n```\n\n| Variable | Description | Values |\n|----------|-------------|--------|\n| `region` | Your deployment region | `us`, `au`, `ae`, `uk`, `us-azure`, `sa` |\n| `app_name` | `maintenance` for API Key auth, `developer` for OAuth2 auth | `maintenance`, `developer` |\n\n## Authentication\n\nAll API requests must be authenticated using one of the following methods:\n\n### API Key (Personal Access Token)\nGenerate an API key from your Facilio account settings and pass it in the `x-api-key` header.\nThe key inherits the permissions of the user who created it.\n\n```\nx-api-key: your-api-key-here\n```\n\n### OAuth2\nFor developer app integrations. Supports **authorization_code** and **password** grant types.\n\n| Endpoint | URL |\n|----------|-----|\n| Authorize | `https://{region}.facilioapis.com/identity/oauth2/authorize` |\n| Token | `https://{region}.facilioapis.com/identity/oauth2/token` |\n| Refresh | `https://{region}.facilioapis.com/identity/oauth2/token` (with `grant_type=refresh_token`) |\n| Revoke | `https://{region}.facilioapis.com/identity/oauth2/revoke` |\n\nPass the access token as:\n```\nAuthorization: Bearer oauth2 <access_token>\n```\n\n---\n\n## List Operations\n\nAll list endpoints (`GET /{module}`) support these query parameters:\n\n| Parameter | Type | Default | Description |\n|-----------|------|---------|-------------|\n| `page` | integer | 1 | Page number (1-based) |\n| `pageSize` | integer | 50 | Number of records per page. Maximum is 200. |\n| `select` | string | — | Comma-separated field names to include in the response. If omitted, module default fields are returned. |\n| `expand` | string | — | Comma-separated lookup field names to expand with full details (max 5). By default, lookup fields return only `{id}`. |\n| `search` | string | — | Free-text search on the module's primary field (e.g. subject for work orders, name for assets). |\n| `sortBy` | string | — | Field name to sort by. Only sortable fields are accepted (see each module's documentation). |\n| `sortOrder` | string | `desc` | Sort direction: `asc` (ascending) or `desc` (descending). |\n| `count` | boolean | false | When `true`, the response includes a `count` field with the total number of matching records. |\n| `view` | string | — | Name of a saved view. Applies the view's columns, filters, and sort order. |\n| `changed` | string | — | UTC timestamp for delta sync (format: `yyyy-MM-dd'T'HH:mm:ss'Z'`). Returns records created or modified after this time. |\n\n---\n\n## Filtering\n\nApply filters by adding query parameters to any list endpoint. Filters are combined with AND logic.\n\n**Exact match:**\n```\nGET /workorder?status=Submitted&priority=High\n```\n\n**Operator match:**\n```\nGET /workorder?subject(contains)=HVAC&createdTime(after)=2026-01-01T00:00:00Z\n```\n\n### Operators by Field Type\n\n| Field Type | Example Fields | Operators | Value Format |\n|------------|----------------|-----------|--------------|\n| String | subject, name, description | `is`, `isn_t`, `contains`, `doesn_t_contain`, `starts_with`, `ends_with` | Text string |\n| Number | serialNumber, area, noOfTasks | `equals`, `not_equals`, `greater_than`, `less_than`, `greater_than_equal`, `less_than_equal`, `between` | Number (for `between`: two comma-separated values) |\n| Date/DateTime | createdTime, dueDate, scheduledStart | `is`, `isn_t`, `before`, `after`, `between`, `today`, `yesterday`, `current_week`, `last_week`, `current_month`, `last_month` | UTC `yyyy-MM-dd'T'HH:mm:ss'Z'` (value-less operators like `today` need no value) |\n| Boolean | highRisk, decommission | `equals`, `is` | `true` or `false` |\n| Lookup | resource, site, assignedTo, createdBy | `is`, `isn_t` | Record ID (integer) |\n| Picklist | status, priority, category, type | `is`, `isn_t` | Display name string (e.g. `Submitted`) or ID |\n| Enum | sourceType, urgency | `is`, `isn_t` | Display name string or index |\n| All types | Any field | `is_empty`, `is_not_empty` | No value needed |\n\n**Multiple values (OR within a field):**\n```\nGET /workorder?priority=High,Medium\n```\n\n---\n\n## Delta Sync\n\nFor incremental data synchronization, use the `changed` parameter to fetch only records that have been created or modified since your last sync:\n\n```\nGET /workorder?changed=2026-02-01T00:00:00Z\n```\n\nThis checks both the created time and modified time of each record (OR condition), so you get both new and updated records. You can combine `changed` with other filters.\n\n---\n\n## Custom Fields\n\nCustom fields are user-defined fields added via Facilio setup. They follow the naming pattern `{field_name}_{module}` (e.g. `po_reference_workorder`, `client_type_site`, `warranty_info_asset`).\n\n| Operation | Behavior |\n|-----------|----------|\n| **Single record GET** | Custom fields are automatically included in the response |\n| **List GET** | Custom fields are excluded by default. Use `?select=subject,po_reference_workorder` to include specific ones |\n| **Create / Update** | Pass custom fields in the request body alongside system fields |\n| **Filtering** | Custom fields can be used as filter parameters |\n| **Sorting** | Custom fields of primitive types (string, number, date) can be used with `sortBy` |\n\n> **Note:** Large text (BIG_STRING) custom fields are always excluded from list responses to prevent excessive memory usage. They are only available on single record GET.\n\n**Example — Create a work order with custom fields:**\n```json\n{\n  \"data\": {\n    \"subject\": \"HVAC Repair\",\n    \"siteId\": 10,\n    \"po_reference_workorder\": \"PO-2026-001\",\n    \"cost_estimate_workorder\": 1500.00\n  }\n}\n```\n\n---\n\n## Lookup fields in responses\n\nA **lookup** links your record to another record or to a controlled list (site, assignee, tenant, status, and so on). The JSON shape depends on which endpoint you call.\n\n### Lists (`GET /{module}`)\n\nBy default, each lookup is compact: `{ \"id\": <number> }`.\n\nTo load more detail on specific lookups, use `?expand=` with a comma-separated list of **lookup field names** (maximum **5** fields).\n\n### Single record, create, and update\n\nOn **GET** by id, **POST** create, and **PATCH** update, lookups that appear in the response are usually **expanded** into a small object instead of only an id.\n\nWhat you get is decided by **what the field points to**:\n\n- **Standard business records** in this API (for example site, tenant, asset, work order): the fields that module normally exposes, **including custom fields** you added on that target record. If the expanded object itself contains another lookup, that inner lookup stays compact: `{ \"id\" }` only.\n- **People and shared reference data** (for example `users`, `people`, `location`, `resource`): a **short, fixed list** of fields the API publishes — e.g. users typically include `id`, `name`, `email`, and `phone` when present. Internal database columns are not returned.\n- **Your org’s custom module** as the target: that module’s usual fields **plus** its custom fields.\n- **Any other target** not covered above: **`id`** and **`name`** only.\n\nSome fields behave as **picklists** (status, priority, category, type, …). They often return a **single text or id value** (e.g. `\"Submitted\"`) instead of a nested object. Check `GET /{moduleName}/metadata` for the field’s `dataType` and picklist details.\n\nProperties that are null are omitted from the JSON body.\n\n---\n\n## Response Format\n\n**Success — single record:**\n```json\n{\n  \"success\": true,\n  \"data\": { \"id\": 1, \"subject\": \"WO-1\", \"status\": \"Submitted\" }\n}\n```\n\n**Success — list:**\n```json\n{\n  \"success\": true,\n  \"data\": [ { \"id\": 1, ... }, { \"id\": 2, ... } ],\n  \"pagination\": { \"page\": 1, \"pageSize\": 50 },\n  \"count\": 120\n}\n```\n\n**Error:**\n```json\n{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"VALIDATION_ERROR\",\n    \"message\": \"A specified field does not exist or is not accessible\"\n  }\n}\n```\n\n---\n\n## Error Codes\n\n| Code | HTTP | Description |\n|------|------|-------------|\n| `UNAUTHORIZED` | 401 | Missing or invalid authentication |\n| `FORBIDDEN` | 403 | Insufficient permissions for this operation |\n| `MODULE_NOT_FOUND` | 404 | Module does not exist or is not accessible in this app |\n| `RECORD_NOT_FOUND` | 404 | Record with the given ID was not found |\n| `API_NOT_FOUND` | 404 | The API endpoint does not exist |\n| `VIEW_NOT_FOUND` | 404 | The specified saved view was not found |\n| `PICKLIST_NOT_FOUND` | 404 | The specified picklist field was not found |\n| `VALIDATION_ERROR` | 400 | Request body or parameters failed validation |\n| `INVALID_FIELD` | 400 | A specified field does not exist or is not accessible |\n| `INVALID_FILTER` | 400 | Filter syntax is invalid or operator not supported for field type |\n| `EXPAND_LIMIT_EXCEEDED` | 400 | More than 5 fields specified in `expand` parameter |\n| `METHOD_NOT_ALLOWED` | 405 | HTTP method not supported for this endpoint |\n| `CREATE_NOT_ALLOWED` | 403 | Create operation is disabled for this module |\n| `UPDATE_NOT_ALLOWED` | 403 | Update operation is disabled for this module |\n| `DELETE_NOT_ALLOWED` | 403 | Delete operation is disabled for this module |\n| `MODULE_NOT_ENABLED` | 403 | Module is not enabled for this organization |\n| `RATE_LIMITED` | 429 | Rate limit exceeded |\n| `INTERNAL_ERROR` | 500 | Unexpected server error |\n\n---\n\n## Rate Limiting\n\n- **Limit:** 100 requests per minute per API key / OAuth2 token\n- **Response:** HTTP 429 Too Many Requests when exceeded\n- **Recommendation:** Implement exponential backoff when receiving 429 responses\n\n---\n\n## HTTP Method Override\n\nSome systems only support POST and GET requests. To use PATCH, or DELETE through a POST request,\ninclude the `X-HTTP-Method-Override` header with the desired method.\n\n```\nPOST /workorder/13\nX-HTTP-Method-Override: PATCH\nContent-Type: application/json\n\n{ \"data\": { \"priority\": \"Low\" } }\n```\n\nThis is equivalent to `PATCH /workorder/13`. Supported override values: `PATCH`, `DELETE`.\nThe override header is only honored on POST requests.\n\n---\n\n## Field Types and Limits\n\n| Field Type | Max Length | Description |\n|------------|-----------|-------------|\n| String | 255 characters | Short text fields (e.g. subject, name, email) |\n| Large Text | 2,000 characters | Medium text fields (e.g. description) |\n| Big String | 32,000 characters | Long text fields (custom large text fields). Excluded from list API responses. |\n| Number | — | Integer or decimal values |\n| Date / DateTime | — | UTC format: `yyyy-MM-dd'T'HH:mm:ss'Z'` |\n| Boolean | — | `true` or `false` |\n| Lookup | — | Reference to another record. Pass the record ID on create/update. Returns `{id}` on list unless `?expand=` is used. On single-record GET (and typical create/update responses), expanded shape follows **Lookup fields in responses** above — not a single fixed `{id, name, email}` for every field. |\n| Picklist | — | Enumerated values (status, priority, category, type). Pass display name string (e.g. `\"High\"`) or numeric ID. |\n| Enum | — | System enum values. Pass display name string or index. |\n\nValues exceeding the maximum length will be rejected with a `VALIDATION_ERROR`.\n\n---\n\n## Additional Notes\n\n- **Skipping Workflows:** By default, workflow rules (automations, notifications, approvals) execute when you create or update a record. To skip them, pass the header `X-Execute-Workflows: false`. This is useful for bulk data imports or migrations where triggering automations is not desired.\n- **Picklist Fields:** Fields like status, priority, category, and type accept and return display name strings (e.g. `\"Submitted\"`, `\"High\"`, `\"Energy\"`). You can also pass the numeric ID.\n- **Lookup Fields:** On list API, lookup fields return `{id}` only unless `?expand=` is used. On single record GET (and create/update responses), lookups are expanded automatically; the property set depends on the lookup target module — see **Lookup fields in responses**.\n\n\nContact Support:\n Name: Facilio Support",
+      "type": "text/plain"
+    }
+  }
+}

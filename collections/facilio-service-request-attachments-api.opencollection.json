@@ -1,0 +1,124 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Facilio REST Assets Service Request Attachments API",
+    "version": "5.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-api-key",
+      "value": "{{x-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Service Request Attachments",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List service request attachments",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/servicerequest/:id/attachments",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              }
+            ]
+          },
+          "docs": "Returns all file attachments for the specified service request."
+        },
+        {
+          "info": {
+            "name": "Add service request attachment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/servicerequest/:id/attachments",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              }
+            ],
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "attachment",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Uploads a file attachment to the service request."
+        },
+        {
+          "info": {
+            "name": "Delete service request attachment",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/servicerequest/:id/attachments/:attachmentId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              },
+              {
+                "name": "attachmentId",
+                "value": "",
+                "type": "path",
+                "description": "Attachment ID"
+              }
+            ]
+          },
+          "docs": "Delete service request attachment"
+        },
+        {
+          "info": {
+            "name": "Download service request attachment",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/servicerequest/:id/attachments/:attachmentId/download",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              },
+              {
+                "name": "attachmentId",
+                "value": "",
+                "type": "path",
+                "description": "Attachment ID"
+              }
+            ]
+          },
+          "docs": "Download service request attachment"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

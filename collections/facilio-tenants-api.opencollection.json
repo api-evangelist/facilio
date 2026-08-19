@@ -1,0 +1,164 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Facilio REST Assets Tenants API",
+    "version": "5.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-api-key",
+      "value": "{{x-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Tenants",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List tenants",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/tenant",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number (1-based)"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Records per page (max 200)"
+              },
+              {
+                "name": "select",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated field names to include in the response"
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Free-text search on the primary field (subject, name, etc.)"
+              },
+              {
+                "name": "count",
+                "value": "",
+                "type": "query",
+                "description": "Include total record count in response"
+              }
+            ]
+          },
+          "docs": "List tenants"
+        },
+        {
+          "info": {
+            "name": "Create a tenant",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/tenant",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new tenant. Requires `name` and `primaryContactEmail`."
+        },
+        {
+          "info": {
+            "name": "Get a tenant",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/tenant/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              }
+            ]
+          },
+          "docs": "Get a tenant"
+        },
+        {
+          "info": {
+            "name": "Update a tenant",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/tenant/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a tenant"
+        },
+        {
+          "info": {
+            "name": "Delete a tenant",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/tenant/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              }
+            ]
+          },
+          "docs": "Delete a tenant"
+        },
+        {
+          "info": {
+            "name": "Get tenant field schema",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/tenant/metadata",
+            "params": [
+              {
+                "name": "includeAllowedValues",
+                "value": "",
+                "type": "query",
+                "description": "When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).\nDefault `false` keeps the original metadata payload (no enrichment, no extra DB calls).\nUse this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.\n"
+              }
+            ]
+          },
+          "docs": "Returns the field schema for the tenant module, including all declared system fields and any org-specific custom fields with their data type, required/readOnly flags, and lookup targets."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

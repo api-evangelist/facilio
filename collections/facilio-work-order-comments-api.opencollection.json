@@ -1,0 +1,122 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Facilio REST Assets Work Order Comments API",
+    "version": "5.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-api-key",
+      "value": "{{x-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Work Order Comments",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List work order comments",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/workorder/:id/comments",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              }
+            ]
+          },
+          "docs": "Returns all comments/notes for the specified work order, sorted by creation time."
+        },
+        {
+          "info": {
+            "name": "Add work order comment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/workorder/:id/comments",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Adds a comment/note to the work order. Optionally notify the requester."
+        },
+        {
+          "info": {
+            "name": "Update work order comment",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/workorder/:id/comments/:commentId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              },
+              {
+                "name": "commentId",
+                "value": "",
+                "type": "path",
+                "description": "Comment ID"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the body text of an existing comment."
+        },
+        {
+          "info": {
+            "name": "Delete work order comment",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/workorder/:id/comments/:commentId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              },
+              {
+                "name": "commentId",
+                "value": "",
+                "type": "path",
+                "description": "Comment ID"
+              }
+            ]
+          },
+          "docs": "Deletes a specific comment from the work order."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,380 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Facilio REST Assets Picklists API",
+    "version": "5.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-api-key",
+      "value": "{{x-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Picklists",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Work order statuses",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/picklist/workorder/status",
+            "params": [
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Filter picklist values by name"
+              }
+            ]
+          },
+          "docs": "Returns all available status values for work orders."
+        },
+        {
+          "info": {
+            "name": "Work order priorities",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/picklist/workorder/priority",
+            "params": [
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Filter picklist values by name"
+              }
+            ]
+          },
+          "docs": "Returns all available priority values for work orders."
+        },
+        {
+          "info": {
+            "name": "Work order categories",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/picklist/workorder/category",
+            "params": [
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Filter picklist values by name"
+              }
+            ]
+          },
+          "docs": "Returns all available category values for work orders."
+        },
+        {
+          "info": {
+            "name": "Work order types",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/picklist/workorder/type",
+            "params": [
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Filter picklist values by name"
+              }
+            ]
+          },
+          "docs": "Returns all available type values for work orders."
+        },
+        {
+          "info": {
+            "name": "Service request statuses",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/picklist/servicerequest/moduleState",
+            "params": [
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Filter picklist values by name"
+              }
+            ]
+          },
+          "docs": "Returns all available status values for service requests."
+        },
+        {
+          "info": {
+            "name": "Service request urgency levels",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/picklist/servicerequest/urgency",
+            "params": [
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Filter picklist values by name"
+              }
+            ]
+          },
+          "docs": "Returns all available urgency levels for service requests (equivalent to priority)."
+        },
+        {
+          "info": {
+            "name": "Asset categories",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/picklist/asset/category",
+            "params": [
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Filter picklist values by name"
+              }
+            ]
+          },
+          "docs": "Returns all available category values for assets."
+        },
+        {
+          "info": {
+            "name": "Asset types",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/picklist/asset/type",
+            "params": [
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Filter picklist values by name"
+              }
+            ]
+          },
+          "docs": "Returns all available type values for assets."
+        },
+        {
+          "info": {
+            "name": "Asset departments",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/picklist/asset/department",
+            "params": [
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Filter picklist values by name"
+              }
+            ]
+          },
+          "docs": "Returns all available department values for assets."
+        },
+        {
+          "info": {
+            "name": "Space categories",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/picklist/space/spaceCategory",
+            "params": [
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Filter picklist values by name"
+              }
+            ]
+          },
+          "docs": "Returns all available category values for spaces."
+        },
+        {
+          "info": {
+            "name": "Quote statuses",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/picklist/quote/moduleState",
+            "params": [
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Filter picklist values by name"
+              }
+            ]
+          },
+          "docs": "Returns all available status values for quotes."
+        },
+        {
+          "info": {
+            "name": "Invoice statuses",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/picklist/invoice/invoiceStatus",
+            "params": [
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Filter picklist values by name"
+              }
+            ]
+          },
+          "docs": "Returns all available status values for invoices."
+        },
+        {
+          "info": {
+            "name": "Purchase request statuses",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/picklist/purchaserequest/moduleState",
+            "params": [
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Filter picklist values by name"
+              }
+            ]
+          },
+          "docs": "Returns all available status values for purchase requests."
+        },
+        {
+          "info": {
+            "name": "Purchase order statuses",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/picklist/purchaseorder/moduleState",
+            "params": [
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Filter picklist values by name"
+              }
+            ]
+          },
+          "docs": "Returns all available status values for purchase orders."
+        },
+        {
+          "info": {
+            "name": "Inventory request statuses",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/picklist/inventoryrequest/moduleState",
+            "params": [
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Filter picklist values by name"
+              }
+            ]
+          },
+          "docs": "Returns all available status values for inventory requests."
+        },
+        {
+          "info": {
+            "name": "Vendor credit statuses",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/picklist/vendorCredit/vendorCreditNoteStatus",
+            "params": [
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Filter picklist values by name"
+              }
+            ]
+          },
+          "docs": "Returns all available status values for vendor credits."
+        },
+        {
+          "info": {
+            "name": "Client credit statuses",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/picklist/clientCredit/clientCreditNoteStatus",
+            "params": [
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Filter picklist values by name"
+              }
+            ]
+          },
+          "docs": "Returns all available status values for client credits."
+        },
+        {
+          "info": {
+            "name": "Get picklist values for a custom field",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/picklist/:moduleName/:fieldName",
+            "params": [
+              {
+                "name": "moduleName",
+                "value": "",
+                "type": "path",
+                "description": "Module name (e.g. `workorder`, `asset`)"
+              },
+              {
+                "name": "fieldName",
+                "value": "",
+                "type": "path",
+                "description": "Field name (e.g. `urgency`, `warranty_type_asset`)"
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Filter picklist values by name"
+              }
+            ]
+          },
+          "docs": "Returns picklist values for custom enum or system picklist fields.\nOnly enum-type and system picklist lookup fields are supported.\nFor regular lookup fields (site, building, asset), use the module's list API instead.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

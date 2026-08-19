@@ -1,0 +1,56 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Facilio REST Assets Common API",
+    "version": "5.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-api-key",
+      "value": "{{x-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Common",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get current user profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/profile"
+          },
+          "docs": "Returns the authenticated user's profile information including name, email, timezone, role, and organization details."
+        },
+        {
+          "info": {
+            "name": "List all accessible modules",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/modules",
+            "params": [
+              {
+                "name": "custom",
+                "value": "",
+                "type": "query",
+                "description": "When `true`, return only org-created custom modules (modules where `isCustom = true`).\nDefault `false` (or absent) returns the full system + custom catalogue — this preserves the previous default behavior.\n"
+              }
+            ]
+          },
+          "docs": "Returns a catalogue of every module accessible via the V5 API for the current org:\n\n- **System modules** — standard Facilio modules available in every org (workorder, asset, site, etc.)\n- **Custom modules** — modules created by your organization via Facilio Setup\n\nUse this endpoint to discover which module names are valid for other V5 API calls, and to determine whether a given module is a system module or an org-created custom module.\n\nPass `?custom=true` to scope the response to only custom mo"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

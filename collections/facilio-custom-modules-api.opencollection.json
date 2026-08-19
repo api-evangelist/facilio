@@ -1,0 +1,243 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Facilio REST Assets Custom Modules API",
+    "version": "5.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-api-key",
+      "value": "{{x-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Custom Modules",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List custom module records",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/:moduleName",
+            "params": [
+              {
+                "name": "moduleName",
+                "value": "",
+                "type": "path",
+                "description": "Custom module name (e.g. `custom_employees`). Must be a module returned by `GET /modules` with `isCustom: true`."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number (1-based)"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query",
+                "description": "Records per page (max 200)"
+              },
+              {
+                "name": "select",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated field names to include in the response"
+              },
+              {
+                "name": "expand",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated lookup field names to expand on **list** endpoints (max 5).\nExpanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).\n"
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Free-text search on the primary field (subject, name, etc.)"
+              },
+              {
+                "name": "count",
+                "value": "",
+                "type": "query",
+                "description": "Include total record count in response"
+              },
+              {
+                "name": "view",
+                "value": "",
+                "type": "query",
+                "description": "Saved view name"
+              },
+              {
+                "name": "changed",
+                "value": "",
+                "type": "query",
+                "description": "Delta sync: returns records created/modified after this UTC timestamp"
+              },
+              {
+                "name": "sortBy",
+                "value": "",
+                "type": "query",
+                "description": "Field to sort by. Sortable fields: `name`, `sysCreatedTime`, `sysModifiedTime`. Custom fields of primitive types (string, number, date) are also sortable."
+              },
+              {
+                "name": "sortOrder",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Returns a paginated list of records from the custom module. Supports filtering, sorting, field selection, and saved views.\nCustom fields are excluded from list responses by default; use `?select=` to include them.\n"
+        },
+        {
+          "info": {
+            "name": "Create a custom module record",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/:moduleName",
+            "params": [
+              {
+                "name": "moduleName",
+                "value": "",
+                "type": "path",
+                "description": "Custom module name"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new record. Pass field values in `data`; see metadata for required fields and types."
+        },
+        {
+          "info": {
+            "name": "Get a custom module record",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/:moduleName/:id",
+            "params": [
+              {
+                "name": "moduleName",
+                "value": "",
+                "type": "path",
+                "description": "Custom module name"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              },
+              {
+                "name": "select",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated field names to include in the response"
+              },
+              {
+                "name": "expand",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated lookup field names to expand on **list** endpoints (max 5).\nExpanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).\n"
+              }
+            ]
+          },
+          "docs": "Returns a single record by ID. All fields are included in the response, including custom fields."
+        },
+        {
+          "info": {
+            "name": "Update a custom module record",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/:moduleName/:id",
+            "params": [
+              {
+                "name": "moduleName",
+                "value": "",
+                "type": "path",
+                "description": "Custom module name"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Partially updates a record. Only include the fields you want to change. Pass `null` to clear a field."
+        },
+        {
+          "info": {
+            "name": "Delete a custom module record",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/:moduleName/:id",
+            "params": [
+              {
+                "name": "moduleName",
+                "value": "",
+                "type": "path",
+                "description": "Custom module name"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Record ID"
+              }
+            ]
+          },
+          "docs": "Permanently deletes a record from the custom module."
+        },
+        {
+          "info": {
+            "name": "Get custom module field schema",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{region}.facilioapis.com/{app_name}/api/v5/:moduleName/metadata",
+            "params": [
+              {
+                "name": "moduleName",
+                "value": "",
+                "type": "path",
+                "description": "Module name — any module returned by `GET /modules`"
+              },
+              {
+                "name": "includeAllowedValues",
+                "value": "",
+                "type": "query",
+                "description": "When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).\nDefault `false` keeps the original metadata payload (no enrichment, no extra DB calls).\nUse this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.\n"
+              }
+            ]
+          },
+          "docs": "Returns module identity and field schema (types, required, readOnly, lookup targets). Each field includes `isCustom` and, for text-style fields, the canonical `max_length` (255 / 2000 / 32000).\nWorks for any module name returned by `GET /modules`.\n\nPass `?includeAllowedValues=true` to add `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules. Default behavior (no flag)"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
