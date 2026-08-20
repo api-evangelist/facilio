@@ -40,6 +40,17 @@ modified: '2026-07-19'
 image: https://facilio.com/images/homepage-v2/facilio-og.png
 tags:
 - Company
+- Artificial Intelligence
+- Facility Management
+- CMMS
+- Property Operations
+- Maintenance
+- Asset Management
+- Real-Estate
+- IoT
+- Buildings
+tags_raw:
+- Company
 - Ai
 - Facility Management
 - CMMS
@@ -206,6 +217,8 @@ apis:
   humanURL: https://facilio.com/developers/docs/api-reference/
   baseURL: https://us.facilioapis.com/maintenance/api/v5
   tags:
+  - Item
+  tags_raw:
   - Items
   properties:
   - type: OpenAPI
