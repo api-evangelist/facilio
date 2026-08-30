@@ -11,7 +11,7 @@ capability_model:
   attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
     CC BY 4.0
   notice: NOTICE
-edge_count: 10
+edge_count: 12
 edges:
 - tag: Purchase Orders
   spec_file: facilio-purchase-orders-api-openapi.yml
@@ -19,86 +19,108 @@ edges:
   capability_id_l1: BC-500
   capability_name: Purchase Order Management
   confidence: 0.95
-  evidence: POST /purchaseorder createPurchaseOrder 'Create a purchase order'; schemas PurchaseOrder,
-    PurchaseOrderLineItem
+  evidence: POST /purchaseorder  createPurchaseOrder  Create a purchase order; schema PurchaseOrderLineItem
   reason: Full CRUD over purchase orders with line items is plainly Purchase Order Management within Procurement.
-- tag: Items
-  spec_file: facilio-items-api-openapi.yml
-  capability_id: BC-530
-  capability_id_l1: BC-530
-  capability_name: Inventory Management
-  confidence: 0.85
-  evidence: POST /item/adjustment 'Adjust item quantity (non-rotating types)'; GET /item/{id}/bin 'List
-    bins and on-hand quantities for an item'
-  reason: Operations manage stocked inventory quantities, bins and adjustments — clearly Inventory Management.
-    Adjustments touch accuracy while bin/on-hand touches stock levels, so no single L2 is chosen.
-- tag: Receivables
-  spec_file: facilio-receivables-api-openapi.yml
-  capability_id: BC-500.40
-  capability_id_l1: BC-500
-  capability_name: Procure-to-Pay Operations Management
-  confidence: 0.82
-  evidence: POST /receivable/{id}/addreceipt 'Add a receipt line'; POST /receivable/{id}/stock 'Stock
-    received PO lines into the storeroom'
-  reason: Despite the finance-sounding tag, these operations record goods receipt against purchase order
-    lines and stock them into the storeroom — procure-to-pay receiving, not accounts receivable.
-- tag: Tools
-  spec_file: facilio-tools-api-openapi.yml
-  capability_id: BC-530
-  capability_id_l1: BC-530
-  capability_name: Inventory Management
-  confidence: 0.8
-  evidence: '"List bins and on-hand quantities for a tool"; "Adjust tool quantity (non-rotating types)"'
-  reason: On-hand quantities, bin locations and quantity adjustments are plainly stock/inventory operations;
-    ambiguity between stock-level and accuracy/adjustment sub-capabilities so L2 omitted.
 - tag: Purchase Requests
   spec_file: facilio-purchase-requests-api-openapi.yml
   capability_id: BC-500.40
   capability_id_l1: BC-500
   capability_name: Procure-to-Pay Operations Management
+  confidence: 0.85
+  evidence: POST /purchaserequest  createPurchaseRequest  Create a purchase request; schema PurchaseRequestLineItem
+  reason: Purchase requests are requisitions preceding POs — procure-to-pay operations (requisitions,
+    receipts) within Procurement Management.
+- tag: Items
+  spec_file: facilio-items-api-openapi.yml
+  capability_id: BC-530.10
+  capability_id_l1: BC-530
+  capability_name: Stock Level Management
+  confidence: 0.8
+  evidence: POST /item/adjustment  Adjust item quantity (non-rotating types); GET /item/{id}/bin  List
+    bins and on-hand quantities for an item
+  reason: Operations manage stocked inventory quantities and on-hand levels by bin, which is stock level
+    / inventory accuracy management in a CMMS storeroom context.
+- tag: Receivables
+  spec_file: facilio-receivables-api-openapi.yml
+  capability_id: BC-500.40
+  capability_id_l1: BC-500
+  capability_name: Procure-to-Pay Operations Management
+  confidence: 0.8
+  evidence: POST /receivable/{id}/stock  receivableStock  Stock received PO lines into the storeroom;
+    POLineItemStock
+  reason: Despite the finance-sounding tag, these operations are goods receipt against purchase order
+    lines and stocking into the storeroom — P2P receiving, not accounts receivable.
+- tag: Spaces
+  spec_file: facilio-spaces-api-openapi.yml
+  capability_id: BC-700.40
+  capability_id_l1: BC-700
+  capability_name: Space Management
   confidence: 0.75
-  evidence: POST /purchaserequest createPurchaseRequest 'Create a purchase request'; schema PurchaseRequestLineItem
-  reason: Purchase requests are requisitions feeding the procure-to-pay flow, which the P2P Operations
-    sub-capability explicitly covers ('requisitions, receipts'); slight ambiguity versus PO management
-    keeps confidence moderate.
+  evidence: '"Portfolio (Sites, Buildings, Floors, Spaces) — Maintain your facility hierarchy and space
+    data"; GET /space listSpaces "List spaces"'
+  reason: CRUD over the space entity of a facility hierarchy — space/occupancy data maintenance within
+    facilities management, not an HVAC engineering artefact.
+- tag: Tools
+  spec_file: facilio-tools-api-openapi.yml
+  capability_id: BC-530
+  capability_id_l1: BC-530
+  capability_name: Inventory Management
+  confidence: 0.75
+  evidence: GET /tool/{id}/bin "List bins and on-hand quantities for a tool"; POST /tool/adjustment "Adjust
+    tool quantity (non-rotating types)"
+  reason: Bin-level on-hand quantities and quantity adjustments are stock tracking of tools — inventory
+    management; ambiguous between stock-level and accuracy sub-capabilities.
 - tag: Vendor Credits
   spec_file: facilio-vendor-credits-api-openapi.yml
   capability_id: BC-200.20
   capability_id_l1: BC-200
   capability_name: Accounts Payable Management
   confidence: 0.75
-  evidence: '"Create a vendor credit"; schemas "CreditNoteLineItem, VendorCredit"'
-  reason: Vendor credit notes with line items are vendor-side accounting documents offsetting payables,
-    i.e. Accounts Payable Management; the API is document CRUD only, hence not maximal confidence.
+  evidence: POST /vendorCredit createVendorCredit; schemas "CreditNoteLineItem", "VendorCredit"
+  reason: Vendor credit notes with line items are payables-side accounting documents against supplier
+    invoices, i.e. accounts payable processing.
+- tag: Client Credits
+  spec_file: facilio-client-credits-api-openapi.yml
+  capability_id: BC-200.30
+  capability_id_l1: BC-200
+  capability_name: Accounts Receivable Management
+  confidence: 0.7
+  evidence: schemas "ClientCredit", "CreditNoteLineItem"; "POST /clientCredit  createClientCredit  Create
+    a client credit"
+  reason: Credit notes with line items issued against clients are customer-side billing adjustments, i.e.
+    accounts receivable accounting. The CreditNoteLineItem schema grounds the financial reading; some
+    residual chance it is a service-credit/entitlement construct, hence 0.7.
 - tag: Invoices
   spec_file: facilio-invoices-api-openapi.yml
   capability_id: BC-200.30
   capability_id_l1: BC-200
   capability_name: Accounts Receivable Management
   confidence: 0.7
-  evidence: POST /invoice createInvoice; schemas "Invoice", "InvoiceLineItem", "Address"
-  reason: Creation and management of customer-facing invoices with line items, i.e. customer invoicing
-    under Accounts Receivable Management.
-- tag: Spaces
-  spec_file: facilio-spaces-api-openapi.yml
-  capability_id: BC-700.40
-  capability_id_l1: BC-700
-  capability_name: Space Management
+  evidence: '"POST /invoice  createInvoice  Create an invoice"; schemas "Invoice", "InvoiceLineItem",
+    "Address"'
+  reason: Creation and maintenance of customer invoices with line items in a platform that bills clients/tenants
+    for facility services — customer invoicing under accounts receivable. Direction (customer billing
+    vs vendor payables) is inferred from the client-facing context, hence 0.7 rather than higher.
+- tag: Service Requests
+  spec_file: facilio-service-requests-api-openapi.yml
+  capability_id: BC-2060.30
+  capability_id_l1: BC-2060
+  capability_name: Reactive & Emergency Service Operations
   confidence: 0.7
-  evidence: '"**Portfolio (Sites, Buildings, Floors, Spaces)** — Maintain your facility hierarchy and
-    space data"; operations "List spaces", "Create a space"'
-  reason: CRUD over the facility space hierarchy of a facilities-operations platform; closest fit is space/occupancy
-    data management within Facilities Management. Some chance it belongs under real-estate portfolio data,
-    hence moderate confidence.
+  evidence: 'POST /servicerequest  createServiceRequest; description: "Work Orders & Service Requests
+    — Create, assign, track, and close maintenance tasks programmatically"'
+  reason: Service requests are the reactive/demand intake for building maintenance in a CMMS, aligning
+    with reactive service operations on installed building systems. Some ambiguity versus generic facilities
+    or customer inquiry management, hence 0.7.
 - tag: Vendors
   spec_file: facilio-vendors-api-openapi.yml
   capability_id: BC-510
   capability_id_l1: BC-510
   capability_name: Supplier Management
   confidence: 0.7
-  evidence: '"push tenant and vendor records from your CRM"; "Create a vendor", schema "Vendor, Address"'
-  reason: Vendor/supplier master records for a platform that "unifies maintenance teams, vendors" — supplier
-    management at L1; no specific onboarding, performance or risk operations to justify an L2.
+  evidence: POST /vendors createVendor "Create a vendor"; schemas "Vendor", "Address"
+  reason: Vendor master records for the maintenance/purchasing process — supplier management; CRUD-only
+    surface so no sub-capability named.
 - tag: Work Orders
   spec_file: facilio-work-orders-api-openapi.yml
   capability_id: BC-700
@@ -106,8 +128,7 @@ edges:
   capability_name: Facilities Management
   confidence: 0.7
   evidence: '"Work Orders & Service Requests — Create, assign, track, and close maintenance tasks programmatically";
-    operations "Create a work order", "Update or complete work order task"'
-  reason: Facilio is a CMMS for property/facility operations; the tag's operations manage maintenance
-    work orders and tasks across sites and buildings, which realises Facilities Management (building services
-    maintenance execution). Left at L1 because work orders span hard and soft FM rather than naming one
-    sub-capability.
+    POST /workorder createWorkOrder'
+  reason: Facilio is a CMMS for property/facility operations; the operations create, assign and close
+    maintenance work orders and tasks on buildings and equipment, which is facilities maintenance execution.
+    L2 left null because work orders span hard and soft FM without the context naming which.
