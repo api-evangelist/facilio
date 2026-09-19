@@ -385,6 +385,8 @@ apis:
   humanURL: https://facilio.com/developers/docs/api-reference/
   baseURL: https://us.facilioapis.com/maintenance/api/v5
   tags:
+  - Space
+  tags_raw:
   - Spaces
   properties:
   - type: OpenAPI
