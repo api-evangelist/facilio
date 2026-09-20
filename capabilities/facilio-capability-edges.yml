@@ -11,7 +11,7 @@ capability_model:
   attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
     CC BY 4.0
   notice: NOTICE
-edge_count: 12
+edge_count: 13
 edges:
 - tag: Purchase Orders
   spec_file: facilio-purchase-orders-api-openapi.yml
@@ -90,6 +90,16 @@ edges:
   reason: Credit notes with line items issued against clients are customer-side billing adjustments, i.e.
     accounts receivable accounting. The CreditNoteLineItem schema grounds the financial reading; some
     residual chance it is a service-credit/entitlement construct, hence 0.7.
+- tag: Inventory Requests
+  spec_file: facilio-inventory-requests-api-openapi.yml
+  capability_id: BC-530.30
+  capability_id_l1: BC-530
+  capability_name: Inventory Allocation Management
+  confidence: 0.7
+  evidence: '"Create an inventory request", schema "InventoryRequestLineItem"'
+  reason: Requests for stocked inventory items (reservation/issue from storeroom) in a CMMS — inventory
+    allocation/reservation is the closest fit; L1 Inventory Management is safe.
+  recovered_from: sweep-20260829T005356Z-edges.json
 - tag: Invoices
   spec_file: facilio-invoices-api-openapi.yml
   capability_id: BC-200.30
