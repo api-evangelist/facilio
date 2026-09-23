@@ -1,15 +1,15 @@
-generated: '2026-07-19'
+generated: '2026-09-19'
 method: searched
 hosts:
 - host: https://facilio.com
   documents:
-  - path: /.well-known/api-catalog        # RFC 9727 API catalog (linkset)
+  - path: /.well-known/api-catalog
     status: 200
     file: facilio-api-catalog.json
-  - path: /.well-known/mcp/server-card.json  # MCP server card
+  - path: /.well-known/mcp/server-card.json
     status: 200
     file: facilio-mcp-server-card.json
-  - path: /.well-known/security.txt        # RFC 9116
+  - path: /.well-known/security.txt
     status: 403
     note: WAF (Cloudflare) blocks unauthenticated fetch; no published security.txt confirmed
   - path: /.well-known/openid-configuration
@@ -20,11 +20,16 @@ hosts:
     status: 403
 - host: https://mcp.facilio.com
   documents:
-  - path: /.well-known/oauth-authorization-server  # RFC 8414
+  - path: /.well-known/oauth-authorization-server
     status: 200
     file: facilio-mcp-oauth-authorization-server.json
-  - path: /.well-known/oauth-protected-resource     # RFC 9728
+  - path: /.well-known/oauth-protected-resource
     status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    file: facilio-mcp-oauth-protected-resource.json
+    bytes: 294
+  path_echo_control: passed
 - host: https://app.facilio.com
   documents:
   - path: /.well-known/security.txt
@@ -49,3 +54,16 @@ catalog:
   - href: https://mcp.facilio.com/.well-known/oauth-protected-resource
     type: application/json
     title: Facilio MCP — OAuth 2.0 Protected Resource Metadata
+x-mcp-probe:
+  probed: '2026-09-19'
+  issue: roadmap#321, roadmap#337
+  documents:
+  - host: https://mcp.facilio.com
+    path: /.well-known/oauth-protected-resource
+    file: facilio-mcp-oauth-protected-resource.json
+  validated_on: resource (RFC 9728) / issuer (RFC 8414, OIDC)
+  negative_control: one per host; a 2xx JSON object at an impossible path discards the host
+note: 'MCP-host OAuth discovery added 2026-09-19 (roadmap#321/#337): the harvest visits a provider''s
+  primary hosts, and RFC 9728 protected-resource metadata lives on the MCP host, so these documents existed
+  and were invisible to the scorer. Fetched live and validated on `resource`/`issuer`; one negative control
+  per host.'

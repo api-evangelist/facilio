@@ -1,0 +1,1 @@
+{"resource":"https://mcp.facilio.com/mcp","authorization_servers":["https://mcp.facilio.com/"],"scopes_supported":["openid","email","profile","connections:actions.execute.read","connections:actions.execute.write","connections:actions.execute.destructive"],"bearer_methods_supported":["header"]}
