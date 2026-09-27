@@ -194,6 +194,75 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   schemas:
+    FacilioModule:
+      type: object
+      description: A single entry in the module catalogue returned by GET /modules.
+      properties:
+        name:
+          type: string
+          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
+        displayName:
+          type: string
+          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
+        description:
+          type: string
+          description: Module description as configured in Facilio Setup. Omitted when blank.
+        isCustom:
+          type: boolean
+          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+    TenantContact:
+      type: object
+      description: Contact person for a tenant.
+      required:
+      - name
+      - tenant
+      - email
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: Unique record ID
+        name:
+          type: string
+          description: Contact name (required on create, sortable)
+        tenant:
+          type: integer
+          description: Parent tenant ID (required on create)
+        email:
+          type: string
+          description: Email address (required on create)
+        phone:
+          type: string
+          description: Phone number
+        isPrimaryContact:
+          type: boolean
+          description: Whether this is the primary contact
+        sysCreatedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Creation timestamp (sortable)
+        sysModifiedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Last modified (sortable)
     FacilioField:
       type: object
       description: Schema descriptor for a single field within a module.
@@ -289,75 +358,6 @@ components:
                 '
               items:
                 $ref: '#/components/schemas/FacilioField'
-    FacilioModule:
-      type: object
-      description: A single entry in the module catalogue returned by GET /modules.
-      properties:
-        name:
-          type: string
-          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
-        displayName:
-          type: string
-          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
-        description:
-          type: string
-          description: Module description as configured in Facilio Setup. Omitted when blank.
-        isCustom:
-          type: boolean
-          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
-    Error:
-      type: object
-      description: Error response
-      properties:
-        success:
-          type: boolean
-          example: false
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-              description: Machine-readable error code
-            message:
-              type: string
-              description: Human-readable error message
-    TenantContact:
-      type: object
-      description: Contact person for a tenant.
-      required:
-      - name
-      - tenant
-      - email
-      properties:
-        id:
-          type: integer
-          readOnly: true
-          description: Unique record ID
-        name:
-          type: string
-          description: Contact name (required on create, sortable)
-        tenant:
-          type: integer
-          description: Parent tenant ID (required on create)
-        email:
-          type: string
-          description: Email address (required on create)
-        phone:
-          type: string
-          description: Phone number
-        isPrimaryContact:
-          type: boolean
-          description: Whether this is the primary contact
-        sysCreatedTime:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Creation timestamp (sortable)
-        sysModifiedTime:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Last modified (sortable)
   parameters:
     page:
       name: page
@@ -366,20 +366,6 @@ components:
       schema:
         type: integer
         default: 1
-    recordId:
-      name: id
-      in: path
-      required: true
-      description: Record ID
-      schema:
-        type: integer
-        format: int64
-    search:
-      name: search
-      in: query
-      description: Free-text search on the primary field (subject, name, etc.)
-      schema:
-        type: string
     pageSize:
       name: pageSize
       in: query
@@ -388,6 +374,12 @@ components:
         type: integer
         default: 50
         maximum: 200
+    search:
+      name: search
+      in: query
+      description: Free-text search on the primary field (subject, name, etc.)
+      schema:
+        type: string
     includeAllowedValues:
       name: includeAllowedValues
       in: query
@@ -401,6 +393,14 @@ components:
       schema:
         type: boolean
         default: false
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
   responses:
     Unauthorized:
       description: Missing or invalid authentication credentials

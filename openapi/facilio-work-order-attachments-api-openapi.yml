@@ -153,23 +153,6 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 components:
-  parameters:
-    attachmentId:
-      name: attachmentId
-      in: path
-      required: true
-      description: Attachment ID
-      schema:
-        type: integer
-        format: int64
-    recordId:
-      name: id
-      in: path
-      required: true
-      description: Record ID
-      schema:
-        type: integer
-        format: int64
   responses:
     Unauthorized:
       description: Missing or invalid authentication credentials
@@ -221,6 +204,23 @@ components:
             message:
               type: string
               description: Human-readable error message
+  parameters:
+    attachmentId:
+      name: attachmentId
+      in: path
+      required: true
+      description: Attachment ID
+      schema:
+        type: integer
+        format: int64
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
   securitySchemes:
     apiKey:
       type: apiKey

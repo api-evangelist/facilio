@@ -206,6 +206,88 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   schemas:
+    FacilioModule:
+      type: object
+      description: A single entry in the module catalogue returned by GET /modules.
+      properties:
+        name:
+          type: string
+          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
+        displayName:
+          type: string
+          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
+        description:
+          type: string
+          description: Module description as configured in Facilio Setup. Omitted when blank.
+        isCustom:
+          type: boolean
+          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+    Building:
+      type: object
+      description: Building within a site.
+      required:
+      - name
+      - site
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: Unique record ID
+        name:
+          type: string
+          description: Building name (required on create, sortable)
+        description:
+          type: string
+          description: Building description
+        site:
+          type: integer
+          description: Parent site ID (required on create)
+        location:
+          description: Building address / location
+          allOf:
+          - $ref: '#/components/schemas/Address'
+        moduleState:
+          type: string
+          description: Status — pass `status` value or numeric ID. Use `GET /picklist/building/moduleState` for valid values.
+        grossFloorArea:
+          type: number
+          description: Gross floor area
+        noOfFloors:
+          type: integer
+          readOnly: true
+          description: Number of floors
+        area:
+          type: number
+          description: Total area
+        managedBy:
+          type: integer
+          description: Manager user ID
+        sysCreatedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Creation timestamp (sortable)
+        sysModifiedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Last modified (sortable)
     FacilioField:
       type: object
       description: Schema descriptor for a single field within a module.
@@ -279,44 +361,6 @@ components:
               value:
                 type: string
                 description: Canonical value accepted by create/update for this field and filtering
-    ModuleMetaResponse:
-      type: object
-      description: Response body for GET /{moduleName}/metadata.
-      properties:
-        success:
-          type: boolean
-        data:
-          type: object
-          properties:
-            module:
-              $ref: '#/components/schemas/FacilioModule'
-            fields:
-              type: array
-              description: 'Ordered list of fields for the module.
-
-                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
-
-                Custom modules return all fields.
-
-                '
-              items:
-                $ref: '#/components/schemas/FacilioField'
-    Error:
-      type: object
-      description: Error response
-      properties:
-        success:
-          type: boolean
-          example: false
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-              description: Machine-readable error code
-            message:
-              type: string
-              description: Human-readable error message
     Address:
       type: object
       description: Postal address. Used for site/building locations, storeroom locations, vendor/client/tenant addresses, and quote/invoice billing & shipping addresses.
@@ -357,72 +401,28 @@ components:
           type: number
           format: double
           description: Longitude
-    FacilioModule:
+    ModuleMetaResponse:
       type: object
-      description: A single entry in the module catalogue returned by GET /modules.
+      description: Response body for GET /{moduleName}/metadata.
       properties:
-        name:
-          type: string
-          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
-        displayName:
-          type: string
-          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
-        description:
-          type: string
-          description: Module description as configured in Facilio Setup. Omitted when blank.
-        isCustom:
+        success:
           type: boolean
-          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
-    Building:
-      type: object
-      description: Building within a site.
-      required:
-      - name
-      - site
-      properties:
-        id:
-          type: integer
-          readOnly: true
-          description: Unique record ID
-        name:
-          type: string
-          description: Building name (required on create, sortable)
-        description:
-          type: string
-          description: Building description
-        site:
-          type: integer
-          description: Parent site ID (required on create)
-        location:
-          description: Building address / location
-          allOf:
-          - $ref: '#/components/schemas/Address'
-        moduleState:
-          type: string
-          description: Status — pass `status` value or numeric ID. Use `GET /picklist/building/moduleState` for valid values.
-        grossFloorArea:
-          type: number
-          description: Gross floor area
-        noOfFloors:
-          type: integer
-          readOnly: true
-          description: Number of floors
-        area:
-          type: number
-          description: Total area
-        managedBy:
-          type: integer
-          description: Manager user ID
-        sysCreatedTime:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Creation timestamp (sortable)
-        sysModifiedTime:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Last modified (sortable)
+        data:
+          type: object
+          properties:
+            module:
+              $ref: '#/components/schemas/FacilioModule'
+            fields:
+              type: array
+              description: 'Ordered list of fields for the module.
+
+                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
+
+                Custom modules return all fields.
+
+                '
+              items:
+                $ref: '#/components/schemas/FacilioField'
   parameters:
     page:
       name: page
@@ -431,6 +431,14 @@ components:
       schema:
         type: integer
         default: 1
+    pageSize:
+      name: pageSize
+      in: query
+      description: Records per page (max 200)
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
     recordId:
       name: id
       in: path
@@ -445,14 +453,6 @@ components:
       description: Free-text search on the primary field (subject, name, etc.)
       schema:
         type: string
-    pageSize:
-      name: pageSize
-      in: query
-      description: Records per page (max 200)
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
     count:
       name: count
       in: query

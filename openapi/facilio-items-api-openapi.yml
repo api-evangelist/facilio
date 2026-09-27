@@ -228,6 +228,71 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   schemas:
+    FacilioModule:
+      type: object
+      description: A single entry in the module catalogue returned by GET /modules.
+      properties:
+        name:
+          type: string
+          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
+        displayName:
+          type: string
+          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
+        description:
+          type: string
+          description: Module description as configured in Facilio Setup. Omitted when blank.
+        isCustom:
+          type: boolean
+          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+    ItemAdjustment:
+      type: object
+      required:
+      - adjustmentType
+      - quantity
+      - itemType
+      - storeRoom
+      properties:
+        adjustmentType:
+          type: string
+          description: '`increase` or `decrease` (case-insensitive)'
+        quantity:
+          type: number
+          format: double
+          exclusiveMinimum: 0
+        itemType:
+          description: Item type id — pass the number directly (object with `id` is also accepted).
+        storeRoom:
+          description: Storeroom id — pass the number directly (object with `id` is also accepted).
+        bin:
+          description: Optional bin — pass the bin name as a string, the bin id as a number, or an object with `id` or `name`.
+        unitCost:
+          type: number
+          format: double
+          description: Increase only — purchased item unit cost
+        unitPrice:
+          type: number
+          format: double
+          description: Alias of `unitCost` on increase
+        purchasedDate:
+          description: Epoch ms (number) or ISO date string — `costDate` on purchased item (increase)
+        remarks:
+          type: string
     FacilioField:
       type: object
       description: Schema descriptor for a single field within a module.
@@ -323,72 +388,14 @@ components:
                 '
               items:
                 $ref: '#/components/schemas/FacilioField'
-    ItemAdjustment:
-      type: object
-      required:
-      - adjustmentType
-      - quantity
-      - itemType
-      - storeRoom
-      properties:
-        adjustmentType:
-          type: string
-          description: '`increase` or `decrease` (case-insensitive)'
-        quantity:
-          type: number
-          format: double
-          exclusiveMinimum: 0
-        itemType:
-          description: Item type id — pass the number directly (object with `id` is also accepted).
-        storeRoom:
-          description: Storeroom id — pass the number directly (object with `id` is also accepted).
-        bin:
-          description: Optional bin — pass the bin name as a string, the bin id as a number, or an object with `id` or `name`.
-        unitCost:
-          type: number
-          format: double
-          description: Increase only — purchased item unit cost
-        unitPrice:
-          type: number
-          format: double
-          description: Alias of `unitCost` on increase
-        purchasedDate:
-          description: Epoch ms (number) or ISO date string — `costDate` on purchased item (increase)
-        remarks:
-          type: string
-    Error:
-      type: object
-      description: Error response
-      properties:
-        success:
-          type: boolean
-          example: false
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-              description: Machine-readable error code
-            message:
-              type: string
-              description: Human-readable error message
-    FacilioModule:
-      type: object
-      description: A single entry in the module catalogue returned by GET /modules.
-      properties:
-        name:
-          type: string
-          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
-        displayName:
-          type: string
-          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
-        description:
-          type: string
-          description: Module description as configured in Facilio Setup. Omitted when blank.
-        isCustom:
-          type: boolean
-          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
   parameters:
+    changed:
+      name: changed
+      in: query
+      description: 'Delta sync: returns records created/modified after this UTC timestamp'
+      schema:
+        type: string
+        format: date-time
     page:
       name: page
       in: query
@@ -396,21 +403,6 @@ components:
       schema:
         type: integer
         default: 1
-    recordId:
-      name: id
-      in: path
-      required: true
-      description: Record ID
-      schema:
-        type: integer
-        format: int64
-    count:
-      name: count
-      in: query
-      description: Include total record count in response
-      schema:
-        type: boolean
-        default: false
     pageSize:
       name: pageSize
       in: query
@@ -419,13 +411,27 @@ components:
         type: integer
         default: 50
         maximum: 200
-    changed:
-      name: changed
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
+    search:
+      name: search
       in: query
-      description: 'Delta sync: returns records created/modified after this UTC timestamp'
+      description: Free-text search on the primary field (subject, name, etc.)
       schema:
         type: string
-        format: date-time
+    count:
+      name: count
+      in: query
+      description: Include total record count in response
+      schema:
+        type: boolean
+        default: false
     expand:
       name: expand
       in: query
@@ -434,12 +440,6 @@ components:
         Expanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).
 
         '
-      schema:
-        type: string
-    search:
-      name: search
-      in: query
-      description: Free-text search on the primary field (subject, name, etc.)
       schema:
         type: string
     includeAllowedValues:

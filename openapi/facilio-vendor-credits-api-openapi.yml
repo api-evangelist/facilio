@@ -315,80 +315,206 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 components:
+  parameters:
+    pageSize:
+      name: pageSize
+      in: query
+      description: Records per page (max 200)
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+    expand:
+      name: expand
+      in: query
+      description: 'Comma-separated lookup field names to expand on **list** endpoints (max 5).
+
+        Expanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).
+
+        '
+      schema:
+        type: string
+    select:
+      name: select
+      in: query
+      description: Comma-separated field names to include in the response
+      schema:
+        type: string
+    search:
+      name: search
+      in: query
+      description: Free-text search on the primary field (subject, name, etc.)
+      schema:
+        type: string
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
+    changed:
+      name: changed
+      in: query
+      description: 'Delta sync: returns records created/modified after this UTC timestamp'
+      schema:
+        type: string
+        format: date-time
+    count:
+      name: count
+      in: query
+      description: Include total record count in response
+      schema:
+        type: boolean
+        default: false
+    includeAllowedValues:
+      name: includeAllowedValues
+      in: query
+      description: 'When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).
+
+        Default `false` keeps the original metadata payload (no enrichment, no extra DB calls).
+
+        Use this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.
+
+        '
+      schema:
+        type: boolean
+        default: false
   schemas:
-    FacilioField:
+    VendorCredit:
       type: object
-      description: Schema descriptor for a single field within a module.
+      description: Vendor credit note with line items.
       properties:
-        name:
-          type: string
-          description: Field name used in API requests and responses (e.g. `subject`, `po_reference_workorder`)
-        displayName:
-          type: string
-          description: Human-readable field label
-        dataType:
-          type: string
-          description: 'Field data type. Common values:
-
-            `STRING`, `NUMBER`, `DECIMAL`, `BOOLEAN`,
-
-            `DATE`, `DATE_TIME`,
-
-            `BIG_STRING` (large text, excluded from list responses),
-
-            `LOOKUP` (reference to another record — see `lookupModuleName`),
-
-            `MULTI_LOOKUP` (multi-reference — see `lookupModuleName`),
-
-            `ENUM`, `SYSTEM_ENUM`, `STRING_SYSTEM_ENUM` (picklist types)
-
-            '
-          example: STRING
-        required:
-          type: boolean
-          description: '`true` if this field must be provided on record creation'
-        readOnly:
-          type: boolean
-          description: '`true` if this field cannot be set or modified via the API (e.g. auto-generated system fields)'
-        isCustom:
-          type: boolean
-          description: '`true` for fields added by your organization; `false` for standard built-in fields'
-        sortable:
-          type: boolean
-          description: '`true` if this field can be used as a `sortBy` value on the list API'
-        lookupModuleName:
-          type: string
-          description: Present only on `LOOKUP` and `MULTI_LOOKUP` fields. The name of the target module (e.g. `site`, `users`, `ticketstatus`).
-        max_length:
+        id:
           type: integer
-          description: 'Maximum number of characters accepted by the V5 write API for text-style fields.
-
-            Present only when the field''s `dataType` is one of:
-
-            `STRING` (255), `LARGE_TEXT` (2000), `BIG_STRING` (32000).
-
-            Omitted for all other data types.
-
-            '
-          example: 255
-        allowed_values:
+          readOnly: true
+          description: Unique record ID
+        localId:
+          type: integer
+          readOnly: true
+          description: Sequential number (sortable)
+        creditNumber:
+          type: string
+          readOnly: true
+          description: Credit note number (sortable)
+        subject:
+          type: string
+          maxLength: 255
+          description: Credit note subject
+        description:
+          type: string
+          maxLength: 2000
+          description: Credit note description
+        notes:
+          type: string
+          maxLength: 2000
+          description: Customer notes
+        vendor:
+          type: object
+          description: '{id} — Vendor reference'
+        vendorContract:
+          type: object
+          description: '{id} — Vendor contract reference'
+        invoices:
           type: array
-          description: 'List of acceptable write values for picklist-capable fields. Present **only when the request includes `?includeAllowedValues=true`** AND the field is one of:
-
-            `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, or a `LOOKUP` targeting a system picklist module (e.g. `ticketstatus`, `ticketpriority`, `ticketcategory`, `tickettype`).
-
-            Each entry uses `{label, value}`; the `value` is the canonical form accepted by create/update payloads.
-
-            '
           items:
             type: object
-            properties:
-              label:
-                type: string
-                description: Display label as shown in the UI
-              value:
-                type: string
-                description: Canonical value accepted by create/update for this field and filtering
+          description: Associated invoices — array of {id}
+        site:
+          type: object
+          description: '{id} — Site reference'
+        contact:
+          type: object
+          description: '{id} — Contact person reference'
+        billToAddress:
+          description: Billing address
+          allOf:
+          - $ref: '#/components/schemas/Address'
+        issueDate:
+          type: string
+          format: date
+          description: Issue date (sortable)
+        expiryDate:
+          type: string
+          format: date
+          description: Expiry date (sortable)
+        subTotal:
+          type: number
+          format: double
+          readOnly: true
+          description: Subtotal before tax
+        totalCost:
+          type: number
+          format: double
+          readOnly: true
+          description: Total cost including tax
+        totalTaxAmount:
+          type: number
+          format: double
+          readOnly: true
+          description: Total tax amount
+        discountAmount:
+          type: number
+          format: double
+          description: Discount amount
+        discountPercentage:
+          type: number
+          format: double
+          description: Discount percentage
+        vendorCreditNoteStatus:
+          type: string
+          description: Status — pass display name (e.g. 'Awaiting Refund', 'Refunded') or numeric ID. Use `GET /picklist/vendorCredit/vendorCreditNoteStatus` for valid values.
+        revisionNumber:
+          type: integer
+          readOnly: true
+          description: Revision number
+        lineItems:
+          type: array
+          description: 'Line items. `type` values: Service, Others.'
+          items:
+            $ref: '#/components/schemas/CreditNoteLineItem'
+        sysCreatedByPeople:
+          readOnly: true
+          allOf:
+          - $ref: '#/components/schemas/User'
+        sysCreatedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Created (sortable)
+        sysModifiedByPeople:
+          readOnly: true
+          allOf:
+          - $ref: '#/components/schemas/User'
+        sysModifiedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Modified (sortable)
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
     Address:
       type: object
       description: Postal address. Used for site/building locations, storeroom locations, vendor/client/tenant addresses, and quote/invoice billing & shipping addresses.
@@ -502,116 +628,95 @@ components:
                 '
               items:
                 $ref: '#/components/schemas/FacilioField'
-    VendorCredit:
+    FacilioField:
       type: object
-      description: Vendor credit note with line items.
+      description: Schema descriptor for a single field within a module.
       properties:
-        id:
+        name:
+          type: string
+          description: Field name used in API requests and responses (e.g. `subject`, `po_reference_workorder`)
+        displayName:
+          type: string
+          description: Human-readable field label
+        dataType:
+          type: string
+          description: 'Field data type. Common values:
+
+            `STRING`, `NUMBER`, `DECIMAL`, `BOOLEAN`,
+
+            `DATE`, `DATE_TIME`,
+
+            `BIG_STRING` (large text, excluded from list responses),
+
+            `LOOKUP` (reference to another record — see `lookupModuleName`),
+
+            `MULTI_LOOKUP` (multi-reference — see `lookupModuleName`),
+
+            `ENUM`, `SYSTEM_ENUM`, `STRING_SYSTEM_ENUM` (picklist types)
+
+            '
+          example: STRING
+        required:
+          type: boolean
+          description: '`true` if this field must be provided on record creation'
+        readOnly:
+          type: boolean
+          description: '`true` if this field cannot be set or modified via the API (e.g. auto-generated system fields)'
+        isCustom:
+          type: boolean
+          description: '`true` for fields added by your organization; `false` for standard built-in fields'
+        sortable:
+          type: boolean
+          description: '`true` if this field can be used as a `sortBy` value on the list API'
+        lookupModuleName:
+          type: string
+          description: Present only on `LOOKUP` and `MULTI_LOOKUP` fields. The name of the target module (e.g. `site`, `users`, `ticketstatus`).
+        max_length:
           type: integer
-          readOnly: true
-          description: Unique record ID
-        localId:
-          type: integer
-          readOnly: true
-          description: Sequential number (sortable)
-        creditNumber:
-          type: string
-          readOnly: true
-          description: Credit note number (sortable)
-        subject:
-          type: string
-          maxLength: 255
-          description: Credit note subject
-        description:
-          type: string
-          maxLength: 2000
-          description: Credit note description
-        notes:
-          type: string
-          maxLength: 2000
-          description: Customer notes
-        vendor:
-          type: object
-          description: '{id} — Vendor reference'
-        vendorContract:
-          type: object
-          description: '{id} — Vendor contract reference'
-        invoices:
+          description: 'Maximum number of characters accepted by the V5 write API for text-style fields.
+
+            Present only when the field''s `dataType` is one of:
+
+            `STRING` (255), `LARGE_TEXT` (2000), `BIG_STRING` (32000).
+
+            Omitted for all other data types.
+
+            '
+          example: 255
+        allowed_values:
           type: array
+          description: 'List of acceptable write values for picklist-capable fields. Present **only when the request includes `?includeAllowedValues=true`** AND the field is one of:
+
+            `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, or a `LOOKUP` targeting a system picklist module (e.g. `ticketstatus`, `ticketpriority`, `ticketcategory`, `tickettype`).
+
+            Each entry uses `{label, value}`; the `value` is the canonical form accepted by create/update payloads.
+
+            '
           items:
             type: object
-          description: Associated invoices — array of {id}
-        site:
-          type: object
-          description: '{id} — Site reference'
-        contact:
-          type: object
-          description: '{id} — Contact person reference'
-        billToAddress:
-          description: Billing address
-          allOf:
-          - $ref: '#/components/schemas/Address'
-        issueDate:
+            properties:
+              label:
+                type: string
+                description: Display label as shown in the UI
+              value:
+                type: string
+                description: Canonical value accepted by create/update for this field and filtering
+    FacilioModule:
+      type: object
+      description: A single entry in the module catalogue returned by GET /modules.
+      properties:
+        name:
           type: string
-          format: date
-          description: Issue date (sortable)
-        expiryDate:
+          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
+        displayName:
           type: string
-          format: date
-          description: Expiry date (sortable)
-        subTotal:
-          type: number
-          format: double
-          readOnly: true
-          description: Subtotal before tax
-        totalCost:
-          type: number
-          format: double
-          readOnly: true
-          description: Total cost including tax
-        totalTaxAmount:
-          type: number
-          format: double
-          readOnly: true
-          description: Total tax amount
-        discountAmount:
-          type: number
-          format: double
-          description: Discount amount
-        discountPercentage:
-          type: number
-          format: double
-          description: Discount percentage
-        vendorCreditNoteStatus:
+          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
+        description:
           type: string
-          description: Status — pass display name (e.g. 'Awaiting Refund', 'Refunded') or numeric ID. Use `GET /picklist/vendorCredit/vendorCreditNoteStatus` for valid values.
-        revisionNumber:
-          type: integer
-          readOnly: true
-          description: Revision number
-        lineItems:
-          type: array
-          description: 'Line items. `type` values: Service, Others.'
-          items:
-            $ref: '#/components/schemas/CreditNoteLineItem'
-        sysCreatedByPeople:
-          readOnly: true
-          allOf:
-          - $ref: '#/components/schemas/User'
-        sysCreatedTime:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Created (sortable)
-        sysModifiedByPeople:
-          readOnly: true
-          allOf:
-          - $ref: '#/components/schemas/User'
-        sysModifiedTime:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Modified (sortable)
+          description: Module description as configured in Facilio Setup. Omitted when blank.
+        isCustom:
+          type: boolean
+          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
     User:
       type: object
       description: 'Expanded object for lookups to the `users` module.
@@ -635,112 +740,18 @@ components:
         phone:
           type: string
           description: Phone number when present
-    FacilioModule:
-      type: object
-      description: A single entry in the module catalogue returned by GET /modules.
-      properties:
-        name:
-          type: string
-          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
-        displayName:
-          type: string
-          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
-        description:
-          type: string
-          description: Module description as configured in Facilio Setup. Omitted when blank.
-        isCustom:
-          type: boolean
-          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
-    Error:
-      type: object
-      description: Error response
-      properties:
-        success:
-          type: boolean
-          example: false
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-              description: Machine-readable error code
-            message:
-              type: string
-              description: Human-readable error message
-  parameters:
-    expand:
-      name: expand
-      in: query
-      description: 'Comma-separated lookup field names to expand on **list** endpoints (max 5).
-
-        Expanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).
-
-        '
-      schema:
-        type: string
-    includeAllowedValues:
-      name: includeAllowedValues
-      in: query
-      description: 'When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).
-
-        Default `false` keeps the original metadata payload (no enrichment, no extra DB calls).
-
-        Use this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.
-
-        '
-      schema:
-        type: boolean
-        default: false
-    select:
-      name: select
-      in: query
-      description: Comma-separated field names to include in the response
-      schema:
-        type: string
-    recordId:
-      name: id
-      in: path
-      required: true
-      description: Record ID
-      schema:
-        type: integer
-        format: int64
-    changed:
-      name: changed
-      in: query
-      description: 'Delta sync: returns records created/modified after this UTC timestamp'
-      schema:
-        type: string
-        format: date-time
-    page:
-      name: page
-      in: query
-      description: Page number (1-based)
-      schema:
-        type: integer
-        default: 1
-    count:
-      name: count
-      in: query
-      description: Include total record count in response
-      schema:
-        type: boolean
-        default: false
-    search:
-      name: search
-      in: query
-      description: Free-text search on the primary field (subject, name, etc.)
-      schema:
-        type: string
-    pageSize:
-      name: pageSize
-      in: query
-      description: Records per page (max 200)
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
   responses:
+    Unauthorized:
+      description: Missing or invalid authentication credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Missing or invalid authentication credentials
     BadRequest:
       description: Validation error — missing required fields, invalid field values, or malformed request body
       content:
@@ -763,17 +774,6 @@ components:
             error:
               code: RECORD_NOT_FOUND
               message: Record with the given ID was not found
-    Unauthorized:
-      description: Missing or invalid authentication credentials
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            success: false
-            error:
-              code: UNAUTHORIZED
-              message: Missing or invalid authentication credentials
   securitySchemes:
     apiKey:
       type: apiKey

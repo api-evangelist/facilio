@@ -275,6 +275,63 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   schemas:
+    FacilioModule:
+      type: object
+      description: A single entry in the module catalogue returned by GET /modules.
+      properties:
+        name:
+          type: string
+          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
+        displayName:
+          type: string
+          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
+        description:
+          type: string
+          description: Module description as configured in Facilio Setup. Omitted when blank.
+        isCustom:
+          type: boolean
+          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
+    Receipt:
+      type: object
+      description: 'Receipt line for `POST /receivable/{id}/addreceipt` (sent inside request `data`).
+
+        Responses include read-only fields such as `id`, `receivableId`, `status`, and `receiptTime`.
+
+        '
+      required:
+      - lineItem
+      - quantity
+      properties:
+        lineItem:
+          description: Purchase order line item id — pass the number directly (object with `id` is also accepted).
+        quantity:
+          type: number
+          format: double
+          minimum: 0
+        bin:
+          description: Optional bin id or name object for receipt routing
+        remarks:
+          type: string
+        noOfSerialNumbers:
+          type: integer
+          minimum: 0
+          description: Optional. Use only when the PO line requires serial capture; omit for standard lines.
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
     FacilioField:
       type: object
       description: Schema descriptor for a single field within a module.
@@ -348,6 +405,24 @@ components:
               value:
                 type: string
                 description: Canonical value accepted by create/update for this field and filtering
+    POLineItemStock:
+      type: object
+      description: One line in `POST /receivable/{id}/stock` (`lineItems` or `lineItemsStockQuantity`). Pass line, receipt, and lot as numeric ids where possible; use a string or id/name object for bin.
+      properties:
+        lineItem:
+          description: Purchase order line id — numeric, or object with `id`.
+        quantity:
+          type: number
+          format: double
+        receipt:
+          description: Receipt record id — numeric, or object with `id`.
+        bin:
+          description: Storeroom bin — bin name as a string, or object with `id` and/or `name`.
+        lot:
+          description: Lot id when the line is lot-tracked — numeric, or object with `id`.
+        stockedBy:
+          type: object
+          description: Optional user reference, e.g. object with `id`.
     ModuleMetaResponse:
       type: object
       description: Response body for GET /{moduleName}/metadata.
@@ -370,82 +445,14 @@ components:
                 '
               items:
                 $ref: '#/components/schemas/FacilioField'
-    Error:
-      type: object
-      description: Error response
-      properties:
-        success:
-          type: boolean
-          example: false
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-              description: Machine-readable error code
-            message:
-              type: string
-              description: Human-readable error message
-    Receipt:
-      type: object
-      description: 'Receipt line for `POST /receivable/{id}/addreceipt` (sent inside request `data`).
-
-        Responses include read-only fields such as `id`, `receivableId`, `status`, and `receiptTime`.
-
-        '
-      required:
-      - lineItem
-      - quantity
-      properties:
-        lineItem:
-          description: Purchase order line item id — pass the number directly (object with `id` is also accepted).
-        quantity:
-          type: number
-          format: double
-          minimum: 0
-        bin:
-          description: Optional bin id or name object for receipt routing
-        remarks:
-          type: string
-        noOfSerialNumbers:
-          type: integer
-          minimum: 0
-          description: Optional. Use only when the PO line requires serial capture; omit for standard lines.
-    FacilioModule:
-      type: object
-      description: A single entry in the module catalogue returned by GET /modules.
-      properties:
-        name:
-          type: string
-          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
-        displayName:
-          type: string
-          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
-        description:
-          type: string
-          description: Module description as configured in Facilio Setup. Omitted when blank.
-        isCustom:
-          type: boolean
-          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
-    POLineItemStock:
-      type: object
-      description: One line in `POST /receivable/{id}/stock` (`lineItems` or `lineItemsStockQuantity`). Pass line, receipt, and lot as numeric ids where possible; use a string or id/name object for bin.
-      properties:
-        lineItem:
-          description: Purchase order line id — numeric, or object with `id`.
-        quantity:
-          type: number
-          format: double
-        receipt:
-          description: Receipt record id — numeric, or object with `id`.
-        bin:
-          description: Storeroom bin — bin name as a string, or object with `id` and/or `name`.
-        lot:
-          description: Lot id when the line is lot-tracked — numeric, or object with `id`.
-        stockedBy:
-          type: object
-          description: Optional user reference, e.g. object with `id`.
   parameters:
+    changed:
+      name: changed
+      in: query
+      description: 'Delta sync: returns records created/modified after this UTC timestamp'
+      schema:
+        type: string
+        format: date-time
     page:
       name: page
       in: query
@@ -453,21 +460,6 @@ components:
       schema:
         type: integer
         default: 1
-    recordId:
-      name: id
-      in: path
-      required: true
-      description: Record ID
-      schema:
-        type: integer
-        format: int64
-    count:
-      name: count
-      in: query
-      description: Include total record count in response
-      schema:
-        type: boolean
-        default: false
     pageSize:
       name: pageSize
       in: query
@@ -476,13 +468,27 @@ components:
         type: integer
         default: 50
         maximum: 200
-    changed:
-      name: changed
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
+    search:
+      name: search
       in: query
-      description: 'Delta sync: returns records created/modified after this UTC timestamp'
+      description: Free-text search on the primary field (subject, name, etc.)
       schema:
         type: string
-        format: date-time
+    count:
+      name: count
+      in: query
+      description: Include total record count in response
+      schema:
+        type: boolean
+        default: false
     expand:
       name: expand
       in: query
@@ -491,12 +497,6 @@ components:
         Expanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).
 
         '
-      schema:
-        type: string
-    search:
-      name: search
-      in: query
-      description: Free-text search on the primary field (subject, name, etc.)
       schema:
         type: string
     includeAllowedValues:

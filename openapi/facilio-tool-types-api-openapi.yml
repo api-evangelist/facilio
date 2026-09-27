@@ -232,6 +232,103 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   schemas:
+    FacilioModule:
+      type: object
+      description: A single entry in the module catalogue returned by GET /modules.
+      properties:
+        name:
+          type: string
+          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
+        displayName:
+          type: string
+          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
+        description:
+          type: string
+          description: Module description as configured in Facilio Setup. Omitted when blank.
+        isCustom:
+          type: boolean
+          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+    ToolType:
+      type: object
+      description: Reusable equipment tracked in inventory.
+      required:
+      - name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: Unique record ID
+        name:
+          type: string
+          maxLength: 255
+          description: Tool type name (required, sortable)
+        description:
+          type: string
+          maxLength: 2000
+          description: Description
+        category:
+          type: integer
+          description: Inventory category ID (lookup). Returns {id, name} on GET.
+        quantity:
+          type: number
+          format: double
+          readOnly: true
+          description: Total quantity across storerooms
+        currentQuantity:
+          type: number
+          format: double
+          readOnly: true
+          description: Available quantity
+        minimumQuantity:
+          type: number
+          format: double
+          description: Reorder threshold
+        sellingPrice:
+          type: number
+          format: double
+          description: Rate per unit
+        lastIssuedDate:
+          type: string
+          format: date
+          readOnly: true
+          description: Last issued date
+        lastPurchasedDate:
+          type: string
+          format: date
+          readOnly: true
+          description: Last purchased date
+        isRotating:
+          type: boolean
+          description: Whether individually tracked (serialized)
+        isApprovalNeeded:
+          type: boolean
+          description: Whether issuance requires approval
+        sysCreatedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Created (sortable)
+        sysModifiedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Modified (sortable)
     FacilioField:
       type: object
       description: Schema descriptor for a single field within a module.
@@ -305,71 +402,6 @@ components:
               value:
                 type: string
                 description: Canonical value accepted by create/update for this field and filtering
-    ToolType:
-      type: object
-      description: Reusable equipment tracked in inventory.
-      required:
-      - name
-      properties:
-        id:
-          type: integer
-          readOnly: true
-          description: Unique record ID
-        name:
-          type: string
-          maxLength: 255
-          description: Tool type name (required, sortable)
-        description:
-          type: string
-          maxLength: 2000
-          description: Description
-        category:
-          type: integer
-          description: Inventory category ID (lookup). Returns {id, name} on GET.
-        quantity:
-          type: number
-          format: double
-          readOnly: true
-          description: Total quantity across storerooms
-        currentQuantity:
-          type: number
-          format: double
-          readOnly: true
-          description: Available quantity
-        minimumQuantity:
-          type: number
-          format: double
-          description: Reorder threshold
-        sellingPrice:
-          type: number
-          format: double
-          description: Rate per unit
-        lastIssuedDate:
-          type: string
-          format: date
-          readOnly: true
-          description: Last issued date
-        lastPurchasedDate:
-          type: string
-          format: date
-          readOnly: true
-          description: Last purchased date
-        isRotating:
-          type: boolean
-          description: Whether individually tracked (serialized)
-        isApprovalNeeded:
-          type: boolean
-          description: Whether issuance requires approval
-        sysCreatedTime:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Created (sortable)
-        sysModifiedTime:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Modified (sortable)
     ModuleMetaResponse:
       type: object
       description: Response body for GET /{moduleName}/metadata.
@@ -392,39 +424,14 @@ components:
                 '
               items:
                 $ref: '#/components/schemas/FacilioField'
-    Error:
-      type: object
-      description: Error response
-      properties:
-        success:
-          type: boolean
-          example: false
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-              description: Machine-readable error code
-            message:
-              type: string
-              description: Human-readable error message
-    FacilioModule:
-      type: object
-      description: A single entry in the module catalogue returned by GET /modules.
-      properties:
-        name:
-          type: string
-          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
-        displayName:
-          type: string
-          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
-        description:
-          type: string
-          description: Module description as configured in Facilio Setup. Omitted when blank.
-        isCustom:
-          type: boolean
-          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
   parameters:
+    changed:
+      name: changed
+      in: query
+      description: 'Delta sync: returns records created/modified after this UTC timestamp'
+      schema:
+        type: string
+        format: date-time
     page:
       name: page
       in: query
@@ -432,6 +439,14 @@ components:
       schema:
         type: integer
         default: 1
+    pageSize:
+      name: pageSize
+      in: query
+      description: Records per page (max 200)
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
     recordId:
       name: id
       in: path
@@ -446,21 +461,6 @@ components:
       description: Free-text search on the primary field (subject, name, etc.)
       schema:
         type: string
-    pageSize:
-      name: pageSize
-      in: query
-      description: Records per page (max 200)
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
-    changed:
-      name: changed
-      in: query
-      description: 'Delta sync: returns records created/modified after this UTC timestamp'
-      schema:
-        type: string
-        format: date-time
     count:
       name: count
       in: query

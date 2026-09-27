@@ -243,117 +243,6 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   schemas:
-    FacilioField:
-      type: object
-      description: Schema descriptor for a single field within a module.
-      properties:
-        name:
-          type: string
-          description: Field name used in API requests and responses (e.g. `subject`, `po_reference_workorder`)
-        displayName:
-          type: string
-          description: Human-readable field label
-        dataType:
-          type: string
-          description: 'Field data type. Common values:
-
-            `STRING`, `NUMBER`, `DECIMAL`, `BOOLEAN`,
-
-            `DATE`, `DATE_TIME`,
-
-            `BIG_STRING` (large text, excluded from list responses),
-
-            `LOOKUP` (reference to another record — see `lookupModuleName`),
-
-            `MULTI_LOOKUP` (multi-reference — see `lookupModuleName`),
-
-            `ENUM`, `SYSTEM_ENUM`, `STRING_SYSTEM_ENUM` (picklist types)
-
-            '
-          example: STRING
-        required:
-          type: boolean
-          description: '`true` if this field must be provided on record creation'
-        readOnly:
-          type: boolean
-          description: '`true` if this field cannot be set or modified via the API (e.g. auto-generated system fields)'
-        isCustom:
-          type: boolean
-          description: '`true` for fields added by your organization; `false` for standard built-in fields'
-        sortable:
-          type: boolean
-          description: '`true` if this field can be used as a `sortBy` value on the list API'
-        lookupModuleName:
-          type: string
-          description: Present only on `LOOKUP` and `MULTI_LOOKUP` fields. The name of the target module (e.g. `site`, `users`, `ticketstatus`).
-        max_length:
-          type: integer
-          description: 'Maximum number of characters accepted by the V5 write API for text-style fields.
-
-            Present only when the field''s `dataType` is one of:
-
-            `STRING` (255), `LARGE_TEXT` (2000), `BIG_STRING` (32000).
-
-            Omitted for all other data types.
-
-            '
-          example: 255
-        allowed_values:
-          type: array
-          description: 'List of acceptable write values for picklist-capable fields. Present **only when the request includes `?includeAllowedValues=true`** AND the field is one of:
-
-            `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, or a `LOOKUP` targeting a system picklist module (e.g. `ticketstatus`, `ticketpriority`, `ticketcategory`, `tickettype`).
-
-            Each entry uses `{label, value}`; the `value` is the canonical form accepted by create/update payloads.
-
-            '
-          items:
-            type: object
-            properties:
-              label:
-                type: string
-                description: Display label as shown in the UI
-              value:
-                type: string
-                description: Canonical value accepted by create/update for this field and filtering
-    ModuleMetaResponse:
-      type: object
-      description: Response body for GET /{moduleName}/metadata.
-      properties:
-        success:
-          type: boolean
-        data:
-          type: object
-          properties:
-            module:
-              $ref: '#/components/schemas/FacilioModule'
-            fields:
-              type: array
-              description: 'Ordered list of fields for the module.
-
-                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
-
-                Custom modules return all fields.
-
-                '
-              items:
-                $ref: '#/components/schemas/FacilioField'
-    Error:
-      type: object
-      description: Error response
-      properties:
-        success:
-          type: boolean
-          example: false
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-              description: Machine-readable error code
-            message:
-              type: string
-              description: Human-readable error message
     FacilioModule:
       type: object
       description: A single entry in the module catalogue returned by GET /modules.
@@ -452,7 +341,125 @@ components:
           format: date-time
           readOnly: true
           description: Modified (sortable)
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+    FacilioField:
+      type: object
+      description: Schema descriptor for a single field within a module.
+      properties:
+        name:
+          type: string
+          description: Field name used in API requests and responses (e.g. `subject`, `po_reference_workorder`)
+        displayName:
+          type: string
+          description: Human-readable field label
+        dataType:
+          type: string
+          description: 'Field data type. Common values:
+
+            `STRING`, `NUMBER`, `DECIMAL`, `BOOLEAN`,
+
+            `DATE`, `DATE_TIME`,
+
+            `BIG_STRING` (large text, excluded from list responses),
+
+            `LOOKUP` (reference to another record — see `lookupModuleName`),
+
+            `MULTI_LOOKUP` (multi-reference — see `lookupModuleName`),
+
+            `ENUM`, `SYSTEM_ENUM`, `STRING_SYSTEM_ENUM` (picklist types)
+
+            '
+          example: STRING
+        required:
+          type: boolean
+          description: '`true` if this field must be provided on record creation'
+        readOnly:
+          type: boolean
+          description: '`true` if this field cannot be set or modified via the API (e.g. auto-generated system fields)'
+        isCustom:
+          type: boolean
+          description: '`true` for fields added by your organization; `false` for standard built-in fields'
+        sortable:
+          type: boolean
+          description: '`true` if this field can be used as a `sortBy` value on the list API'
+        lookupModuleName:
+          type: string
+          description: Present only on `LOOKUP` and `MULTI_LOOKUP` fields. The name of the target module (e.g. `site`, `users`, `ticketstatus`).
+        max_length:
+          type: integer
+          description: 'Maximum number of characters accepted by the V5 write API for text-style fields.
+
+            Present only when the field''s `dataType` is one of:
+
+            `STRING` (255), `LARGE_TEXT` (2000), `BIG_STRING` (32000).
+
+            Omitted for all other data types.
+
+            '
+          example: 255
+        allowed_values:
+          type: array
+          description: 'List of acceptable write values for picklist-capable fields. Present **only when the request includes `?includeAllowedValues=true`** AND the field is one of:
+
+            `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, or a `LOOKUP` targeting a system picklist module (e.g. `ticketstatus`, `ticketpriority`, `ticketcategory`, `tickettype`).
+
+            Each entry uses `{label, value}`; the `value` is the canonical form accepted by create/update payloads.
+
+            '
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+                description: Display label as shown in the UI
+              value:
+                type: string
+                description: Canonical value accepted by create/update for this field and filtering
+    ModuleMetaResponse:
+      type: object
+      description: Response body for GET /{moduleName}/metadata.
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            module:
+              $ref: '#/components/schemas/FacilioModule'
+            fields:
+              type: array
+              description: 'Ordered list of fields for the module.
+
+                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
+
+                Custom modules return all fields.
+
+                '
+              items:
+                $ref: '#/components/schemas/FacilioField'
   parameters:
+    changed:
+      name: changed
+      in: query
+      description: 'Delta sync: returns records created/modified after this UTC timestamp'
+      schema:
+        type: string
+        format: date-time
     page:
       name: page
       in: query
@@ -460,6 +467,14 @@ components:
       schema:
         type: integer
         default: 1
+    pageSize:
+      name: pageSize
+      in: query
+      description: Records per page (max 200)
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
     recordId:
       name: id
       in: path
@@ -474,21 +489,6 @@ components:
       description: Free-text search on the primary field (subject, name, etc.)
       schema:
         type: string
-    pageSize:
-      name: pageSize
-      in: query
-      description: Records per page (max 200)
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
-    changed:
-      name: changed
-      in: query
-      description: 'Delta sync: returns records created/modified after this UTC timestamp'
-      schema:
-        type: string
-        format: date-time
     count:
       name: count
       in: query

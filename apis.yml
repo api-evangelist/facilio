@@ -58,7 +58,7 @@ tags:
 - Property Operations
 - Maintenance
 - Asset Management
-- Real-Estate
+- Real Estate
 - IoT
 - Buildings
 tags_raw:
@@ -72,6 +72,7 @@ tags_raw:
 - Real Estate
 - IoT
 - Buildings
+- Real-Estate
 apis:
 - aid: facilio:facilio-assets-api
   name: Facilio Assets API
@@ -385,9 +386,11 @@ apis:
   humanURL: https://facilio.com/developers/docs/api-reference/
   baseURL: https://us.facilioapis.com/maintenance/api/v5
   tags:
+  - Spaces
   - Space
   tags_raw:
   - Spaces
+  - Space
   properties:
   - type: OpenAPI
     url: openapi/facilio-spaces-api-openapi.yml
