@@ -154,22 +154,6 @@ components:
             message:
               type: string
               description: Human-readable error message
-    FacilioModule:
-      type: object
-      description: A single entry in the module catalogue returned by GET /modules.
-      properties:
-        name:
-          type: string
-          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
-        displayName:
-          type: string
-          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
-        description:
-          type: string
-          description: Module description as configured in Facilio Setup. Omitted when blank.
-        isCustom:
-          type: boolean
-          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
     Profile:
       type: object
       properties:
@@ -200,6 +184,22 @@ components:
               type: string
             domain:
               type: string
+    FacilioModule:
+      type: object
+      description: A single entry in the module catalogue returned by GET /modules.
+      properties:
+        name:
+          type: string
+          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
+        displayName:
+          type: string
+          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
+        description:
+          type: string
+          description: Module description as configured in Facilio Setup. Omitted when blank.
+        isCustom:
+          type: boolean
+          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
   responses:
     Unauthorized:
       description: Missing or invalid authentication credentials

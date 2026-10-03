@@ -275,22 +275,44 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   schemas:
-    FacilioModule:
+    ModuleMetaResponse:
       type: object
-      description: A single entry in the module catalogue returned by GET /modules.
+      description: Response body for GET /{moduleName}/metadata.
       properties:
-        name:
-          type: string
-          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
-        displayName:
-          type: string
-          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
-        description:
-          type: string
-          description: Module description as configured in Facilio Setup. Omitted when blank.
-        isCustom:
+        success:
           type: boolean
-          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
+        data:
+          type: object
+          properties:
+            module:
+              $ref: '#/components/schemas/FacilioModule'
+            fields:
+              type: array
+              description: 'Ordered list of fields for the module.
+
+                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
+
+                Custom modules return all fields.
+
+                '
+              items:
+                $ref: '#/components/schemas/FacilioField'
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
     Receipt:
       type: object
       description: 'Receipt line for `POST /receivable/{id}/addreceipt` (sent inside request `data`).
@@ -316,22 +338,24 @@ components:
           type: integer
           minimum: 0
           description: Optional. Use only when the PO line requires serial capture; omit for standard lines.
-    Error:
+    POLineItemStock:
       type: object
-      description: Error response
+      description: One line in `POST /receivable/{id}/stock` (`lineItems` or `lineItemsStockQuantity`). Pass line, receipt, and lot as numeric ids where possible; use a string or id/name object for bin.
       properties:
-        success:
-          type: boolean
-          example: false
-        error:
+        lineItem:
+          description: Purchase order line id — numeric, or object with `id`.
+        quantity:
+          type: number
+          format: double
+        receipt:
+          description: Receipt record id — numeric, or object with `id`.
+        bin:
+          description: Storeroom bin — bin name as a string, or object with `id` and/or `name`.
+        lot:
+          description: Lot id when the line is lot-tracked — numeric, or object with `id`.
+        stockedBy:
           type: object
-          properties:
-            code:
-              type: string
-              description: Machine-readable error code
-            message:
-              type: string
-              description: Human-readable error message
+          description: Optional user reference, e.g. object with `id`.
     FacilioField:
       type: object
       description: Schema descriptor for a single field within a module.
@@ -405,47 +429,36 @@ components:
               value:
                 type: string
                 description: Canonical value accepted by create/update for this field and filtering
-    POLineItemStock:
+    FacilioModule:
       type: object
-      description: One line in `POST /receivable/{id}/stock` (`lineItems` or `lineItemsStockQuantity`). Pass line, receipt, and lot as numeric ids where possible; use a string or id/name object for bin.
+      description: A single entry in the module catalogue returned by GET /modules.
       properties:
-        lineItem:
-          description: Purchase order line id — numeric, or object with `id`.
-        quantity:
-          type: number
-          format: double
-        receipt:
-          description: Receipt record id — numeric, or object with `id`.
-        bin:
-          description: Storeroom bin — bin name as a string, or object with `id` and/or `name`.
-        lot:
-          description: Lot id when the line is lot-tracked — numeric, or object with `id`.
-        stockedBy:
-          type: object
-          description: Optional user reference, e.g. object with `id`.
-    ModuleMetaResponse:
-      type: object
-      description: Response body for GET /{moduleName}/metadata.
-      properties:
-        success:
+        name:
+          type: string
+          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
+        displayName:
+          type: string
+          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
+        description:
+          type: string
+          description: Module description as configured in Facilio Setup. Omitted when blank.
+        isCustom:
           type: boolean
-        data:
-          type: object
-          properties:
-            module:
-              $ref: '#/components/schemas/FacilioModule'
-            fields:
-              type: array
-              description: 'Ordered list of fields for the module.
-
-                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
-
-                Custom modules return all fields.
-
-                '
-              items:
-                $ref: '#/components/schemas/FacilioField'
+          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
   parameters:
+    includeAllowedValues:
+      name: includeAllowedValues
+      in: query
+      description: 'When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).
+
+        Default `false` keeps the original metadata payload (no enrichment, no extra DB calls).
+
+        Use this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.
+
+        '
+      schema:
+        type: boolean
+        default: false
     changed:
       name: changed
       in: query
@@ -453,21 +466,6 @@ components:
       schema:
         type: string
         format: date-time
-    page:
-      name: page
-      in: query
-      description: Page number (1-based)
-      schema:
-        type: integer
-        default: 1
-    pageSize:
-      name: pageSize
-      in: query
-      description: Records per page (max 200)
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
     recordId:
       name: id
       in: path
@@ -476,10 +474,10 @@ components:
       schema:
         type: integer
         format: int64
-    search:
-      name: search
+    select:
+      name: select
       in: query
-      description: Free-text search on the primary field (subject, name, etc.)
+      description: Comma-separated field names to include in the response
       schema:
         type: string
     count:
@@ -499,26 +497,39 @@ components:
         '
       schema:
         type: string
-    includeAllowedValues:
-      name: includeAllowedValues
+    page:
+      name: page
       in: query
-      description: 'When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).
-
-        Default `false` keeps the original metadata payload (no enrichment, no extra DB calls).
-
-        Use this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.
-
-        '
+      description: Page number (1-based)
       schema:
-        type: boolean
-        default: false
-    select:
-      name: select
+        type: integer
+        default: 1
+    search:
+      name: search
       in: query
-      description: Comma-separated field names to include in the response
+      description: Free-text search on the primary field (subject, name, etc.)
       schema:
         type: string
+    pageSize:
+      name: pageSize
+      in: query
+      description: Records per page (max 200)
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
   responses:
+    NotFound:
+      description: Record or module not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: RECORD_NOT_FOUND
+              message: Record with the given ID was not found
     Unauthorized:
       description: Missing or invalid authentication credentials
       content:
@@ -541,17 +552,6 @@ components:
             error:
               code: VALIDATION_ERROR
               message: 'Required field(s) missing: name'
-    NotFound:
-      description: Record or module not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            success: false
-            error:
-              code: RECORD_NOT_FOUND
-              message: Record with the given ID was not found
   securitySchemes:
     apiKey:
       type: apiKey

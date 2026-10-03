@@ -545,7 +545,62 @@ paths:
           $ref: '#/components/responses/Unauthorized'
 components:
   schemas:
-    AssetDepartment:
+    Priority:
+      type: object
+      description: Used for work order priority and service request urgency
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              priority:
+                type: string
+                description: Priority value (e.g. High, Medium, Low)
+              displayName:
+                type: string
+              colour:
+                type: string
+                description: 'Hex color code (e.g. #f00)'
+              sequenceNumber:
+                type: integer
+                description: Sort order
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+    EnumPicklistValues:
+      type: object
+      description: Enum picklist values — returns {id, displayName} for each value
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              displayName:
+                type: string
+    SpaceCategory:
       type: object
       properties:
         success:
@@ -559,7 +614,43 @@ components:
                 type: integer
               name:
                 type: string
-                description: Department name
+                description: Category name (e.g. Office, Conference Room)
+              displayName:
+                type: string
+    WorkOrderType:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+                description: Type name
+              displayName:
+                type: string
+    AssetType:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+                description: Type name
+              displayName:
+                type: string
     CustomPicklistValues:
       type: object
       description: moduleState picklist values — returns {id, status, displayName} for each state
@@ -595,22 +686,21 @@ components:
                 description: Status value
               displayName:
                 type: string
-    Error:
+    AssetDepartment:
       type: object
-      description: Error response
       properties:
         success:
           type: boolean
-          example: false
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-              description: Machine-readable error code
-            message:
-              type: string
-              description: Human-readable error message
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+                description: Department name
     WorkOrderCategory:
       type: object
       properties:
@@ -626,62 +716,6 @@ components:
               name:
                 type: string
                 description: Category name
-              displayName:
-                type: string
-    Priority:
-      type: object
-      description: Used for work order priority and service request urgency
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-              priority:
-                type: string
-                description: Priority value (e.g. High, Medium, Low)
-              displayName:
-                type: string
-              colour:
-                type: string
-                description: 'Hex color code (e.g. #f00)'
-              sequenceNumber:
-                type: integer
-                description: Sort order
-    WorkOrderType:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-              name:
-                type: string
-                description: Type name
-              displayName:
-                type: string
-    EnumPicklistValues:
-      type: object
-      description: Enum picklist values — returns {id, displayName} for each value
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
               displayName:
                 type: string
     WorkOrderStatus:
@@ -701,40 +735,6 @@ components:
                 description: Status value (e.g. Submitted, Closed)
               displayName:
                 type: string
-    SpaceCategory:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-              name:
-                type: string
-                description: Category name (e.g. Office, Conference Room)
-              displayName:
-                type: string
-    AssetType:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-              name:
-                type: string
-                description: Type name
-              displayName:
-                type: string
     AssetCategory:
       type: object
       properties:
@@ -752,6 +752,13 @@ components:
                 description: Category name (e.g. HVAC, Electrical)
               displayName:
                 type: string
+  parameters:
+    picklistSearch:
+      name: search
+      in: query
+      description: Filter picklist values by name
+      schema:
+        type: string
   responses:
     Unauthorized:
       description: Missing or invalid authentication credentials
@@ -764,13 +771,6 @@ components:
             error:
               code: UNAUTHORIZED
               message: Missing or invalid authentication credentials
-  parameters:
-    picklistSearch:
-      name: search
-      in: query
-      description: Filter picklist values by name
-      schema:
-        type: string
   securitySchemes:
     apiKey:
       type: apiKey

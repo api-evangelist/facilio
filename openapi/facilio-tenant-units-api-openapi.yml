@@ -206,22 +206,6 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   schemas:
-    FacilioModule:
-      type: object
-      description: A single entry in the module catalogue returned by GET /modules.
-      properties:
-        name:
-          type: string
-          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
-        displayName:
-          type: string
-          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
-        description:
-          type: string
-          description: Module description as configured in Facilio Setup. Omitted when blank.
-        isCustom:
-          type: boolean
-          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
     ModuleMetaResponse:
       type: object
       description: Response body for GET /{moduleName}/metadata.
@@ -260,6 +244,44 @@ components:
             message:
               type: string
               description: Human-readable error message
+    TenantUnit:
+      type: object
+      description: Physical unit assigned to a tenant. On create, `name` and `site` are required.
+      required:
+      - name
+      - site
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: Unique record ID
+        name:
+          type: string
+          description: Unit name (required on create, sortable)
+        tenant:
+          type: integer
+          description: Tenant ID
+        floor:
+          type: integer
+          description: Floor ID
+        building:
+          type: integer
+          description: Building ID
+        site:
+          description: Site ID (required on create). Pass the id as a number, or an object with `id`.
+        isOccupied:
+          type: boolean
+          description: Whether the unit is occupied
+        sysCreatedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Creation timestamp (sortable)
+        sysModifiedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Last modified (sortable)
     FacilioField:
       type: object
       description: Schema descriptor for a single field within a module.
@@ -333,66 +355,23 @@ components:
               value:
                 type: string
                 description: Canonical value accepted by create/update for this field and filtering
-    TenantUnit:
+    FacilioModule:
       type: object
-      description: Physical unit assigned to a tenant. On create, `name` and `site` are required.
-      required:
-      - name
-      - site
+      description: A single entry in the module catalogue returned by GET /modules.
       properties:
-        id:
-          type: integer
-          readOnly: true
-          description: Unique record ID
         name:
           type: string
-          description: Unit name (required on create, sortable)
-        tenant:
-          type: integer
-          description: Tenant ID
-        floor:
-          type: integer
-          description: Floor ID
-        building:
-          type: integer
-          description: Building ID
-        site:
-          description: Site ID (required on create). Pass the id as a number, or an object with `id`.
-        isOccupied:
+          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
+        displayName:
+          type: string
+          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
+        description:
+          type: string
+          description: Module description as configured in Facilio Setup. Omitted when blank.
+        isCustom:
           type: boolean
-          description: Whether the unit is occupied
-        sysCreatedTime:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Creation timestamp (sortable)
-        sysModifiedTime:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Last modified (sortable)
+          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
   parameters:
-    page:
-      name: page
-      in: query
-      description: Page number (1-based)
-      schema:
-        type: integer
-        default: 1
-    pageSize:
-      name: pageSize
-      in: query
-      description: Records per page (max 200)
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
-    search:
-      name: search
-      in: query
-      description: Free-text search on the primary field (subject, name, etc.)
-      schema:
-        type: string
     includeAllowedValues:
       name: includeAllowedValues
       in: query
@@ -406,6 +385,13 @@ components:
       schema:
         type: boolean
         default: false
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
     recordId:
       name: id
       in: path
@@ -414,7 +400,32 @@ components:
       schema:
         type: integer
         format: int64
+    search:
+      name: search
+      in: query
+      description: Free-text search on the primary field (subject, name, etc.)
+      schema:
+        type: string
+    pageSize:
+      name: pageSize
+      in: query
+      description: Records per page (max 200)
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
   responses:
+    NotFound:
+      description: Record or module not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: RECORD_NOT_FOUND
+              message: Record with the given ID was not found
     Unauthorized:
       description: Missing or invalid authentication credentials
       content:
@@ -437,17 +448,6 @@ components:
             error:
               code: VALIDATION_ERROR
               message: 'Required field(s) missing: name'
-    NotFound:
-      description: Record or module not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            success: false
-            error:
-              code: RECORD_NOT_FOUND
-              message: Record with the given ID was not found
   securitySchemes:
     apiKey:
       type: apiKey

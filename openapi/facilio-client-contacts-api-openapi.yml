@@ -197,22 +197,28 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   schemas:
-    FacilioModule:
+    ModuleMetaResponse:
       type: object
-      description: A single entry in the module catalogue returned by GET /modules.
+      description: Response body for GET /{moduleName}/metadata.
       properties:
-        name:
-          type: string
-          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
-        displayName:
-          type: string
-          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
-        description:
-          type: string
-          description: Module description as configured in Facilio Setup. Omitted when blank.
-        isCustom:
+        success:
           type: boolean
-          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
+        data:
+          type: object
+          properties:
+            module:
+              $ref: '#/components/schemas/FacilioModule'
+            fields:
+              type: array
+              description: 'Ordered list of fields for the module.
+
+                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
+
+                Custom modules return all fields.
+
+                '
+              items:
+                $ref: '#/components/schemas/FacilioField'
     Error:
       type: object
       description: Error response
@@ -229,43 +235,6 @@ components:
             message:
               type: string
               description: Human-readable error message
-    ClientContact:
-      type: object
-      description: Contact person for a client.
-      required:
-      - name
-      - client
-      - email
-      properties:
-        id:
-          type: integer
-          readOnly: true
-          description: Unique record ID
-        name:
-          type: string
-          description: Contact name (required on create, sortable)
-        client:
-          type: integer
-          description: Parent client ID (required on create)
-        email:
-          type: string
-          description: Email address (required on create)
-        phone:
-          type: string
-          description: Phone number
-        isPrimaryContact:
-          type: boolean
-          description: Whether this is the primary contact
-        sysCreatedTime:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Creation timestamp (sortable)
-        sysModifiedTime:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Last modified (sortable)
     FacilioField:
       type: object
       description: Schema descriptor for a single field within a module.
@@ -339,50 +308,60 @@ components:
               value:
                 type: string
                 description: Canonical value accepted by create/update for this field and filtering
-    ModuleMetaResponse:
+    FacilioModule:
       type: object
-      description: Response body for GET /{moduleName}/metadata.
+      description: A single entry in the module catalogue returned by GET /modules.
       properties:
-        success:
+        name:
+          type: string
+          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
+        displayName:
+          type: string
+          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
+        description:
+          type: string
+          description: Module description as configured in Facilio Setup. Omitted when blank.
+        isCustom:
           type: boolean
-        data:
-          type: object
-          properties:
-            module:
-              $ref: '#/components/schemas/FacilioModule'
-            fields:
-              type: array
-              description: 'Ordered list of fields for the module.
-
-                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
-
-                Custom modules return all fields.
-
-                '
-              items:
-                $ref: '#/components/schemas/FacilioField'
+          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
+    ClientContact:
+      type: object
+      description: Contact person for a client.
+      required:
+      - name
+      - client
+      - email
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: Unique record ID
+        name:
+          type: string
+          description: Contact name (required on create, sortable)
+        client:
+          type: integer
+          description: Parent client ID (required on create)
+        email:
+          type: string
+          description: Email address (required on create)
+        phone:
+          type: string
+          description: Phone number
+        isPrimaryContact:
+          type: boolean
+          description: Whether this is the primary contact
+        sysCreatedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Creation timestamp (sortable)
+        sysModifiedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Last modified (sortable)
   parameters:
-    page:
-      name: page
-      in: query
-      description: Page number (1-based)
-      schema:
-        type: integer
-        default: 1
-    pageSize:
-      name: pageSize
-      in: query
-      description: Records per page (max 200)
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
-    search:
-      name: search
-      in: query
-      description: Free-text search on the primary field (subject, name, etc.)
-      schema:
-        type: string
     includeAllowedValues:
       name: includeAllowedValues
       in: query
@@ -396,6 +375,13 @@ components:
       schema:
         type: boolean
         default: false
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
     recordId:
       name: id
       in: path
@@ -404,7 +390,32 @@ components:
       schema:
         type: integer
         format: int64
+    search:
+      name: search
+      in: query
+      description: Free-text search on the primary field (subject, name, etc.)
+      schema:
+        type: string
+    pageSize:
+      name: pageSize
+      in: query
+      description: Records per page (max 200)
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
   responses:
+    NotFound:
+      description: Record or module not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: RECORD_NOT_FOUND
+              message: Record with the given ID was not found
     Unauthorized:
       description: Missing or invalid authentication credentials
       content:
@@ -427,17 +438,6 @@ components:
             error:
               code: VALIDATION_ERROR
               message: 'Required field(s) missing: name'
-    NotFound:
-      description: Record or module not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            success: false
-            error:
-              code: RECORD_NOT_FOUND
-              message: Record with the given ID was not found
   securitySchemes:
     apiKey:
       type: apiKey

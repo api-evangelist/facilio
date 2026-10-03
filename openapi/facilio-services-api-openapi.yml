@@ -235,22 +235,29 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   schemas:
-    FacilioModule:
+    User:
       type: object
-      description: A single entry in the module catalogue returned by GET /modules.
+      description: 'Expanded object for lookups to the `users` module.
+
+        On list API, user lookups return `{id}` only unless `?expand=` includes that field.
+
+        When expanded (single-record GET, create/update responses, or list with `expand`): fixed set `id`, `name`, `email`, `phone` (see **Lookup fields in responses**).
+
+        '
       properties:
+        id:
+          type: integer
+          format: int64
+          description: User ID
         name:
           type: string
-          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
-        displayName:
+          description: User's full name
+        email:
           type: string
-          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
-        description:
+          description: User's email address
+        phone:
           type: string
-          description: Module description as configured in Facilio Setup. Omitted when blank.
-        isCustom:
-          type: boolean
-          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
+          description: Phone number when present
     ModuleMetaResponse:
       type: object
       description: Response body for GET /{moduleName}/metadata.
@@ -289,29 +296,63 @@ components:
             message:
               type: string
               description: Human-readable error message
-    User:
+    Service:
       type: object
-      description: 'Expanded object for lookups to the `users` module.
-
-        On list API, user lookups return `{id}` only unless `?expand=` includes that field.
-
-        When expanded (single-record GET, create/update responses, or list with `expand`): fixed set `id`, `name`, `email`, `phone` (see **Lookup fields in responses**).
-
-        '
+      description: Labor or service offering.
+      required:
+      - name
       properties:
         id:
           type: integer
-          format: int64
-          description: User ID
+          readOnly: true
+          description: Unique record ID
         name:
           type: string
-          description: User's full name
-        email:
+          maxLength: 255
+          description: Service name (required, sortable)
+        description:
           type: string
-          description: User's email address
-        phone:
+          maxLength: 2000
+          description: Description
+        status:
           type: string
-          description: Phone number when present
+          description: Status — pass `status` value or numeric ID. Use `GET /picklist/service/status` for valid values.
+        buyingPrice:
+          type: number
+          format: double
+          description: Cost price
+        sellingPrice:
+          type: number
+          format: double
+          description: Selling price
+        duration:
+          type: number
+          format: double
+          description: Duration in hours
+        paymentType:
+          type: string
+          enum:
+          - Fixed
+          - Hourly
+          description: Payment type
+        sysCreatedBy:
+          readOnly: true
+          allOf:
+          - $ref: '#/components/schemas/User'
+        sysCreatedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Created (sortable)
+        sysModifiedBy:
+          readOnly: true
+          allOf:
+          - $ref: '#/components/schemas/User'
+        sysModifiedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Modified (sortable)
     FacilioField:
       type: object
       description: Schema descriptor for a single field within a module.
@@ -385,107 +426,23 @@ components:
               value:
                 type: string
                 description: Canonical value accepted by create/update for this field and filtering
-    Service:
+    FacilioModule:
       type: object
-      description: Labor or service offering.
-      required:
-      - name
+      description: A single entry in the module catalogue returned by GET /modules.
       properties:
-        id:
-          type: integer
-          readOnly: true
-          description: Unique record ID
         name:
           type: string
-          maxLength: 255
-          description: Service name (required, sortable)
+          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
+        displayName:
+          type: string
+          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
         description:
           type: string
-          maxLength: 2000
-          description: Description
-        status:
-          type: string
-          description: Status — pass `status` value or numeric ID. Use `GET /picklist/service/status` for valid values.
-        buyingPrice:
-          type: number
-          format: double
-          description: Cost price
-        sellingPrice:
-          type: number
-          format: double
-          description: Selling price
-        duration:
-          type: number
-          format: double
-          description: Duration in hours
-        paymentType:
-          type: string
-          enum:
-          - Fixed
-          - Hourly
-          description: Payment type
-        sysCreatedBy:
-          readOnly: true
-          allOf:
-          - $ref: '#/components/schemas/User'
-        sysCreatedTime:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Created (sortable)
-        sysModifiedBy:
-          readOnly: true
-          allOf:
-          - $ref: '#/components/schemas/User'
-        sysModifiedTime:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Modified (sortable)
+          description: Module description as configured in Facilio Setup. Omitted when blank.
+        isCustom:
+          type: boolean
+          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
   parameters:
-    changed:
-      name: changed
-      in: query
-      description: 'Delta sync: returns records created/modified after this UTC timestamp'
-      schema:
-        type: string
-        format: date-time
-    page:
-      name: page
-      in: query
-      description: Page number (1-based)
-      schema:
-        type: integer
-        default: 1
-    pageSize:
-      name: pageSize
-      in: query
-      description: Records per page (max 200)
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
-    recordId:
-      name: id
-      in: path
-      required: true
-      description: Record ID
-      schema:
-        type: integer
-        format: int64
-    search:
-      name: search
-      in: query
-      description: Free-text search on the primary field (subject, name, etc.)
-      schema:
-        type: string
-    count:
-      name: count
-      in: query
-      description: Include total record count in response
-      schema:
-        type: boolean
-        default: false
     includeAllowedValues:
       name: includeAllowedValues
       in: query
@@ -499,13 +456,67 @@ components:
       schema:
         type: boolean
         default: false
+    changed:
+      name: changed
+      in: query
+      description: 'Delta sync: returns records created/modified after this UTC timestamp'
+      schema:
+        type: string
+        format: date-time
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
     select:
       name: select
       in: query
       description: Comma-separated field names to include in the response
       schema:
         type: string
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
+    count:
+      name: count
+      in: query
+      description: Include total record count in response
+      schema:
+        type: boolean
+        default: false
+    search:
+      name: search
+      in: query
+      description: Free-text search on the primary field (subject, name, etc.)
+      schema:
+        type: string
+    pageSize:
+      name: pageSize
+      in: query
+      description: Records per page (max 200)
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
   responses:
+    NotFound:
+      description: Record or module not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: RECORD_NOT_FOUND
+              message: Record with the given ID was not found
     Unauthorized:
       description: Missing or invalid authentication credentials
       content:
@@ -528,17 +539,6 @@ components:
             error:
               code: VALIDATION_ERROR
               message: 'Required field(s) missing: name'
-    NotFound:
-      description: Record or module not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            success: false
-            error:
-              code: RECORD_NOT_FOUND
-              message: Record with the given ID was not found
   securitySchemes:
     apiKey:
       type: apiKey
