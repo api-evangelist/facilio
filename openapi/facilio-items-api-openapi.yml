@@ -227,78 +227,80 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 components:
+  parameters:
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
+    select:
+      name: select
+      in: query
+      description: Comma-separated field names to include in the response
+      schema:
+        type: string
+    includeAllowedValues:
+      name: includeAllowedValues
+      in: query
+      description: 'When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).
+
+        Default `false` keeps the original metadata payload (no enrichment, no extra DB calls).
+
+        Use this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.
+
+        '
+      schema:
+        type: boolean
+        default: false
+    search:
+      name: search
+      in: query
+      description: Free-text search on the primary field (subject, name, etc.)
+      schema:
+        type: string
+    count:
+      name: count
+      in: query
+      description: Include total record count in response
+      schema:
+        type: boolean
+        default: false
+    expand:
+      name: expand
+      in: query
+      description: 'Comma-separated lookup field names to expand on **list** endpoints (max 5).
+
+        Expanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).
+
+        '
+      schema:
+        type: string
+    pageSize:
+      name: pageSize
+      in: query
+      description: Records per page (max 200)
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+    changed:
+      name: changed
+      in: query
+      description: 'Delta sync: returns records created/modified after this UTC timestamp'
+      schema:
+        type: string
+        format: date-time
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
   schemas:
-    ModuleMetaResponse:
-      type: object
-      description: Response body for GET /{moduleName}/metadata.
-      properties:
-        success:
-          type: boolean
-        data:
-          type: object
-          properties:
-            module:
-              $ref: '#/components/schemas/FacilioModule'
-            fields:
-              type: array
-              description: 'Ordered list of fields for the module.
-
-                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
-
-                Custom modules return all fields.
-
-                '
-              items:
-                $ref: '#/components/schemas/FacilioField'
-    Error:
-      type: object
-      description: Error response
-      properties:
-        success:
-          type: boolean
-          example: false
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-              description: Machine-readable error code
-            message:
-              type: string
-              description: Human-readable error message
-    ItemAdjustment:
-      type: object
-      required:
-      - adjustmentType
-      - quantity
-      - itemType
-      - storeRoom
-      properties:
-        adjustmentType:
-          type: string
-          description: '`increase` or `decrease` (case-insensitive)'
-        quantity:
-          type: number
-          format: double
-          exclusiveMinimum: 0
-        itemType:
-          description: Item type id — pass the number directly (object with `id` is also accepted).
-        storeRoom:
-          description: Storeroom id — pass the number directly (object with `id` is also accepted).
-        bin:
-          description: Optional bin — pass the bin name as a string, the bin id as a number, or an object with `id` or `name`.
-        unitCost:
-          type: number
-          format: double
-          description: Increase only — purchased item unit cost
-        unitPrice:
-          type: number
-          format: double
-          description: Alias of `unitCost` on increase
-        purchasedDate:
-          description: Epoch ms (number) or ISO date string — `costDate` on purchased item (increase)
-        remarks:
-          type: string
     FacilioField:
       type: object
       description: Schema descriptor for a single field within a module.
@@ -372,6 +374,61 @@ components:
               value:
                 type: string
                 description: Canonical value accepted by create/update for this field and filtering
+    ItemAdjustment:
+      type: object
+      required:
+      - adjustmentType
+      - quantity
+      - itemType
+      - storeRoom
+      properties:
+        adjustmentType:
+          type: string
+          description: '`increase` or `decrease` (case-insensitive)'
+        quantity:
+          type: number
+          format: double
+          exclusiveMinimum: 0
+        itemType:
+          description: Item type id — pass the number directly (object with `id` is also accepted).
+        storeRoom:
+          description: Storeroom id — pass the number directly (object with `id` is also accepted).
+        bin:
+          description: Optional bin — pass the bin name as a string, the bin id as a number, or an object with `id` or `name`.
+        unitCost:
+          type: number
+          format: double
+          description: Increase only — purchased item unit cost
+        unitPrice:
+          type: number
+          format: double
+          description: Alias of `unitCost` on increase
+        purchasedDate:
+          description: Epoch ms (number) or ISO date string — `costDate` on purchased item (increase)
+        remarks:
+          type: string
+    ModuleMetaResponse:
+      type: object
+      description: Response body for GET /{moduleName}/metadata.
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            module:
+              $ref: '#/components/schemas/FacilioModule'
+            fields:
+              type: array
+              description: 'Ordered list of fields for the module.
+
+                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
+
+                Custom modules return all fields.
+
+                '
+              items:
+                $ref: '#/components/schemas/FacilioField'
     FacilioModule:
       type: object
       description: A single entry in the module catalogue returned by GET /modules.
@@ -388,79 +445,22 @@ components:
         isCustom:
           type: boolean
           description: '`true` for modules created by your organization; `false` for standard Facilio modules'
-  parameters:
-    includeAllowedValues:
-      name: includeAllowedValues
-      in: query
-      description: 'When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).
-
-        Default `false` keeps the original metadata payload (no enrichment, no extra DB calls).
-
-        Use this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.
-
-        '
-      schema:
-        type: boolean
-        default: false
-    changed:
-      name: changed
-      in: query
-      description: 'Delta sync: returns records created/modified after this UTC timestamp'
-      schema:
-        type: string
-        format: date-time
-    recordId:
-      name: id
-      in: path
-      required: true
-      description: Record ID
-      schema:
-        type: integer
-        format: int64
-    select:
-      name: select
-      in: query
-      description: Comma-separated field names to include in the response
-      schema:
-        type: string
-    page:
-      name: page
-      in: query
-      description: Page number (1-based)
-      schema:
-        type: integer
-        default: 1
-    expand:
-      name: expand
-      in: query
-      description: 'Comma-separated lookup field names to expand on **list** endpoints (max 5).
-
-        Expanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).
-
-        '
-      schema:
-        type: string
-    count:
-      name: count
-      in: query
-      description: Include total record count in response
-      schema:
-        type: boolean
-        default: false
-    search:
-      name: search
-      in: query
-      description: Free-text search on the primary field (subject, name, etc.)
-      schema:
-        type: string
-    pageSize:
-      name: pageSize
-      in: query
-      description: Records per page (max 200)
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
   responses:
     NotFound:
       description: Record or module not found
@@ -473,17 +473,6 @@ components:
             error:
               code: RECORD_NOT_FOUND
               message: Record with the given ID was not found
-    Unauthorized:
-      description: Missing or invalid authentication credentials
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            success: false
-            error:
-              code: UNAUTHORIZED
-              message: Missing or invalid authentication credentials
     BadRequest:
       description: Validation error — missing required fields, invalid field values, or malformed request body
       content:
@@ -495,6 +484,17 @@ components:
             error:
               code: VALIDATION_ERROR
               message: 'Required field(s) missing: name'
+    Unauthorized:
+      description: Missing or invalid authentication credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Missing or invalid authentication credentials
   securitySchemes:
     apiKey:
       type: apiKey

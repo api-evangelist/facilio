@@ -205,6 +205,22 @@ components:
         phone:
           type: string
           description: Phone number when present
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
     WorkOrderComment:
       type: object
       description: Work order comment/note.
@@ -239,51 +255,7 @@ components:
           description: User who posted the comment
           allOf:
           - $ref: '#/components/schemas/User'
-    Error:
-      type: object
-      description: Error response
-      properties:
-        success:
-          type: boolean
-          example: false
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-              description: Machine-readable error code
-            message:
-              type: string
-              description: Human-readable error message
-  parameters:
-    recordId:
-      name: id
-      in: path
-      required: true
-      description: Record ID
-      schema:
-        type: integer
-        format: int64
-    commentId:
-      name: commentId
-      in: path
-      required: true
-      description: Comment ID
-      schema:
-        type: integer
-        format: int64
   responses:
-    NotFound:
-      description: Record or module not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            success: false
-            error:
-              code: RECORD_NOT_FOUND
-              message: Record with the given ID was not found
     Unauthorized:
       description: Missing or invalid authentication credentials
       content:
@@ -306,6 +278,34 @@ components:
             error:
               code: VALIDATION_ERROR
               message: 'Required field(s) missing: name'
+    NotFound:
+      description: Record or module not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: RECORD_NOT_FOUND
+              message: Record with the given ID was not found
+  parameters:
+    commentId:
+      name: commentId
+      in: path
+      required: true
+      description: Comment ID
+      schema:
+        type: integer
+        format: int64
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
   securitySchemes:
     apiKey:
       type: apiKey

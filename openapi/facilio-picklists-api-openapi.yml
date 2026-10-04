@@ -545,6 +545,21 @@ paths:
           $ref: '#/components/responses/Unauthorized'
 components:
   schemas:
+    AssetDepartment:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+                description: Department name
     Priority:
       type: object
       description: Used for work order priority and service request urgency
@@ -569,71 +584,6 @@ components:
               sequenceNumber:
                 type: integer
                 description: Sort order
-    Error:
-      type: object
-      description: Error response
-      properties:
-        success:
-          type: boolean
-          example: false
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-              description: Machine-readable error code
-            message:
-              type: string
-              description: Human-readable error message
-    EnumPicklistValues:
-      type: object
-      description: Enum picklist values — returns {id, displayName} for each value
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-              displayName:
-                type: string
-    SpaceCategory:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-              name:
-                type: string
-                description: Category name (e.g. Office, Conference Room)
-              displayName:
-                type: string
-    WorkOrderType:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-              name:
-                type: string
-                description: Type name
-              displayName:
-                type: string
     AssetType:
       type: object
       properties:
@@ -669,24 +619,7 @@ components:
                 description: Status value
               displayName:
                 type: string
-    ServiceRequestStatus:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-              status:
-                type: string
-                description: Status value
-              displayName:
-                type: string
-    AssetDepartment:
+    WorkOrderType:
       type: object
       properties:
         success:
@@ -700,22 +633,7 @@ components:
                 type: integer
               name:
                 type: string
-                description: Department name
-    WorkOrderCategory:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-              name:
-                type: string
-                description: Category name
+                description: Type name
               displayName:
                 type: string
     WorkOrderStatus:
@@ -735,6 +653,38 @@ components:
                 description: Status value (e.g. Submitted, Closed)
               displayName:
                 type: string
+    SpaceCategory:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+                description: Category name (e.g. Office, Conference Room)
+              displayName:
+                type: string
+    EnumPicklistValues:
+      type: object
+      description: Enum picklist values — returns {id, displayName} for each value
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              displayName:
+                type: string
     AssetCategory:
       type: object
       properties:
@@ -750,6 +700,56 @@ components:
               name:
                 type: string
                 description: Category name (e.g. HVAC, Electrical)
+              displayName:
+                type: string
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+    ServiceRequestStatus:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              status:
+                type: string
+                description: Status value
+              displayName:
+                type: string
+    WorkOrderCategory:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+                description: Category name
               displayName:
                 type: string
   parameters:

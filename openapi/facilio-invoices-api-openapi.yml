@@ -310,29 +310,6 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   schemas:
-    User:
-      type: object
-      description: 'Expanded object for lookups to the `users` module.
-
-        On list API, user lookups return `{id}` only unless `?expand=` includes that field.
-
-        When expanded (single-record GET, create/update responses, or list with `expand`): fixed set `id`, `name`, `email`, `phone` (see **Lookup fields in responses**).
-
-        '
-      properties:
-        id:
-          type: integer
-          format: int64
-          description: User ID
-        name:
-          type: string
-          description: User's full name
-        email:
-          type: string
-          description: User's email address
-        phone:
-          type: string
-          description: Phone number when present
     InvoiceLineItem:
       type: object
       description: Invoice line item.
@@ -429,95 +406,6 @@ components:
           type: number
           format: double
           description: Longitude
-    FacilioField:
-      type: object
-      description: Schema descriptor for a single field within a module.
-      properties:
-        name:
-          type: string
-          description: Field name used in API requests and responses (e.g. `subject`, `po_reference_workorder`)
-        displayName:
-          type: string
-          description: Human-readable field label
-        dataType:
-          type: string
-          description: 'Field data type. Common values:
-
-            `STRING`, `NUMBER`, `DECIMAL`, `BOOLEAN`,
-
-            `DATE`, `DATE_TIME`,
-
-            `BIG_STRING` (large text, excluded from list responses),
-
-            `LOOKUP` (reference to another record — see `lookupModuleName`),
-
-            `MULTI_LOOKUP` (multi-reference — see `lookupModuleName`),
-
-            `ENUM`, `SYSTEM_ENUM`, `STRING_SYSTEM_ENUM` (picklist types)
-
-            '
-          example: STRING
-        required:
-          type: boolean
-          description: '`true` if this field must be provided on record creation'
-        readOnly:
-          type: boolean
-          description: '`true` if this field cannot be set or modified via the API (e.g. auto-generated system fields)'
-        isCustom:
-          type: boolean
-          description: '`true` for fields added by your organization; `false` for standard built-in fields'
-        sortable:
-          type: boolean
-          description: '`true` if this field can be used as a `sortBy` value on the list API'
-        lookupModuleName:
-          type: string
-          description: Present only on `LOOKUP` and `MULTI_LOOKUP` fields. The name of the target module (e.g. `site`, `users`, `ticketstatus`).
-        max_length:
-          type: integer
-          description: 'Maximum number of characters accepted by the V5 write API for text-style fields.
-
-            Present only when the field''s `dataType` is one of:
-
-            `STRING` (255), `LARGE_TEXT` (2000), `BIG_STRING` (32000).
-
-            Omitted for all other data types.
-
-            '
-          example: 255
-        allowed_values:
-          type: array
-          description: 'List of acceptable write values for picklist-capable fields. Present **only when the request includes `?includeAllowedValues=true`** AND the field is one of:
-
-            `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, or a `LOOKUP` targeting a system picklist module (e.g. `ticketstatus`, `ticketpriority`, `ticketcategory`, `tickettype`).
-
-            Each entry uses `{label, value}`; the `value` is the canonical form accepted by create/update payloads.
-
-            '
-          items:
-            type: object
-            properties:
-              label:
-                type: string
-                description: Display label as shown in the UI
-              value:
-                type: string
-                description: Canonical value accepted by create/update for this field and filtering
-    Error:
-      type: object
-      description: Error response
-      properties:
-        success:
-          type: boolean
-          example: false
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-              description: Machine-readable error code
-            message:
-              type: string
-              description: Human-readable error message
     Invoice:
       type: object
       description: Invoice with line items.
@@ -639,22 +527,6 @@ components:
           format: date-time
           readOnly: true
           description: Modified (sortable)
-    FacilioModule:
-      type: object
-      description: A single entry in the module catalogue returned by GET /modules.
-      properties:
-        name:
-          type: string
-          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
-        displayName:
-          type: string
-          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
-        description:
-          type: string
-          description: Module description as configured in Facilio Setup. Omitted when blank.
-        isCustom:
-          type: boolean
-          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
     ModuleMetaResponse:
       type: object
       description: Response body for GET /{moduleName}/metadata.
@@ -677,7 +549,162 @@ components:
                 '
               items:
                 $ref: '#/components/schemas/FacilioField'
+    FacilioModule:
+      type: object
+      description: A single entry in the module catalogue returned by GET /modules.
+      properties:
+        name:
+          type: string
+          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
+        displayName:
+          type: string
+          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
+        description:
+          type: string
+          description: Module description as configured in Facilio Setup. Omitted when blank.
+        isCustom:
+          type: boolean
+          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
+    FacilioField:
+      type: object
+      description: Schema descriptor for a single field within a module.
+      properties:
+        name:
+          type: string
+          description: Field name used in API requests and responses (e.g. `subject`, `po_reference_workorder`)
+        displayName:
+          type: string
+          description: Human-readable field label
+        dataType:
+          type: string
+          description: 'Field data type. Common values:
+
+            `STRING`, `NUMBER`, `DECIMAL`, `BOOLEAN`,
+
+            `DATE`, `DATE_TIME`,
+
+            `BIG_STRING` (large text, excluded from list responses),
+
+            `LOOKUP` (reference to another record — see `lookupModuleName`),
+
+            `MULTI_LOOKUP` (multi-reference — see `lookupModuleName`),
+
+            `ENUM`, `SYSTEM_ENUM`, `STRING_SYSTEM_ENUM` (picklist types)
+
+            '
+          example: STRING
+        required:
+          type: boolean
+          description: '`true` if this field must be provided on record creation'
+        readOnly:
+          type: boolean
+          description: '`true` if this field cannot be set or modified via the API (e.g. auto-generated system fields)'
+        isCustom:
+          type: boolean
+          description: '`true` for fields added by your organization; `false` for standard built-in fields'
+        sortable:
+          type: boolean
+          description: '`true` if this field can be used as a `sortBy` value on the list API'
+        lookupModuleName:
+          type: string
+          description: Present only on `LOOKUP` and `MULTI_LOOKUP` fields. The name of the target module (e.g. `site`, `users`, `ticketstatus`).
+        max_length:
+          type: integer
+          description: 'Maximum number of characters accepted by the V5 write API for text-style fields.
+
+            Present only when the field''s `dataType` is one of:
+
+            `STRING` (255), `LARGE_TEXT` (2000), `BIG_STRING` (32000).
+
+            Omitted for all other data types.
+
+            '
+          example: 255
+        allowed_values:
+          type: array
+          description: 'List of acceptable write values for picklist-capable fields. Present **only when the request includes `?includeAllowedValues=true`** AND the field is one of:
+
+            `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, or a `LOOKUP` targeting a system picklist module (e.g. `ticketstatus`, `ticketpriority`, `ticketcategory`, `tickettype`).
+
+            Each entry uses `{label, value}`; the `value` is the canonical form accepted by create/update payloads.
+
+            '
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+                description: Display label as shown in the UI
+              value:
+                type: string
+                description: Canonical value accepted by create/update for this field and filtering
+    User:
+      type: object
+      description: 'Expanded object for lookups to the `users` module.
+
+        On list API, user lookups return `{id}` only unless `?expand=` includes that field.
+
+        When expanded (single-record GET, create/update responses, or list with `expand`): fixed set `id`, `name`, `email`, `phone` (see **Lookup fields in responses**).
+
+        '
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: User ID
+        name:
+          type: string
+          description: User's full name
+        email:
+          type: string
+          description: User's email address
+        phone:
+          type: string
+          description: Phone number when present
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
   parameters:
+    search:
+      name: search
+      in: query
+      description: Free-text search on the primary field (subject, name, etc.)
+      schema:
+        type: string
+    select:
+      name: select
+      in: query
+      description: Comma-separated field names to include in the response
+      schema:
+        type: string
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
+    changed:
+      name: changed
+      in: query
+      description: 'Delta sync: returns records created/modified after this UTC timestamp'
+      schema:
+        type: string
+        format: date-time
     includeAllowedValues:
       name: includeAllowedValues
       in: query
@@ -708,6 +735,13 @@ components:
         '
       schema:
         type: string
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
     pageSize:
       name: pageSize
       in: query
@@ -716,40 +750,6 @@ components:
         type: integer
         default: 50
         maximum: 200
-    page:
-      name: page
-      in: query
-      description: Page number (1-based)
-      schema:
-        type: integer
-        default: 1
-    changed:
-      name: changed
-      in: query
-      description: 'Delta sync: returns records created/modified after this UTC timestamp'
-      schema:
-        type: string
-        format: date-time
-    recordId:
-      name: id
-      in: path
-      required: true
-      description: Record ID
-      schema:
-        type: integer
-        format: int64
-    select:
-      name: select
-      in: query
-      description: Comma-separated field names to include in the response
-      schema:
-        type: string
-    search:
-      name: search
-      in: query
-      description: Free-text search on the primary field (subject, name, etc.)
-      schema:
-        type: string
   responses:
     NotFound:
       description: Record or module not found
@@ -762,17 +762,6 @@ components:
             error:
               code: RECORD_NOT_FOUND
               message: Record with the given ID was not found
-    BadRequest:
-      description: Validation error — missing required fields, invalid field values, or malformed request body
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            success: false
-            error:
-              code: VALIDATION_ERROR
-              message: 'Required field(s) missing: name'
     Unauthorized:
       description: Missing or invalid authentication credentials
       content:
@@ -784,6 +773,17 @@ components:
             error:
               code: UNAUTHORIZED
               message: Missing or invalid authentication credentials
+    BadRequest:
+      description: Validation error — missing required fields, invalid field values, or malformed request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: VALIDATION_ERROR
+              message: 'Required field(s) missing: name'
   securitySchemes:
     apiKey:
       type: apiKey

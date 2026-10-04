@@ -202,84 +202,6 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   schemas:
-    ModuleMetaResponse:
-      type: object
-      description: Response body for GET /{moduleName}/metadata.
-      properties:
-        success:
-          type: boolean
-        data:
-          type: object
-          properties:
-            module:
-              $ref: '#/components/schemas/FacilioModule'
-            fields:
-              type: array
-              description: 'Ordered list of fields for the module.
-
-                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
-
-                Custom modules return all fields.
-
-                '
-              items:
-                $ref: '#/components/schemas/FacilioField'
-    Error:
-      type: object
-      description: Error response
-      properties:
-        success:
-          type: boolean
-          example: false
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-              description: Machine-readable error code
-            message:
-              type: string
-              description: Human-readable error message
-    Address:
-      type: object
-      description: Postal address. Used for site/building locations, storeroom locations, vendor/client/tenant addresses, and quote/invoice billing & shipping addresses.
-      properties:
-        id:
-          type: integer
-          readOnly: true
-          description: Address record ID
-        name:
-          type: string
-          maxLength: 255
-          description: Location name
-        street:
-          type: string
-          maxLength: 255
-          description: Street address
-        city:
-          type: string
-          maxLength: 100
-          description: City
-        state:
-          type: string
-          maxLength: 100
-          description: State or province
-        zip:
-          type: string
-          maxLength: 20
-          description: Postal / ZIP code
-        country:
-          type: string
-          maxLength: 100
-          description: Country code (e.g. IN, US)
-        lat:
-          type: number
-          format: double
-          description: Latitude
-        lng:
-          type: number
-          format: double
-          description: Longitude
     Tenant:
       type: object
       description: Tenant organization.
@@ -399,6 +321,68 @@ components:
               value:
                 type: string
                 description: Canonical value accepted by create/update for this field and filtering
+    Address:
+      type: object
+      description: Postal address. Used for site/building locations, storeroom locations, vendor/client/tenant addresses, and quote/invoice billing & shipping addresses.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: Address record ID
+        name:
+          type: string
+          maxLength: 255
+          description: Location name
+        street:
+          type: string
+          maxLength: 255
+          description: Street address
+        city:
+          type: string
+          maxLength: 100
+          description: City
+        state:
+          type: string
+          maxLength: 100
+          description: State or province
+        zip:
+          type: string
+          maxLength: 20
+          description: Postal / ZIP code
+        country:
+          type: string
+          maxLength: 100
+          description: Country code (e.g. IN, US)
+        lat:
+          type: number
+          format: double
+          description: Latitude
+        lng:
+          type: number
+          format: double
+          description: Longitude
+    ModuleMetaResponse:
+      type: object
+      description: Response body for GET /{moduleName}/metadata.
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            module:
+              $ref: '#/components/schemas/FacilioModule'
+            fields:
+              type: array
+              description: 'Ordered list of fields for the module.
+
+                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
+
+                Custom modules return all fields.
+
+                '
+              items:
+                $ref: '#/components/schemas/FacilioField'
     FacilioModule:
       type: object
       description: A single entry in the module catalogue returned by GET /modules.
@@ -415,7 +399,36 @@ components:
         isCustom:
           type: boolean
           description: '`true` for modules created by your organization; `false` for standard Facilio modules'
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
   parameters:
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
+    select:
+      name: select
+      in: query
+      description: Comma-separated field names to include in the response
+      schema:
+        type: string
     includeAllowedValues:
       name: includeAllowedValues
       in: query
@@ -429,25 +442,10 @@ components:
       schema:
         type: boolean
         default: false
-    page:
-      name: page
+    search:
+      name: search
       in: query
-      description: Page number (1-based)
-      schema:
-        type: integer
-        default: 1
-    recordId:
-      name: id
-      in: path
-      required: true
-      description: Record ID
-      schema:
-        type: integer
-        format: int64
-    select:
-      name: select
-      in: query
-      description: Comma-separated field names to include in the response
+      description: Free-text search on the primary field (subject, name, etc.)
       schema:
         type: string
     count:
@@ -457,12 +455,6 @@ components:
       schema:
         type: boolean
         default: false
-    search:
-      name: search
-      in: query
-      description: Free-text search on the primary field (subject, name, etc.)
-      schema:
-        type: string
     pageSize:
       name: pageSize
       in: query
@@ -471,6 +463,14 @@ components:
         type: integer
         default: 50
         maximum: 200
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
   responses:
     NotFound:
       description: Record or module not found
@@ -483,17 +483,6 @@ components:
             error:
               code: RECORD_NOT_FOUND
               message: Record with the given ID was not found
-    Unauthorized:
-      description: Missing or invalid authentication credentials
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            success: false
-            error:
-              code: UNAUTHORIZED
-              message: Missing or invalid authentication credentials
     BadRequest:
       description: Validation error — missing required fields, invalid field values, or malformed request body
       content:
@@ -505,6 +494,17 @@ components:
             error:
               code: VALIDATION_ERROR
               message: 'Required field(s) missing: name'
+    Unauthorized:
+      description: Missing or invalid authentication credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Missing or invalid authentication credentials
   securitySchemes:
     apiKey:
       type: apiKey

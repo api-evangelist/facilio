@@ -170,24 +170,18 @@ components:
       schema:
         type: integer
         format: int64
-  schemas:
-    Error:
-      type: object
-      description: Error response
-      properties:
-        success:
-          type: boolean
-          example: false
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-              description: Machine-readable error code
-            message:
-              type: string
-              description: Human-readable error message
   responses:
+    BadRequest:
+      description: Validation error — missing required fields, invalid field values, or malformed request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: VALIDATION_ERROR
+              message: 'Required field(s) missing: name'
     NotFound:
       description: Record or module not found
       content:
@@ -210,17 +204,23 @@ components:
             error:
               code: UNAUTHORIZED
               message: Missing or invalid authentication credentials
-    BadRequest:
-      description: Validation error — missing required fields, invalid field values, or malformed request body
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            success: false
-            error:
-              code: VALIDATION_ERROR
-              message: 'Required field(s) missing: name'
+  schemas:
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
   securitySchemes:
     apiKey:
       type: apiKey

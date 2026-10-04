@@ -362,6 +362,39 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   parameters:
+    search:
+      name: search
+      in: query
+      description: Free-text search on the primary field (subject, name, etc.)
+      schema:
+        type: string
+    select:
+      name: select
+      in: query
+      description: Comma-separated field names to include in the response
+      schema:
+        type: string
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
+    changed:
+      name: changed
+      in: query
+      description: 'Delta sync: returns records created/modified after this UTC timestamp'
+      schema:
+        type: string
+        format: date-time
+    view:
+      name: view
+      in: query
+      description: Saved view name
+      schema:
+        type: string
     includeAllowedValues:
       name: includeAllowedValues
       in: query
@@ -392,6 +425,13 @@ components:
         '
       schema:
         type: string
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
     pageSize:
       name: pageSize
       in: query
@@ -400,46 +440,6 @@ components:
         type: integer
         default: 50
         maximum: 200
-    page:
-      name: page
-      in: query
-      description: Page number (1-based)
-      schema:
-        type: integer
-        default: 1
-    changed:
-      name: changed
-      in: query
-      description: 'Delta sync: returns records created/modified after this UTC timestamp'
-      schema:
-        type: string
-        format: date-time
-    view:
-      name: view
-      in: query
-      description: Saved view name
-      schema:
-        type: string
-    recordId:
-      name: id
-      in: path
-      required: true
-      description: Record ID
-      schema:
-        type: integer
-        format: int64
-    select:
-      name: select
-      in: query
-      description: Comma-separated field names to include in the response
-      schema:
-        type: string
-    search:
-      name: search
-      in: query
-      description: Free-text search on the primary field (subject, name, etc.)
-      schema:
-        type: string
   responses:
     NotFound:
       description: Record or module not found
@@ -452,17 +452,6 @@ components:
             error:
               code: RECORD_NOT_FOUND
               message: Record with the given ID was not found
-    BadRequest:
-      description: Validation error — missing required fields, invalid field values, or malformed request body
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            success: false
-            error:
-              code: VALIDATION_ERROR
-              message: 'Required field(s) missing: name'
     Unauthorized:
       description: Missing or invalid authentication credentials
       content:
@@ -474,7 +463,84 @@ components:
             error:
               code: UNAUTHORIZED
               message: Missing or invalid authentication credentials
+    BadRequest:
+      description: Validation error — missing required fields, invalid field values, or malformed request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: VALIDATION_ERROR
+              message: 'Required field(s) missing: name'
   schemas:
+    ModuleMetaResponse:
+      type: object
+      description: Response body for GET /{moduleName}/metadata.
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            module:
+              $ref: '#/components/schemas/FacilioModule'
+            fields:
+              type: array
+              description: 'Ordered list of fields for the module.
+
+                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
+
+                Custom modules return all fields.
+
+                '
+              items:
+                $ref: '#/components/schemas/FacilioField'
+    SingleResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+        message:
+          type: string
+    FacilioModule:
+      type: object
+      description: A single entry in the module catalogue returned by GET /modules.
+      properties:
+        name:
+          type: string
+          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
+        displayName:
+          type: string
+          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
+        description:
+          type: string
+          description: Module description as configured in Facilio Setup. Omitted when blank.
+        isCustom:
+          type: boolean
+          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
+    ListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+            pageSize:
+              type: integer
+        count:
+          type: integer
+          description: Total count (only when ?count=true)
     FacilioField:
       type: object
       description: Schema descriptor for a single field within a module.
@@ -564,72 +630,6 @@ components:
             message:
               type: string
               description: Human-readable error message
-    FacilioModule:
-      type: object
-      description: A single entry in the module catalogue returned by GET /modules.
-      properties:
-        name:
-          type: string
-          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
-        displayName:
-          type: string
-          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
-        description:
-          type: string
-          description: Module description as configured in Facilio Setup. Omitted when blank.
-        isCustom:
-          type: boolean
-          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
-    ListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            type: object
-        pagination:
-          type: object
-          properties:
-            page:
-              type: integer
-            pageSize:
-              type: integer
-        count:
-          type: integer
-          description: Total count (only when ?count=true)
-    ModuleMetaResponse:
-      type: object
-      description: Response body for GET /{moduleName}/metadata.
-      properties:
-        success:
-          type: boolean
-        data:
-          type: object
-          properties:
-            module:
-              $ref: '#/components/schemas/FacilioModule'
-            fields:
-              type: array
-              description: 'Ordered list of fields for the module.
-
-                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
-
-                Custom modules return all fields.
-
-                '
-              items:
-                $ref: '#/components/schemas/FacilioField'
-    SingleResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: object
-        message:
-          type: string
   securitySchemes:
     apiKey:
       type: apiKey

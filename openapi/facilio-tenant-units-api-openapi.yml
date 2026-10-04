@@ -205,83 +205,50 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 components:
+  parameters:
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
+    includeAllowedValues:
+      name: includeAllowedValues
+      in: query
+      description: 'When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).
+
+        Default `false` keeps the original metadata payload (no enrichment, no extra DB calls).
+
+        Use this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.
+
+        '
+      schema:
+        type: boolean
+        default: false
+    search:
+      name: search
+      in: query
+      description: Free-text search on the primary field (subject, name, etc.)
+      schema:
+        type: string
+    pageSize:
+      name: pageSize
+      in: query
+      description: Records per page (max 200)
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
   schemas:
-    ModuleMetaResponse:
-      type: object
-      description: Response body for GET /{moduleName}/metadata.
-      properties:
-        success:
-          type: boolean
-        data:
-          type: object
-          properties:
-            module:
-              $ref: '#/components/schemas/FacilioModule'
-            fields:
-              type: array
-              description: 'Ordered list of fields for the module.
-
-                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
-
-                Custom modules return all fields.
-
-                '
-              items:
-                $ref: '#/components/schemas/FacilioField'
-    Error:
-      type: object
-      description: Error response
-      properties:
-        success:
-          type: boolean
-          example: false
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-              description: Machine-readable error code
-            message:
-              type: string
-              description: Human-readable error message
-    TenantUnit:
-      type: object
-      description: Physical unit assigned to a tenant. On create, `name` and `site` are required.
-      required:
-      - name
-      - site
-      properties:
-        id:
-          type: integer
-          readOnly: true
-          description: Unique record ID
-        name:
-          type: string
-          description: Unit name (required on create, sortable)
-        tenant:
-          type: integer
-          description: Tenant ID
-        floor:
-          type: integer
-          description: Floor ID
-        building:
-          type: integer
-          description: Building ID
-        site:
-          description: Site ID (required on create). Pass the id as a number, or an object with `id`.
-        isOccupied:
-          type: boolean
-          description: Whether the unit is occupied
-        sysCreatedTime:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Creation timestamp (sortable)
-        sysModifiedTime:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Last modified (sortable)
     FacilioField:
       type: object
       description: Schema descriptor for a single field within a module.
@@ -355,6 +322,82 @@ components:
               value:
                 type: string
                 description: Canonical value accepted by create/update for this field and filtering
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+    ModuleMetaResponse:
+      type: object
+      description: Response body for GET /{moduleName}/metadata.
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            module:
+              $ref: '#/components/schemas/FacilioModule'
+            fields:
+              type: array
+              description: 'Ordered list of fields for the module.
+
+                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
+
+                Custom modules return all fields.
+
+                '
+              items:
+                $ref: '#/components/schemas/FacilioField'
+    TenantUnit:
+      type: object
+      description: Physical unit assigned to a tenant. On create, `name` and `site` are required.
+      required:
+      - name
+      - site
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: Unique record ID
+        name:
+          type: string
+          description: Unit name (required on create, sortable)
+        tenant:
+          type: integer
+          description: Tenant ID
+        floor:
+          type: integer
+          description: Floor ID
+        building:
+          type: integer
+          description: Building ID
+        site:
+          description: Site ID (required on create). Pass the id as a number, or an object with `id`.
+        isOccupied:
+          type: boolean
+          description: Whether the unit is occupied
+        sysCreatedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Creation timestamp (sortable)
+        sysModifiedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Last modified (sortable)
     FacilioModule:
       type: object
       description: A single entry in the module catalogue returned by GET /modules.
@@ -371,50 +414,18 @@ components:
         isCustom:
           type: boolean
           description: '`true` for modules created by your organization; `false` for standard Facilio modules'
-  parameters:
-    includeAllowedValues:
-      name: includeAllowedValues
-      in: query
-      description: 'When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).
-
-        Default `false` keeps the original metadata payload (no enrichment, no extra DB calls).
-
-        Use this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.
-
-        '
-      schema:
-        type: boolean
-        default: false
-    page:
-      name: page
-      in: query
-      description: Page number (1-based)
-      schema:
-        type: integer
-        default: 1
-    recordId:
-      name: id
-      in: path
-      required: true
-      description: Record ID
-      schema:
-        type: integer
-        format: int64
-    search:
-      name: search
-      in: query
-      description: Free-text search on the primary field (subject, name, etc.)
-      schema:
-        type: string
-    pageSize:
-      name: pageSize
-      in: query
-      description: Records per page (max 200)
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
   responses:
+    BadRequest:
+      description: Validation error — missing required fields, invalid field values, or malformed request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: VALIDATION_ERROR
+              message: 'Required field(s) missing: name'
     NotFound:
       description: Record or module not found
       content:
@@ -437,17 +448,6 @@ components:
             error:
               code: UNAUTHORIZED
               message: Missing or invalid authentication credentials
-    BadRequest:
-      description: Validation error — missing required fields, invalid field values, or malformed request body
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            success: false
-            error:
-              code: VALIDATION_ERROR
-              message: 'Required field(s) missing: name'
   securitySchemes:
     apiKey:
       type: apiKey

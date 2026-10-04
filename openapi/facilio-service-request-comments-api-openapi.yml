@@ -232,24 +232,18 @@ components:
             message:
               type: string
               description: Human-readable error message
-  parameters:
-    recordId:
-      name: id
-      in: path
-      required: true
-      description: Record ID
-      schema:
-        type: integer
-        format: int64
-    commentId:
-      name: commentId
-      in: path
-      required: true
-      description: Comment ID
-      schema:
-        type: integer
-        format: int64
   responses:
+    BadRequest:
+      description: Validation error — missing required fields, invalid field values, or malformed request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: VALIDATION_ERROR
+              message: 'Required field(s) missing: name'
     NotFound:
       description: Record or module not found
       content:
@@ -272,17 +266,23 @@ components:
             error:
               code: UNAUTHORIZED
               message: Missing or invalid authentication credentials
-    BadRequest:
-      description: Validation error — missing required fields, invalid field values, or malformed request body
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            success: false
-            error:
-              code: VALIDATION_ERROR
-              message: 'Required field(s) missing: name'
+  parameters:
+    commentId:
+      name: commentId
+      in: path
+      required: true
+      description: Comment ID
+      schema:
+        type: integer
+        format: int64
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
   securitySchemes:
     apiKey:
       type: apiKey

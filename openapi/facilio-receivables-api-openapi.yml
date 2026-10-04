@@ -275,44 +275,6 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   schemas:
-    ModuleMetaResponse:
-      type: object
-      description: Response body for GET /{moduleName}/metadata.
-      properties:
-        success:
-          type: boolean
-        data:
-          type: object
-          properties:
-            module:
-              $ref: '#/components/schemas/FacilioModule'
-            fields:
-              type: array
-              description: 'Ordered list of fields for the module.
-
-                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
-
-                Custom modules return all fields.
-
-                '
-              items:
-                $ref: '#/components/schemas/FacilioField'
-    Error:
-      type: object
-      description: Error response
-      properties:
-        success:
-          type: boolean
-          example: false
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-              description: Machine-readable error code
-            message:
-              type: string
-              description: Human-readable error message
     Receipt:
       type: object
       description: 'Receipt line for `POST /receivable/{id}/addreceipt` (sent inside request `data`).
@@ -338,24 +300,6 @@ components:
           type: integer
           minimum: 0
           description: Optional. Use only when the PO line requires serial capture; omit for standard lines.
-    POLineItemStock:
-      type: object
-      description: One line in `POST /receivable/{id}/stock` (`lineItems` or `lineItemsStockQuantity`). Pass line, receipt, and lot as numeric ids where possible; use a string or id/name object for bin.
-      properties:
-        lineItem:
-          description: Purchase order line id — numeric, or object with `id`.
-        quantity:
-          type: number
-          format: double
-        receipt:
-          description: Receipt record id — numeric, or object with `id`.
-        bin:
-          description: Storeroom bin — bin name as a string, or object with `id` and/or `name`.
-        lot:
-          description: Lot id when the line is lot-tracked — numeric, or object with `id`.
-        stockedBy:
-          type: object
-          description: Optional user reference, e.g. object with `id`.
     FacilioField:
       type: object
       description: Schema descriptor for a single field within a module.
@@ -429,6 +373,46 @@ components:
               value:
                 type: string
                 description: Canonical value accepted by create/update for this field and filtering
+    POLineItemStock:
+      type: object
+      description: One line in `POST /receivable/{id}/stock` (`lineItems` or `lineItemsStockQuantity`). Pass line, receipt, and lot as numeric ids where possible; use a string or id/name object for bin.
+      properties:
+        lineItem:
+          description: Purchase order line id — numeric, or object with `id`.
+        quantity:
+          type: number
+          format: double
+        receipt:
+          description: Receipt record id — numeric, or object with `id`.
+        bin:
+          description: Storeroom bin — bin name as a string, or object with `id` and/or `name`.
+        lot:
+          description: Lot id when the line is lot-tracked — numeric, or object with `id`.
+        stockedBy:
+          type: object
+          description: Optional user reference, e.g. object with `id`.
+    ModuleMetaResponse:
+      type: object
+      description: Response body for GET /{moduleName}/metadata.
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            module:
+              $ref: '#/components/schemas/FacilioModule'
+            fields:
+              type: array
+              description: 'Ordered list of fields for the module.
+
+                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
+
+                Custom modules return all fields.
+
+                '
+              items:
+                $ref: '#/components/schemas/FacilioField'
     FacilioModule:
       type: object
       description: A single entry in the module catalogue returned by GET /modules.
@@ -445,7 +429,36 @@ components:
         isCustom:
           type: boolean
           description: '`true` for modules created by your organization; `false` for standard Facilio modules'
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
   parameters:
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
+    select:
+      name: select
+      in: query
+      description: Comma-separated field names to include in the response
+      schema:
+        type: string
     includeAllowedValues:
       name: includeAllowedValues
       in: query
@@ -459,25 +472,10 @@ components:
       schema:
         type: boolean
         default: false
-    changed:
-      name: changed
+    search:
+      name: search
       in: query
-      description: 'Delta sync: returns records created/modified after this UTC timestamp'
-      schema:
-        type: string
-        format: date-time
-    recordId:
-      name: id
-      in: path
-      required: true
-      description: Record ID
-      schema:
-        type: integer
-        format: int64
-    select:
-      name: select
-      in: query
-      description: Comma-separated field names to include in the response
+      description: Free-text search on the primary field (subject, name, etc.)
       schema:
         type: string
     count:
@@ -497,19 +495,6 @@ components:
         '
       schema:
         type: string
-    page:
-      name: page
-      in: query
-      description: Page number (1-based)
-      schema:
-        type: integer
-        default: 1
-    search:
-      name: search
-      in: query
-      description: Free-text search on the primary field (subject, name, etc.)
-      schema:
-        type: string
     pageSize:
       name: pageSize
       in: query
@@ -518,6 +503,21 @@ components:
         type: integer
         default: 50
         maximum: 200
+    changed:
+      name: changed
+      in: query
+      description: 'Delta sync: returns records created/modified after this UTC timestamp'
+      schema:
+        type: string
+        format: date-time
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
   responses:
     NotFound:
       description: Record or module not found
@@ -530,17 +530,6 @@ components:
             error:
               code: RECORD_NOT_FOUND
               message: Record with the given ID was not found
-    Unauthorized:
-      description: Missing or invalid authentication credentials
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            success: false
-            error:
-              code: UNAUTHORIZED
-              message: Missing or invalid authentication credentials
     BadRequest:
       description: Validation error — missing required fields, invalid field values, or malformed request body
       content:
@@ -552,6 +541,17 @@ components:
             error:
               code: VALIDATION_ERROR
               message: 'Required field(s) missing: name'
+    Unauthorized:
+      description: Missing or invalid authentication credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Missing or invalid authentication credentials
   securitySchemes:
     apiKey:
       type: apiKey

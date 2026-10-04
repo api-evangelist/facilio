@@ -201,128 +201,63 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 components:
+  parameters:
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
+    select:
+      name: select
+      in: query
+      description: Comma-separated field names to include in the response
+      schema:
+        type: string
+    includeAllowedValues:
+      name: includeAllowedValues
+      in: query
+      description: 'When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).
+
+        Default `false` keeps the original metadata payload (no enrichment, no extra DB calls).
+
+        Use this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.
+
+        '
+      schema:
+        type: boolean
+        default: false
+    search:
+      name: search
+      in: query
+      description: Free-text search on the primary field (subject, name, etc.)
+      schema:
+        type: string
+    count:
+      name: count
+      in: query
+      description: Include total record count in response
+      schema:
+        type: boolean
+        default: false
+    pageSize:
+      name: pageSize
+      in: query
+      description: Records per page (max 200)
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
   schemas:
-    ModuleMetaResponse:
-      type: object
-      description: Response body for GET /{moduleName}/metadata.
-      properties:
-        success:
-          type: boolean
-        data:
-          type: object
-          properties:
-            module:
-              $ref: '#/components/schemas/FacilioModule'
-            fields:
-              type: array
-              description: 'Ordered list of fields for the module.
-
-                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
-
-                Custom modules return all fields.
-
-                '
-              items:
-                $ref: '#/components/schemas/FacilioField'
-    Client:
-      type: object
-      description: Client organization.
-      required:
-      - name
-      - primaryContactEmail
-      properties:
-        id:
-          type: integer
-          readOnly: true
-          description: Unique record ID
-        name:
-          type: string
-          description: Client name (required on create, sortable)
-        description:
-          type: string
-          description: Description
-        primaryContactName:
-          type: string
-          description: Primary contact name
-        primaryContactEmail:
-          type: string
-          description: Primary contact email (required on create)
-        primaryContactPhone:
-          type: string
-          description: Primary contact phone
-        address:
-          description: Client address
-          allOf:
-          - $ref: '#/components/schemas/Address'
-        moduleState:
-          type: string
-          description: Status — pass `status` value or numeric ID. Use `GET /picklist/client/moduleState` for valid values.
-        sysCreatedTime:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Creation timestamp (sortable)
-        sysModifiedTime:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Last modified (sortable)
-    Error:
-      type: object
-      description: Error response
-      properties:
-        success:
-          type: boolean
-          example: false
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-              description: Machine-readable error code
-            message:
-              type: string
-              description: Human-readable error message
-    Address:
-      type: object
-      description: Postal address. Used for site/building locations, storeroom locations, vendor/client/tenant addresses, and quote/invoice billing & shipping addresses.
-      properties:
-        id:
-          type: integer
-          readOnly: true
-          description: Address record ID
-        name:
-          type: string
-          maxLength: 255
-          description: Location name
-        street:
-          type: string
-          maxLength: 255
-          description: Street address
-        city:
-          type: string
-          maxLength: 100
-          description: City
-        state:
-          type: string
-          maxLength: 100
-          description: State or province
-        zip:
-          type: string
-          maxLength: 20
-          description: Postal / ZIP code
-        country:
-          type: string
-          maxLength: 100
-          description: Country code (e.g. IN, US)
-        lat:
-          type: number
-          format: double
-          description: Latitude
-        lng:
-          type: number
-          format: double
-          description: Longitude
     FacilioField:
       type: object
       description: Schema descriptor for a single field within a module.
@@ -396,6 +331,111 @@ components:
               value:
                 type: string
                 description: Canonical value accepted by create/update for this field and filtering
+    Address:
+      type: object
+      description: Postal address. Used for site/building locations, storeroom locations, vendor/client/tenant addresses, and quote/invoice billing & shipping addresses.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: Address record ID
+        name:
+          type: string
+          maxLength: 255
+          description: Location name
+        street:
+          type: string
+          maxLength: 255
+          description: Street address
+        city:
+          type: string
+          maxLength: 100
+          description: City
+        state:
+          type: string
+          maxLength: 100
+          description: State or province
+        zip:
+          type: string
+          maxLength: 20
+          description: Postal / ZIP code
+        country:
+          type: string
+          maxLength: 100
+          description: Country code (e.g. IN, US)
+        lat:
+          type: number
+          format: double
+          description: Latitude
+        lng:
+          type: number
+          format: double
+          description: Longitude
+    ModuleMetaResponse:
+      type: object
+      description: Response body for GET /{moduleName}/metadata.
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            module:
+              $ref: '#/components/schemas/FacilioModule'
+            fields:
+              type: array
+              description: 'Ordered list of fields for the module.
+
+                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
+
+                Custom modules return all fields.
+
+                '
+              items:
+                $ref: '#/components/schemas/FacilioField'
+    Client:
+      type: object
+      description: Client organization.
+      required:
+      - name
+      - primaryContactEmail
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: Unique record ID
+        name:
+          type: string
+          description: Client name (required on create, sortable)
+        description:
+          type: string
+          description: Description
+        primaryContactName:
+          type: string
+          description: Primary contact name
+        primaryContactEmail:
+          type: string
+          description: Primary contact email (required on create)
+        primaryContactPhone:
+          type: string
+          description: Primary contact phone
+        address:
+          description: Client address
+          allOf:
+          - $ref: '#/components/schemas/Address'
+        moduleState:
+          type: string
+          description: Status — pass `status` value or numeric ID. Use `GET /picklist/client/moduleState` for valid values.
+        sysCreatedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Creation timestamp (sortable)
+        sysModifiedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Last modified (sortable)
     FacilioModule:
       type: object
       description: A single entry in the module catalogue returned by GET /modules.
@@ -412,62 +452,22 @@ components:
         isCustom:
           type: boolean
           description: '`true` for modules created by your organization; `false` for standard Facilio modules'
-  parameters:
-    includeAllowedValues:
-      name: includeAllowedValues
-      in: query
-      description: 'When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).
-
-        Default `false` keeps the original metadata payload (no enrichment, no extra DB calls).
-
-        Use this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.
-
-        '
-      schema:
-        type: boolean
-        default: false
-    page:
-      name: page
-      in: query
-      description: Page number (1-based)
-      schema:
-        type: integer
-        default: 1
-    recordId:
-      name: id
-      in: path
-      required: true
-      description: Record ID
-      schema:
-        type: integer
-        format: int64
-    select:
-      name: select
-      in: query
-      description: Comma-separated field names to include in the response
-      schema:
-        type: string
-    count:
-      name: count
-      in: query
-      description: Include total record count in response
-      schema:
-        type: boolean
-        default: false
-    search:
-      name: search
-      in: query
-      description: Free-text search on the primary field (subject, name, etc.)
-      schema:
-        type: string
-    pageSize:
-      name: pageSize
-      in: query
-      description: Records per page (max 200)
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
   responses:
     NotFound:
       description: Record or module not found
@@ -480,17 +480,6 @@ components:
             error:
               code: RECORD_NOT_FOUND
               message: Record with the given ID was not found
-    Unauthorized:
-      description: Missing or invalid authentication credentials
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            success: false
-            error:
-              code: UNAUTHORIZED
-              message: Missing or invalid authentication credentials
     BadRequest:
       description: Validation error — missing required fields, invalid field values, or malformed request body
       content:
@@ -502,6 +491,17 @@ components:
             error:
               code: VALIDATION_ERROR
               message: 'Required field(s) missing: name'
+    Unauthorized:
+      description: Missing or invalid authentication credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Missing or invalid authentication credentials
   securitySchemes:
     apiKey:
       type: apiKey
