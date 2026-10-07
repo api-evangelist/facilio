@@ -1,0 +1,35 @@
+# Pricing transcribed from the provider's own page — see provenance. Numbers are quoted, not derived.
+generated: '2026-10-07'
+method: searched
+source: https://facilio.com/pricing/
+sources:
+- https://facilio.com/pricing/
+provenance:
+  tool: all/0-working/economics/harvest_pricing.py
+  run: 20261007T104522
+  grounding: every price_text was found verbatim in the fetched page text
+audience: business-product
+pricing_basis: negotiated
+delivery:
+  delivery: managed
+  method: page
+  read: '2026-10-07'
+published: false
+note: Tiered CMMS plans with no numeric prices; all tiers say 'Request a custom quote'.
+plan_count: 3
+plans:
+- name: Standard
+  price_text: Request a custom quote
+  period: none
+  included_quota: Work Order & Service Request Management; Preventive Maintenance Scheduling; Mobile Access
+    for Field Teams; Reports & Operational Dashboards; Core Asset & Workflow Configuration
+- name: Essential
+  price_text: Request a custom quote
+  period: none
+  included_quota: Everything in Standard, plus Inspections & Compliance Rounds; Inventory & Spare Parts
+    Management; Procurement Workflows; Tenant / Stakeholder Portals; Integration Support
+- name: Enterprise
+  price_text: Request a custom quote
+  period: none
+  included_quota: Everything in Essential, plus Vendor Management & RFQs; Compliance & Audit Controls;
+    SSO & Enterprise Security Controls; Dedicated Customer Success Owner; Sandbox & Advanced Configuration
