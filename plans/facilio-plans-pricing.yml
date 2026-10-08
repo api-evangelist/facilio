@@ -33,3 +33,30 @@ plans:
   period: none
   included_quota: Everything in Essential, plus Vendor Management & RFQs; Compliance & Audit Controls;
     SSO & Enterprise Security Controls; Dedicated Customer Success Owner; Sandbox & Advanced Configuration
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models: []
+  units: []
+  plans:
+  - name: Standard
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods:
+    - none
+  - name: Essential
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods:
+    - none
+  - name: Enterprise
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods:
+    - none
