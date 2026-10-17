@@ -310,6 +310,46 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   schemas:
+    Address:
+      type: object
+      description: Postal address. Used for site/building locations, storeroom locations, vendor/client/tenant addresses, and quote/invoice billing & shipping addresses.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: Address record ID
+        name:
+          type: string
+          maxLength: 255
+          description: Location name
+        street:
+          type: string
+          maxLength: 255
+          description: Street address
+        city:
+          type: string
+          maxLength: 100
+          description: City
+        state:
+          type: string
+          maxLength: 100
+          description: State or province
+        zip:
+          type: string
+          maxLength: 20
+          description: Postal / ZIP code
+        country:
+          type: string
+          maxLength: 100
+          description: Country code (e.g. IN, US)
+        lat:
+          type: number
+          format: double
+          description: Latitude
+        lng:
+          type: number
+          format: double
+          description: Longitude
     InvoiceLineItem:
       type: object
       description: Invoice line item.
@@ -366,46 +406,28 @@ components:
         tax:
           type: object
           description: '{id} — tax group reference'
-    Address:
+    ModuleMetaResponse:
       type: object
-      description: Postal address. Used for site/building locations, storeroom locations, vendor/client/tenant addresses, and quote/invoice billing & shipping addresses.
+      description: Response body for GET /{moduleName}/metadata.
       properties:
-        id:
-          type: integer
-          readOnly: true
-          description: Address record ID
-        name:
-          type: string
-          maxLength: 255
-          description: Location name
-        street:
-          type: string
-          maxLength: 255
-          description: Street address
-        city:
-          type: string
-          maxLength: 100
-          description: City
-        state:
-          type: string
-          maxLength: 100
-          description: State or province
-        zip:
-          type: string
-          maxLength: 20
-          description: Postal / ZIP code
-        country:
-          type: string
-          maxLength: 100
-          description: Country code (e.g. IN, US)
-        lat:
-          type: number
-          format: double
-          description: Latitude
-        lng:
-          type: number
-          format: double
-          description: Longitude
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            module:
+              $ref: '#/components/schemas/FacilioModule'
+            fields:
+              type: array
+              description: 'Ordered list of fields for the module.
+
+                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
+
+                Custom modules return all fields.
+
+                '
+              items:
+                $ref: '#/components/schemas/FacilioField'
     Invoice:
       type: object
       description: Invoice with line items.
@@ -527,44 +549,6 @@ components:
           format: date-time
           readOnly: true
           description: Modified (sortable)
-    ModuleMetaResponse:
-      type: object
-      description: Response body for GET /{moduleName}/metadata.
-      properties:
-        success:
-          type: boolean
-        data:
-          type: object
-          properties:
-            module:
-              $ref: '#/components/schemas/FacilioModule'
-            fields:
-              type: array
-              description: 'Ordered list of fields for the module.
-
-                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
-
-                Custom modules return all fields.
-
-                '
-              items:
-                $ref: '#/components/schemas/FacilioField'
-    FacilioModule:
-      type: object
-      description: A single entry in the module catalogue returned by GET /modules.
-      properties:
-        name:
-          type: string
-          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
-        displayName:
-          type: string
-          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
-        description:
-          type: string
-          description: Module description as configured in Facilio Setup. Omitted when blank.
-        isCustom:
-          type: boolean
-          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
     FacilioField:
       type: object
       description: Schema descriptor for a single field within a module.
@@ -638,6 +622,22 @@ components:
               value:
                 type: string
                 description: Canonical value accepted by create/update for this field and filtering
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
     User:
       type: object
       description: 'Expanded object for lookups to the `users` module.
@@ -661,29 +661,38 @@ components:
         phone:
           type: string
           description: Phone number when present
-    Error:
+    FacilioModule:
       type: object
-      description: Error response
+      description: A single entry in the module catalogue returned by GET /modules.
       properties:
-        success:
+        name:
+          type: string
+          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
+        displayName:
+          type: string
+          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
+        description:
+          type: string
+          description: Module description as configured in Facilio Setup. Omitted when blank.
+        isCustom:
           type: boolean
-          example: false
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-              description: Machine-readable error code
-            message:
-              type: string
-              description: Human-readable error message
+          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
   parameters:
-    search:
-      name: search
+    pageSize:
+      name: pageSize
       in: query
-      description: Free-text search on the primary field (subject, name, etc.)
+      description: Records per page (max 200)
       schema:
-        type: string
+        type: integer
+        default: 50
+        maximum: 200
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
     select:
       name: select
       in: query
@@ -698,13 +707,6 @@ components:
       schema:
         type: integer
         format: int64
-    changed:
-      name: changed
-      in: query
-      description: 'Delta sync: returns records created/modified after this UTC timestamp'
-      schema:
-        type: string
-        format: date-time
     includeAllowedValues:
       name: includeAllowedValues
       in: query
@@ -718,6 +720,19 @@ components:
       schema:
         type: boolean
         default: false
+    search:
+      name: search
+      in: query
+      description: Free-text search on the primary field (subject, name, etc.)
+      schema:
+        type: string
+    changed:
+      name: changed
+      in: query
+      description: 'Delta sync: returns records created/modified after this UTC timestamp'
+      schema:
+        type: string
+        format: date-time
     count:
       name: count
       in: query
@@ -735,21 +750,6 @@ components:
         '
       schema:
         type: string
-    page:
-      name: page
-      in: query
-      description: Page number (1-based)
-      schema:
-        type: integer
-        default: 1
-    pageSize:
-      name: pageSize
-      in: query
-      description: Records per page (max 200)
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
   responses:
     NotFound:
       description: Record or module not found
@@ -762,17 +762,6 @@ components:
             error:
               code: RECORD_NOT_FOUND
               message: Record with the given ID was not found
-    Unauthorized:
-      description: Missing or invalid authentication credentials
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            success: false
-            error:
-              code: UNAUTHORIZED
-              message: Missing or invalid authentication credentials
     BadRequest:
       description: Validation error — missing required fields, invalid field values, or malformed request body
       content:
@@ -784,6 +773,17 @@ components:
             error:
               code: VALIDATION_ERROR
               message: 'Required field(s) missing: name'
+    Unauthorized:
+      description: Missing or invalid authentication credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Missing or invalid authentication credentials
   securitySchemes:
     apiKey:
       type: apiKey

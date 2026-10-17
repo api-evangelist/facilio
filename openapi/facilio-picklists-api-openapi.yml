@@ -545,7 +545,7 @@ paths:
           $ref: '#/components/responses/Unauthorized'
 components:
   schemas:
-    AssetDepartment:
+    AssetType:
       type: object
       properties:
         success:
@@ -559,7 +559,9 @@ components:
                 type: integer
               name:
                 type: string
-                description: Department name
+                description: Type name
+              displayName:
+                type: string
     Priority:
       type: object
       description: Used for work order priority and service request urgency
@@ -584,7 +586,7 @@ components:
               sequenceNumber:
                 type: integer
                 description: Sort order
-    AssetType:
+    AssetDepartment:
       type: object
       properties:
         success:
@@ -598,7 +600,39 @@ components:
                 type: integer
               name:
                 type: string
-                description: Type name
+                description: Department name
+    WorkOrderCategory:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+                description: Category name
+              displayName:
+                type: string
+    WorkOrderStatus:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              status:
+                type: string
+                description: Status value (e.g. Submitted, Closed)
               displayName:
                 type: string
     CustomPicklistValues:
@@ -619,7 +653,7 @@ components:
                 description: Status value
               displayName:
                 type: string
-    WorkOrderType:
+    AssetCategory:
       type: object
       properties:
         success:
@@ -633,24 +667,7 @@ components:
                 type: integer
               name:
                 type: string
-                description: Type name
-              displayName:
-                type: string
-    WorkOrderStatus:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-              status:
-                type: string
-                description: Status value (e.g. Submitted, Closed)
+                description: Category name (e.g. HVAC, Electrical)
               displayName:
                 type: string
     SpaceCategory:
@@ -670,6 +687,23 @@ components:
                 description: Category name (e.g. Office, Conference Room)
               displayName:
                 type: string
+    WorkOrderType:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+                description: Type name
+              displayName:
+                type: string
     EnumPicklistValues:
       type: object
       description: Enum picklist values — returns {id, displayName} for each value
@@ -685,7 +719,7 @@ components:
                 type: integer
               displayName:
                 type: string
-    AssetCategory:
+    ServiceRequestStatus:
       type: object
       properties:
         success:
@@ -697,9 +731,9 @@ components:
             properties:
               id:
                 type: integer
-              name:
+              status:
                 type: string
-                description: Category name (e.g. HVAC, Electrical)
+                description: Status value
               displayName:
                 type: string
     Error:
@@ -718,40 +752,6 @@ components:
             message:
               type: string
               description: Human-readable error message
-    ServiceRequestStatus:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-              status:
-                type: string
-                description: Status value
-              displayName:
-                type: string
-    WorkOrderCategory:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-              name:
-                type: string
-                description: Category name
-              displayName:
-                type: string
   parameters:
     picklistSearch:
       name: search

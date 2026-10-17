@@ -182,17 +182,6 @@ components:
             error:
               code: VALIDATION_ERROR
               message: 'Required field(s) missing: name'
-    NotFound:
-      description: Record or module not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            success: false
-            error:
-              code: RECORD_NOT_FOUND
-              message: Record with the given ID was not found
     Unauthorized:
       description: Missing or invalid authentication credentials
       content:
@@ -204,6 +193,17 @@ components:
             error:
               code: UNAUTHORIZED
               message: Missing or invalid authentication credentials
+    NotFound:
+      description: Record or module not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: RECORD_NOT_FOUND
+              message: Record with the given ID was not found
   schemas:
     Error:
       type: object
