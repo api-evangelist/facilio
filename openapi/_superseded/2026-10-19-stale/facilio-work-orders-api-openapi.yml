@@ -1,0 +1,1054 @@
+openapi: 3.2.0
+info:
+  title: Facilio REST Work Orders API
+  version: 5.0.0
+  description: The Facilio REST API gives you programmatic access to Facilio's Connected CMMS — the unified platform for managing property operations at portfolio scale.
+  contact:
+    name: Facilio Support
+    url: https://facilio.com
+  license:
+    name: Proprietary
+servers:
+- url: https://{region}.facilioapis.com/{app_name}/api/v5
+  variables:
+    region:
+      description: Regional deployment
+      default: us
+      enum:
+      - us
+      - au
+      - ae
+      - uk
+      - us-azure
+      - sa
+    app_name:
+      description: '''maintenance'' for API Key, ''developer'' for OAuth2'
+      default: maintenance
+      enum:
+      - maintenance
+      - developer
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Work Orders
+  description: Work orders represent maintenance tasks, repairs, and scheduled jobs across your facilities. Track them from creation through assignment, execution, and closure. Assign to staff or teams, set priorities and due dates, and monitor progress.
+paths:
+  /workorder:
+    get:
+      tags:
+      - Work Orders
+      summary: List work orders
+      description: 'Returns a paginated list of work orders. Supports filtering, sorting, field selection, and saved views.
+
+        By default, returns module-configured fields. Use `?select=` to customize.
+
+        Custom fields can be included via `?select=subject,po_reference_workorder`.'
+      operationId: listWorkOrders
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/select'
+      - $ref: '#/components/parameters/expand'
+      - $ref: '#/components/parameters/search'
+      - $ref: '#/components/parameters/count'
+      - $ref: '#/components/parameters/view'
+      - $ref: '#/components/parameters/changed'
+      - name: sortBy
+        in: query
+        description: Field to sort by (only sortable fields accepted)
+        schema:
+          type: string
+          enum:
+          - id
+          - serialNumber
+          - subject
+          - actualWorkDuration
+          - actualWorkStart
+          - actualWorkEnd
+          - estimatedWorkDuration
+          - scheduledStart
+          - estimatedEnd
+          - responseDueDate
+          - dueDate
+          - noOfAttachments
+          - noOfClosedTasks
+          - noOfNotes
+          - noOfTasks
+          - createdTime
+          - modifiedTime
+      - name: sortOrder
+        in: query
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: desc
+      responses:
+        '200':
+          description: Paginated list of work orders
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ListResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/WorkOrder'
+              example:
+                success: true
+                data:
+                - id: 13
+                  serialNumber: 13
+                  subject: HVAC Repair - Building A
+                  status: Submitted
+                  priority: High
+                  category: Energy
+                  type: Corrective
+                  sourceType: Web Work Order
+                  siteId:
+                    id: 10
+                  resource:
+                    id: 14
+                  scheduledStart: '2026-02-12T16:27:24Z'
+                  noOfAttachments: 0
+                  createdTime: '2026-02-12T16:27:24Z'
+                  createdBy:
+                    id: 1
+                  modifiedTime: '2026-02-12T16:27:24Z'
+                - id: 14
+                  serialNumber: 14
+                  subject: Plumbing leak in Floor 2
+                  status: Work in Progress
+                  priority: Medium
+                  category: Plumbing
+                  createdTime: '2026-02-13T09:15:00Z'
+                  createdBy:
+                    id: 2
+                pagination:
+                  page: 1
+                  pageSize: 50
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags:
+      - Work Orders
+      summary: Create a work order
+      description: 'Creates a new work order. Requires `subject` and `site` at minimum.
+
+        Picklist fields (priority, category, type) accept display name strings (e.g. `"High"`) or numeric IDs.
+
+        Custom fields can be passed alongside system fields.'
+      operationId: createWorkOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  $ref: '#/components/schemas/WorkOrder'
+            example:
+              data:
+                subject: HVAC Repair - Building A
+                siteId: 10
+                priority: High
+                category: Energy
+                description: AC unit not cooling properly on Floor 3
+                assignedTo: 5
+                dueDate: '2026-02-15T17:00:00Z'
+                po_reference_workorder: PO-2026-001
+      responses:
+        '201':
+          description: Work order created successfully
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 15
+                  serialNumber: 15
+                  subject: HVAC Repair - Building A
+                  status: Submitted
+                  priority: High
+                  category: Energy
+                  siteId:
+                    id: 10
+                    name: Headquarters
+                  createdTime: '2026-02-14T10:00:00Z'
+                  createdBy:
+                    id: 1
+                    name: Alex Johnson
+                    email: alex.johnson@example.com
+                message: Record created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /workorder/{id}:
+    get:
+      tags:
+      - Work Orders
+      summary: Get a work order
+      description: 'Returns a single work order with all system fields, custom fields, and expanded lookup fields.
+
+        Lookup expansion follows **Lookup fields in responses** in the API overview.'
+      operationId: getWorkOrder
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      - $ref: '#/components/parameters/select'
+      - $ref: '#/components/parameters/expand'
+      responses:
+        '200':
+          description: Work order details
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 13
+                  serialNumber: 13
+                  subject: HVAC Repair - Building A
+                  description: AC unit not cooling properly on Floor 3
+                  status: Submitted
+                  priority: High
+                  category: Energy
+                  type: Corrective
+                  sourceType: Web Work Order
+                  resource:
+                    id: 14
+                    name: AHU-01
+                  siteId:
+                    id: 10
+                    name: Headquarters
+                  assignedTo:
+                    id: 5
+                    name: John Smith
+                    email: john@facilio.com
+                  tenant:
+                    id: 90
+                    name: TechStart Inc
+                  scheduledStart: '2026-02-12T16:27:24Z'
+                  dueDate: '2026-02-15T17:00:00Z'
+                  noOfAttachments: 2
+                  noOfTasks: 3
+                  createdTime: '2026-02-12T16:27:24Z'
+                  createdBy:
+                    id: 1
+                    name: Alex Johnson
+                    email: alex.johnson@example.com
+                  modifiedTime: '2026-02-13T09:30:00Z'
+                  po_reference_workorder: PO-2026-001
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+      - Work Orders
+      summary: Update a work order
+      description: 'Updates an existing work order. Only the fields included in the request body are updated;
+
+        omitted fields remain unchanged. Picklist fields accept display name strings or IDs.'
+      operationId: updateWorkOrder
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  $ref: '#/components/schemas/WorkOrder'
+            example:
+              data:
+                priority: Low
+                status: Work in Progress
+                assignedTo: 7
+      responses:
+        '200':
+          description: Work order updated successfully
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 13
+                  subject: HVAC Repair - Building A
+                  status: Work in Progress
+                  priority: Low
+                  assignedTo:
+                    id: 7
+                    name: Jane Doe
+                    email: jane@facilio.com
+                  modifiedTime: '2026-02-14T11:00:00Z'
+                message: Record updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Work Orders
+      summary: Delete a work order
+      description: Permanently deletes a work order. This action cannot be undone.
+      operationId: deleteWorkOrder
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      responses:
+        '200':
+          description: Work order deleted
+          content:
+            application/json:
+              example:
+                success: true
+                message: Record deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /workorder/{id}/tasks:
+    get:
+      tags:
+      - Work Orders
+      summary: List work order tasks
+      description: Returns checklist tasks for the work order, with each task including its photos.
+      operationId: listWorkOrderTasks
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      responses:
+        '200':
+          description: List of work order tasks
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 801
+                  subject: Verify compressor pressure
+                  description: Check suction and discharge pressure
+                  status: open
+                  photos:
+                  - id: 1101
+                    fileName: before.jpg
+                    contentType: image/jpeg
+                    type: before
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags:
+      - Work Orders
+      summary: Create work order task
+      description: Creates a checklist task under the given work order.
+      operationId: createWorkOrderTask
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  $ref: '#/components/schemas/WorkOrderTask'
+            example:
+              data:
+                subject: Inspect condenser coil
+                description: Capture before/after photos
+      responses:
+        '201':
+          description: Task created
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 802
+                  subject: Inspect condenser coil
+                  status: open
+                  photos: []
+                message: Task created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /workorder/{id}/tasks/{taskId}:
+    get:
+      tags:
+      - Work Orders
+      summary: Get work order task
+      description: Returns a single checklist task with photos.
+      operationId: getWorkOrderTask
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Task details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/WorkOrderTask'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+      - Work Orders
+      summary: Update or complete work order task
+      description: Updates task fields. Set `status=closed` to complete the task and `status=open` to reopen.
+      operationId: updateWorkOrderTask
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  $ref: '#/components/schemas/WorkOrderTask'
+            example:
+              data:
+                status: closed
+      responses:
+        '200':
+          description: Task updated
+          content:
+            application/json:
+              example:
+                success: true
+                message: Task updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Work Orders
+      summary: Delete work order task
+      operationId: deleteWorkOrderTask
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Task deleted
+          content:
+            application/json:
+              example:
+                success: true
+                message: Record deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /workorder/{id}/tasks/{taskId}/photos:
+    post:
+      tags:
+      - Work Orders
+      summary: Upload work order task photo
+      description: Uploads a task photo with type `before` or `after`. Only image files are accepted.
+      operationId: addWorkOrderTaskPhoto
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - attachment
+              - type
+              properties:
+                attachment:
+                  type: string
+                  format: binary
+                  description: Image file only (jpeg, png, gif, webp, bmp, tiff, heic/heif)
+                type:
+                  type: string
+                  enum:
+                  - before
+                  - after
+      responses:
+        '201':
+          description: Attachment uploaded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WorkOrderTaskPhoto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /workorder/metadata:
+    get:
+      tags:
+      - Work Orders
+      summary: Get work order field schema
+      description: Returns the field schema for the workorder module, including all declared system fields and any org-specific custom fields with their data type, required/readOnly flags, and lookup targets.
+      operationId: getWorkOrderMetadata
+      parameters:
+      - $ref: '#/components/parameters/includeAllowedValues'
+      responses:
+        '200':
+          description: Field schema retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModuleMetaResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  schemas:
+    ListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+            pageSize:
+              type: integer
+        count:
+          type: integer
+          description: Total count (only when ?count=true)
+    ModuleMetaResponse:
+      type: object
+      description: Response body for GET /{moduleName}/metadata.
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            module:
+              $ref: '#/components/schemas/FacilioModule'
+            fields:
+              type: array
+              description: 'Ordered list of fields for the module.
+
+                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
+
+                Custom modules return all fields.
+
+                '
+              items:
+                $ref: '#/components/schemas/FacilioField'
+    WorkOrder:
+      type: object
+      description: 'Work order. Custom fields: `{field_name}_workorder`. On create, `subject` and `siteId` are required. On update, only include fields you want to change. Picklist fields accept display name strings or IDs.'
+      required:
+      - subject
+      - siteId
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: Unique record ID
+        serialNumber:
+          type: integer
+          readOnly: true
+          description: Auto-generated sequential number
+        subject:
+          type: string
+          description: Work order title (required on create, sortable)
+        description:
+          type: string
+          description: Detailed description of the work
+        status:
+          type: string
+          description: Status — pass `status` value (e.g. 'Submitted', 'Work in Progress') or numeric ID. Use `GET /picklist/workorder/status` for valid values.
+        priority:
+          type: string
+          description: Priority level — picklist value (e.g. 'High', 'Medium', 'Low') or ID
+        category:
+          type: string
+          description: Work category — picklist value (e.g. 'Energy', 'HVAC') or ID
+        type:
+          type: string
+          description: Work type — picklist value (e.g. 'Corrective', 'Preventive') or ID
+        sourceType:
+          type: string
+          readOnly: true
+          description: How the work order was created (e.g. Web Work Order, Alarm)
+        resource:
+          type: integer
+          description: Associated asset or space ID. Returns {id, name} on GET.
+        siteId:
+          type: integer
+          description: Site where the work order is raised — represents a building, campus, or facility in your portfolio (required on create)
+        assignedTo:
+          type: integer
+          description: Assigned staff user ID. Expanded per `users` module when returned on GET/create/update (see User schema).
+        assignmentGroup:
+          type: integer
+          description: Assigned team ID
+        vendor:
+          type: integer
+          description: Vendor ID
+        client:
+          type: integer
+          description: Client ID
+        tenant:
+          type: integer
+          description: Tenant ID
+        requestedBy:
+          type: integer
+          description: Requester user ID
+        actualWorkDuration:
+          type: number
+          description: Actual work duration in hours (sortable)
+        actualWorkStart:
+          type: string
+          format: date-time
+          description: When work actually started (sortable)
+        actualWorkEnd:
+          type: string
+          format: date-time
+          description: When work actually ended (sortable)
+        estimatedWorkDuration:
+          type: number
+          description: Estimated work duration in hours (sortable)
+        scheduledStart:
+          type: string
+          format: date-time
+          description: Scheduled start time (sortable)
+        estimatedEnd:
+          type: string
+          format: date-time
+          description: Estimated end time (sortable)
+        responseDueDate:
+          type: string
+          format: date-time
+          description: Response SLA due date (sortable)
+        dueDate:
+          type: string
+          format: date-time
+          description: Work order due date (sortable)
+        highRisk:
+          type: boolean
+          description: Whether flagged as high risk
+        noOfAttachments:
+          type: integer
+          readOnly: true
+          description: Number of file attachments (sortable)
+        noOfClosedTasks:
+          type: integer
+          readOnly: true
+          description: Number of completed tasks (sortable)
+        noOfNotes:
+          type: integer
+          readOnly: true
+          description: Number of comments (sortable)
+        noOfTasks:
+          type: integer
+          readOnly: true
+          description: Total number of tasks (sortable)
+        createdTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Record creation timestamp (sortable)
+        createdBy:
+          readOnly: true
+          description: User who created the record
+          allOf:
+          - $ref: '#/components/schemas/User'
+        modifiedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Last modification timestamp (sortable)
+        modifiedBy:
+          readOnly: true
+          description: User who last modified
+          allOf:
+          - $ref: '#/components/schemas/User'
+      additionalProperties:
+        description: Custom fields (e.g. po_reference_workorder)
+    FacilioField:
+      type: object
+      description: Schema descriptor for a single field within a module.
+      properties:
+        name:
+          type: string
+          description: Field name used in API requests and responses (e.g. `subject`, `po_reference_workorder`)
+        displayName:
+          type: string
+          description: Human-readable field label
+        dataType:
+          type: string
+          description: 'Field data type. Common values:
+
+            `STRING`, `NUMBER`, `DECIMAL`, `BOOLEAN`,
+
+            `DATE`, `DATE_TIME`,
+
+            `BIG_STRING` (large text, excluded from list responses),
+
+            `LOOKUP` (reference to another record — see `lookupModuleName`),
+
+            `MULTI_LOOKUP` (multi-reference — see `lookupModuleName`),
+
+            `ENUM`, `SYSTEM_ENUM`, `STRING_SYSTEM_ENUM` (picklist types)
+
+            '
+          example: STRING
+        required:
+          type: boolean
+          description: '`true` if this field must be provided on record creation'
+        readOnly:
+          type: boolean
+          description: '`true` if this field cannot be set or modified via the API (e.g. auto-generated system fields)'
+        isCustom:
+          type: boolean
+          description: '`true` for fields added by your organization; `false` for standard built-in fields'
+        sortable:
+          type: boolean
+          description: '`true` if this field can be used as a `sortBy` value on the list API'
+        lookupModuleName:
+          type: string
+          description: Present only on `LOOKUP` and `MULTI_LOOKUP` fields. The name of the target module (e.g. `site`, `users`, `ticketstatus`).
+        max_length:
+          type: integer
+          description: 'Maximum number of characters accepted by the V5 write API for text-style fields.
+
+            Present only when the field''s `dataType` is one of:
+
+            `STRING` (255), `LARGE_TEXT` (2000), `BIG_STRING` (32000).
+
+            Omitted for all other data types.
+
+            '
+          example: 255
+        allowed_values:
+          type: array
+          description: 'List of acceptable write values for picklist-capable fields. Present **only when the request includes `?includeAllowedValues=true`** AND the field is one of:
+
+            `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, or a `LOOKUP` targeting a system picklist module (e.g. `ticketstatus`, `ticketpriority`, `ticketcategory`, `tickettype`).
+
+            Each entry uses `{label, value}`; the `value` is the canonical form accepted by create/update payloads.
+
+            '
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+                description: Display label as shown in the UI
+              value:
+                type: string
+                description: Canonical value accepted by create/update for this field and filtering
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+    WorkOrderTaskPhoto:
+      type: object
+      description: Task file attachment with before/after type.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        fileName:
+          type: string
+          readOnly: true
+        fileSize:
+          type: integer
+          readOnly: true
+        contentType:
+          type: string
+          readOnly: true
+        type:
+          type: string
+          enum:
+          - before
+          - after
+          description: Photo type
+        createdTime:
+          type: string
+          format: date-time
+          readOnly: true
+    User:
+      type: object
+      description: 'Expanded object for lookups to the `users` module.
+
+        On list API, user lookups return `{id}` only unless `?expand=` includes that field.
+
+        When expanded (single-record GET, create/update responses, or list with `expand`): fixed set `id`, `name`, `email`, `phone` (see **Lookup fields in responses**).
+
+        '
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: User ID
+        name:
+          type: string
+          description: User's full name
+        email:
+          type: string
+          description: User's email address
+        phone:
+          type: string
+          description: Phone number when present
+    WorkOrderTask:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        subject:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum:
+          - open
+          - closed
+        createdTime:
+          type: string
+          format: date-time
+          readOnly: true
+        modifiedTime:
+          type: string
+          format: date-time
+          readOnly: true
+        photos:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkOrderTaskPhoto'
+    FacilioModule:
+      type: object
+      description: A single entry in the module catalogue returned by GET /modules.
+      properties:
+        name:
+          type: string
+          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
+        displayName:
+          type: string
+          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
+        description:
+          type: string
+          description: Module description as configured in Facilio Setup. Omitted when blank.
+        isCustom:
+          type: boolean
+          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
+  parameters:
+    pageSize:
+      name: pageSize
+      in: query
+      description: Records per page (max 200)
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
+    select:
+      name: select
+      in: query
+      description: Comma-separated field names to include in the response
+      schema:
+        type: string
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
+    includeAllowedValues:
+      name: includeAllowedValues
+      in: query
+      description: 'When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).
+
+        Default `false` keeps the original metadata payload (no enrichment, no extra DB calls).
+
+        Use this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.
+
+        '
+      schema:
+        type: boolean
+        default: false
+    view:
+      name: view
+      in: query
+      description: Saved view name
+      schema:
+        type: string
+    search:
+      name: search
+      in: query
+      description: Free-text search on the primary field (subject, name, etc.)
+      schema:
+        type: string
+    changed:
+      name: changed
+      in: query
+      description: 'Delta sync: returns records created/modified after this UTC timestamp'
+      schema:
+        type: string
+        format: date-time
+    count:
+      name: count
+      in: query
+      description: Include total record count in response
+      schema:
+        type: boolean
+        default: false
+    expand:
+      name: expand
+      in: query
+      description: 'Comma-separated lookup field names to expand on **list** endpoints (max 5).
+
+        Expanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).
+
+        '
+      schema:
+        type: string
+  responses:
+    NotFound:
+      description: Record or module not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: RECORD_NOT_FOUND
+              message: Record with the given ID was not found
+    BadRequest:
+      description: Validation error — missing required fields, invalid field values, or malformed request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: VALIDATION_ERROR
+              message: 'Required field(s) missing: name'
+    Unauthorized:
+      description: Missing or invalid authentication credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Missing or invalid authentication credentials
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Personal access token
+    oauth2:
+      type: oauth2
+      description: Supports authorization_code and password grant types
+      flows:
+        authorizationCode:
+          authorizationUrl: https://us.facilioapis.com/identity/oauth2/authorize
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}
+        password:
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}

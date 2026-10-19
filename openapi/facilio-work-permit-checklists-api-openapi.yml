@@ -1,0 +1,532 @@
+openapi: 3.2.0
+info:
+  title: Facilio REST Work Permit Checklists API
+  version: 5.0.0
+  description: 'The Facilio REST API gives you programmatic access to Facilio''s Connected CMMS — the unified platform for managing property operations at portfolio scale. Build integrations that connect Facilio with your ERP, accounting systems, BMS, IoT platforms, and other business tools. Automate work order creation from external triggers, synchronize asset data across systems, push tenant and vendor records from your CRM, or pull maintenance data into your reporting dashboards. **What you can do with this API:**
+
+    - **Work Orders & Service Requests** — Create, assign, track, and close maintenance tasks programmatically
+
+    - **Assets** — Manage your equipment registry, track asset lifecycle, and sync with external asset management systems
+
+    - **Portfolio (Sites, Buildings, Floors, Spaces)** — Maintain your facility hierarchy and space data
+
+    - **People (Tenants, Vendors, Clients)** — Synchronize contacts and stakeholder records
+
+    - **Inventory (Item Types, Tool Types, Items & Tools, Services, Storerooms)** — Master data, per-storeroom item/tool balances (read), per-bin quantities by item or tool record, quantity adjustments, and warehouse locations
+
+    - **Procurement (Quotes, Purchase Requests, Purchase Orders, Receivable receiving, Invoices)** — Procurement with line items; receive against a PO via receivable APIs
+
+    - **Credit Notes (Vendor Credits, Client Credits)** — Manage credit notes for refunds and transaction adjustments with line items
+
+    - **Inventory Requests** — Track material requisitions from work orders to storerooms
+
+    - **Custom Modules** — Manage your organization''s custom modules — record types you define for the data and workflows that are specific to your business
+
+    - **Schema Discovery** — List all accessible modules and inspect field schemas (name, type, required, readOnly, lookup target) via `GET /modules` and `GET /{moduleName}/metadata`
+
+    - **Attachments & Comments** — Attach documents, photos, and notes to work orders and service requests
+
+    - **Picklists** — Discover available values for status, priority, category, and other configurable fields
+
+
+    The API follows REST conventions with JSON request/response bodies, standard HTTP methods (GET, POST, PATCH, DELETE), and consistent error handling across all endpoints. ## Base URL
+
+
+    ```
+
+    https://{region}.facilioapis.com/{app_name}/api/v5
+
+    ```
+
+
+    | Variable | Description | Values |
+
+    |----------|-------------|--------|
+
+    | `region` | Your deployment region | `us`, `au`, `ae`, `uk`, `us-azure`, `sa` |
+
+    | `app_name` | `maintenance` for API Key auth, `developer` for OAuth2 auth | `maintenance`, `developer` |
+
+
+    ## Authentication
+
+
+    All API requests must be authenticated using one of the following methods:
+
+
+    ### API Key (Personal Access Token)
+
+    Generate an API key from your Facilio account settings and pass it in the `x-api-key` header. The key inherits the permissions of the user who created it. ```
+
+    x-api-key: your-api-key-here
+
+    ```
+
+
+    ### OAuth2
+
+    For developer app integrations. Supports **authorization_code** and **password** grant types. | Endpoint | URL |
+
+    |----------|-----|
+
+    | Authorize | `https://{region}.facilioapis.com/identity/oauth2/authorize` |
+
+    | Token | `https://{region}.facilioapis.com/identity/oauth2/token` |
+
+    | Refresh | `https://{region}.facilioapis.com/identity/oauth2/token` (with `grant_type=refresh_token`) |
+
+    | Revoke | `https://{region}.facilioapis.com/identity/oauth2/revoke` |
+
+
+    Pass the access token as:
+
+    ```
+
+    Authorization: Bearer oauth2
+
+    ```
+
+
+    ---
+
+
+    ## List Operations
+
+
+    All list endpoints (`GET /{module}`) support these query parameters:
+
+
+    | Parameter | Type | Default | Description |
+
+    |-----------|------|---------|-------------|
+
+    | `page` | integer | 1 | Page number (1-based) |
+
+    | `pageSize` | integer | 50 | Number of records per page. Maximum is 200. |
+
+    | `select` | string | — | Comma-separated field names to include in the response. If omitted, module default fields are returned. |
+
+    | `expand` | string | — | Comma-separated lookup field names to expand with full details (max 5).'
+  contact:
+    name: Facilio Support
+    url: https://facilio.com
+  license:
+    name: Proprietary
+servers:
+- url: https://{region}.facilioapis.com/{app_name}/api/v5
+  variables:
+    region:
+      description: Regional deployment
+      default: us
+      enum:
+      - us
+      - au
+      - ae
+      - uk
+      - us-azure
+      - sa
+    app_name:
+      description: '''maintenance'' for API Key, ''developer'' for OAuth2'
+      default: maintenance
+      enum:
+      - maintenance
+      - developer
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Work Permit Checklists
+  description: The safety checklist items on a permit — filled and reviewed through its lifecycle — plus the read-only permit-type checklist templates and categories they are generated from.
+paths:
+  /workpermitchecklist:
+    get:
+      tags:
+      - Work Permit Checklists
+      summary: List work permit checklist items
+      description: 'Returns filled checklist items across permits. Filter to one permit with the standard query-param
+
+        filter, e.g. `?workPermit=300`. Items are auto-created when a permit is created, so this module is
+
+        read + update only (no create/delete).'
+      operationId: listWorkPermitChecklistItems
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/select'
+      - $ref: '#/components/parameters/count'
+      responses:
+        '200':
+          description: List of checklist items
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 900
+                  workPermit:
+                    id: 300
+                  checklist:
+                    id: 700
+                    name: Fire extinguisher on site
+                  required: true
+                  isReviewed: false
+                  remarks: 2 units staged
+                  noOfAttachments: 0
+                pagination:
+                  page: 1
+                  pageSize: 50
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /workpermitchecklist/{id}:
+    get:
+      tags:
+      - Work Permit Checklists
+      summary: Get a work permit checklist item
+      operationId: getWorkPermitChecklistItem
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      responses:
+        '200':
+          description: Checklist item
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 900
+                  workPermit:
+                    id: 300
+                  checklist:
+                    id: 700
+                    name: Fire extinguisher on site
+                  required: true
+                  isReviewed: false
+                  remarks: 2 units staged
+                  reviewerRemarks: null
+                  noOfAttachments: 0
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+      - Work Permit Checklists
+      summary: Fill or review a checklist item
+      description: 'Updates a single checklist item — fill it (`remarks`) or review it (`isReviewed`, `reviewerRemarks`).
+
+        Only the included fields are changed.'
+      operationId: updateWorkPermitChecklistItem
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  $ref: '#/components/schemas/WorkPermitChecklist'
+            example:
+              data:
+                isReviewed: true
+                reviewerRemarks: Verified on site
+      responses:
+        '200':
+          description: Checklist item updated
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 900
+                  isReviewed: true
+                  reviewerRemarks: Verified on site
+                message: Record updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /workpermittypechecklist:
+    get:
+      tags:
+      - Work Permit Checklists
+      summary: List permit-type checklist templates
+      description: 'Read-only. The checklist item templates configured on permit types. Each item carries a
+
+        `validationType` (Pre/Post) that determines the permit phase it appears in. Filter by permit type
+
+        with `?workPermitType=...`.'
+      operationId: listWorkPermitTypeChecklists
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/select'
+      - $ref: '#/components/parameters/count'
+      responses:
+        '200':
+          description: List of checklist templates
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 700
+                  item: Fire extinguisher on site
+                  linkName: fire_extinguisher
+                  workPermitType:
+                    id: 1
+                    name: Hot Work
+                  validationType: Pre
+                  category:
+                    id: 50
+                    name: Fire Safety
+                pagination:
+                  page: 1
+                  pageSize: 50
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /workpermittypechecklist/{id}:
+    get:
+      tags:
+      - Work Permit Checklists
+      summary: Get a permit-type checklist template
+      operationId: getWorkPermitTypeChecklist
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      responses:
+        '200':
+          description: Checklist template
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 700
+                  item: Fire extinguisher on site
+                  description: At least one CO2 extinguisher within 10m
+                  linkName: fire_extinguisher
+                  workPermitType:
+                    id: 1
+                    name: Hot Work
+                  validationType: Pre
+                  category:
+                    id: 50
+                    name: Fire Safety
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /workpermittypechecklistcategory:
+    get:
+      tags:
+      - Work Permit Checklists
+      summary: List permit-type checklist categories
+      description: Read-only. Groups permit-type checklist templates, each scoped to a `validationType` (Pre/Post).
+      operationId: listWorkPermitTypeChecklistCategories
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/select'
+      - $ref: '#/components/parameters/count'
+      responses:
+        '200':
+          description: List of categories
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 50
+                  name: Fire Safety
+                  linkName: fire_safety
+                  workPermitType:
+                    id: 1
+                    name: Hot Work
+                  validationType: Pre
+                pagination:
+                  page: 1
+                  pageSize: 50
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /workpermittypechecklistcategory/{id}:
+    get:
+      tags:
+      - Work Permit Checklists
+      summary: Get a permit-type checklist category
+      operationId: getWorkPermitTypeChecklistCategory
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      responses:
+        '200':
+          description: Category
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 50
+                  name: Fire Safety
+                  description: Fire prevention items
+                  linkName: fire_safety
+                  workPermitType:
+                    id: 1
+                    name: Hot Work
+                  validationType: Pre
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  parameters:
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
+    select:
+      name: select
+      in: query
+      description: Comma-separated field names to include in the response
+      schema:
+        type: string
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
+    count:
+      name: count
+      in: query
+      description: Include total record count in response
+      schema:
+        type: boolean
+        default: false
+    pageSize:
+      name: pageSize
+      in: query
+      description: Records per page (max 200)
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+  schemas:
+    WorkPermitChecklist:
+      type: object
+      description: A filled checklist item on a permit. Auto-created from the permit type's templates when the permit is created — no create/delete; update to fill (`remarks`) or review (`isReviewed`, `reviewerRemarks`).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: Checklist item ID
+        workPermit:
+          readOnly: true
+          description: Parent permit — returns {id}
+        checklist:
+          readOnly: true
+          description: Source template item — returns {id, name}
+        required:
+          type: boolean
+          readOnly: true
+          description: Whether this item is mandatory
+        isReviewed:
+          type: boolean
+          description: Whether the item has been reviewed
+        remarks:
+          type: string
+          description: Remarks captured while filling the item
+        reviewerRemarks:
+          type: string
+          description: Remarks captured while reviewing the item
+        noOfAttachments:
+          type: integer
+          readOnly: true
+          description: Number of attachments on the item
+        sysCreatedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Creation timestamp (sortable)
+        sysModifiedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Last modification timestamp (sortable)
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+  responses:
+    BadRequest:
+      description: Validation error — missing required fields, invalid field values, or malformed request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: VALIDATION_ERROR
+              message: 'Required field(s) missing: name'
+    Unauthorized:
+      description: Missing or invalid authentication credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Missing or invalid authentication credentials
+    NotFound:
+      description: Record or module not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: RECORD_NOT_FOUND
+              message: Record with the given ID was not found
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Personal access token
+    oauth2:
+      type: oauth2
+      description: Supports authorization_code and password grant types
+      flows:
+        authorizationCode:
+          authorizationUrl: https://us.facilioapis.com/identity/oauth2/authorize
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}
+        password:
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}

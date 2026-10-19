@@ -1,0 +1,615 @@
+openapi: 3.2.0
+info:
+  title: Facilio REST Employees API
+  version: 5.0.0
+  description: 'The Facilio REST API gives you programmatic access to Facilio''s Connected CMMS — the unified platform for managing property operations at portfolio scale. Build integrations that connect Facilio with your ERP, accounting systems, BMS, IoT platforms, and other business tools. Automate work order creation from external triggers, synchronize asset data across systems, push tenant and vendor records from your CRM, or pull maintenance data into your reporting dashboards. **What you can do with this API:**
+
+    - **Work Orders & Service Requests** — Create, assign, track, and close maintenance tasks programmatically
+
+    - **Assets** — Manage your equipment registry, track asset lifecycle, and sync with external asset management systems
+
+    - **Portfolio (Sites, Buildings, Floors, Spaces)** — Maintain your facility hierarchy and space data
+
+    - **People (Tenants, Vendors, Clients)** — Synchronize contacts and stakeholder records
+
+    - **Inventory (Item Types, Tool Types, Items & Tools, Services, Storerooms)** — Master data, per-storeroom item/tool balances (read), per-bin quantities by item or tool record, quantity adjustments, and warehouse locations
+
+    - **Procurement (Quotes, Purchase Requests, Purchase Orders, Receivable receiving, Invoices)** — Procurement with line items; receive against a PO via receivable APIs
+
+    - **Credit Notes (Vendor Credits, Client Credits)** — Manage credit notes for refunds and transaction adjustments with line items
+
+    - **Inventory Requests** — Track material requisitions from work orders to storerooms
+
+    - **Custom Modules** — Manage your organization''s custom modules — record types you define for the data and workflows that are specific to your business
+
+    - **Schema Discovery** — List all accessible modules and inspect field schemas (name, type, required, readOnly, lookup target) via `GET /modules` and `GET /{moduleName}/metadata`
+
+    - **Attachments & Comments** — Attach documents, photos, and notes to work orders and service requests
+
+    - **Picklists** — Discover available values for status, priority, category, and other configurable fields
+
+
+    The API follows REST conventions with JSON request/response bodies, standard HTTP methods (GET, POST, PATCH, DELETE), and consistent error handling across all endpoints. ## Base URL
+
+
+    ```
+
+    https://{region}.facilioapis.com/{app_name}/api/v5
+
+    ```
+
+
+    | Variable | Description | Values |
+
+    |----------|-------------|--------|
+
+    | `region` | Your deployment region | `us`, `au`, `ae`, `uk`, `us-azure`, `sa` |
+
+    | `app_name` | `maintenance` for API Key auth, `developer` for OAuth2 auth | `maintenance`, `developer` |
+
+
+    ## Authentication
+
+
+    All API requests must be authenticated using one of the following methods:
+
+
+    ### API Key (Personal Access Token)
+
+    Generate an API key from your Facilio account settings and pass it in the `x-api-key` header. The key inherits the permissions of the user who created it. ```
+
+    x-api-key: your-api-key-here
+
+    ```
+
+
+    ### OAuth2
+
+    For developer app integrations. Supports **authorization_code** and **password** grant types. | Endpoint | URL |
+
+    |----------|-----|
+
+    | Authorize | `https://{region}.facilioapis.com/identity/oauth2/authorize` |
+
+    | Token | `https://{region}.facilioapis.com/identity/oauth2/token` |
+
+    | Refresh | `https://{region}.facilioapis.com/identity/oauth2/token` (with `grant_type=refresh_token`) |
+
+    | Revoke | `https://{region}.facilioapis.com/identity/oauth2/revoke` |
+
+
+    Pass the access token as:
+
+    ```
+
+    Authorization: Bearer oauth2
+
+    ```
+
+
+    ---
+
+
+    ## List Operations
+
+
+    All list endpoints (`GET /{module}`) support these query parameters:
+
+
+    | Parameter | Type | Default | Description |
+
+    |-----------|------|---------|-------------|
+
+    | `page` | integer | 1 | Page number (1-based) |
+
+    | `pageSize` | integer | 50 | Number of records per page. Maximum is 200. |
+
+    | `select` | string | — | Comma-separated field names to include in the response. If omitted, module default fields are returned. |
+
+    | `expand` | string | — | Comma-separated lookup field names to expand with full details (max 5).'
+  contact:
+    name: Facilio Support
+    url: https://facilio.com
+  license:
+    name: Proprietary
+servers:
+- url: https://{region}.facilioapis.com/{app_name}/api/v5
+  variables:
+    region:
+      description: Regional deployment
+      default: us
+      enum:
+      - us
+      - au
+      - ae
+      - uk
+      - us-azure
+      - sa
+    app_name:
+      description: '''maintenance'' for API Key, ''developer'' for OAuth2'
+      default: maintenance
+      enum:
+      - maintenance
+      - developer
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Employees
+  description: Employee records — your internal staff (a People-extended module) with name, contact details, designation, and department — used for assignment and directory lookups.
+paths:
+  /employee:
+    get:
+      tags:
+      - Employees
+      summary: List employees
+      description: Returns a paginated list of employees. Supports filtering, sorting, field selection, and saved views.
+      operationId: listEmployees
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/select'
+      - $ref: '#/components/parameters/expand'
+      - $ref: '#/components/parameters/search'
+      - $ref: '#/components/parameters/count'
+      - $ref: '#/components/parameters/view'
+      - name: sortBy
+        in: query
+        description: Field to sort by (only sortable fields accepted)
+        schema:
+          type: string
+          enum:
+          - id
+          - name
+          - email
+          - sysCreatedTime
+          - sysModifiedTime
+      - name: sortOrder
+        in: query
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: asc
+      responses:
+        '200':
+          description: Paginated list of employees
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ListResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Employee'
+              example:
+                success: true
+                data:
+                - id: 800
+                  name: Priya Nair
+                  email: priya.nair@example.com
+                  phone: +91-80-1234-5678
+                  designation: Facilities Engineer
+                  department:
+                    id: 12
+                    name: Operations
+                  active: true
+                pagination:
+                  page: 1
+                  pageSize: 50
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags:
+      - Employees
+      summary: Create an employee
+      description: Creates a new employee. Requires `name` and `email`.
+      operationId: createEmployee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  $ref: '#/components/schemas/Employee'
+            example:
+              data:
+                name: Priya Nair
+                email: priya.nair@example.com
+                phone: +91-80-1234-5678
+                designation: Facilities Engineer
+                department: 12
+                active: true
+      responses:
+        '201':
+          description: Employee created
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 800
+                  name: Priya Nair
+                  email: priya.nair@example.com
+                  active: true
+                message: Record created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /employee/bulk:
+    post:
+      tags:
+      - Employees
+      summary: Bulk create employees
+      description: Creates multiple employees in a single request. The `data` array holds one object per employee.
+      operationId: bulkCreateEmployees
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Employee'
+            example:
+              data:
+              - name: Sam Lee
+                email: sam.lee@example.com
+              - name: Rita Gomez
+                email: rita.gomez@example.com
+      responses:
+        '201':
+          description: Employees created
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 801
+                  name: Sam Lee
+                - id: 802
+                  name: Rita Gomez
+                message: Records created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /employee/{id}:
+    get:
+      tags:
+      - Employees
+      summary: Get an employee
+      operationId: getEmployee
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      - $ref: '#/components/parameters/select'
+      - $ref: '#/components/parameters/expand'
+      responses:
+        '200':
+          description: Employee details
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 800
+                  name: Priya Nair
+                  email: priya.nair@example.com
+                  phone: +91-80-1234-5678
+                  mobile: +91-99000-11223
+                  designation: Facilities Engineer
+                  department:
+                    id: 12
+                    name: Operations
+                  active: true
+                  sysCreatedTime: '2026-01-10T08:00:00Z'
+                  sysCreatedBy:
+                    id: 1
+                    name: Alex Johnson
+                    email: alex.johnson@example.com
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+      - Employees
+      summary: Update an employee
+      description: Updates an employee. Only the fields included in the request body are updated.
+      operationId: updateEmployee
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  $ref: '#/components/schemas/Employee'
+            example:
+              data:
+                designation: Senior Facilities Engineer
+                active: false
+      responses:
+        '200':
+          description: Employee updated
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 800
+                  designation: Senior Facilities Engineer
+                  active: false
+                message: Record updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Employees
+      summary: Delete an employee
+      description: Permanently deletes an employee record. This action cannot be undone.
+      operationId: deleteEmployee
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      responses:
+        '200':
+          description: Employee deleted
+          content:
+            application/json:
+              example:
+                success: true
+                message: Record deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  parameters:
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
+    select:
+      name: select
+      in: query
+      description: Comma-separated field names to include in the response
+      schema:
+        type: string
+    view:
+      name: view
+      in: query
+      description: Saved view name
+      schema:
+        type: string
+    search:
+      name: search
+      in: query
+      description: Free-text search on the primary field (subject, name, etc.)
+      schema:
+        type: string
+    expand:
+      name: expand
+      in: query
+      description: 'Comma-separated lookup field names to expand on **list** endpoints (max 5).
+
+        Expanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).
+
+        '
+      schema:
+        type: string
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
+    count:
+      name: count
+      in: query
+      description: Include total record count in response
+      schema:
+        type: boolean
+        default: false
+    pageSize:
+      name: pageSize
+      in: query
+      description: Records per page (max 200)
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+  schemas:
+    Employee:
+      type: object
+      description: 'Employee (People-extended module). Custom fields: `{field_name}_employees`. On create, `name` and `email` are required.'
+      required:
+      - name
+      - email
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+          description: Unique record ID
+        name:
+          type: string
+          description: Full name (required, sortable)
+        email:
+          type: string
+          description: Email address (required, sortable)
+        phone:
+          type: string
+          description: Phone number
+        mobile:
+          type: string
+          description: Mobile number
+        designation:
+          type: string
+          description: Job title / designation
+        department:
+          type: integer
+          description: Department ID — returns {id, name} on GET
+        active:
+          type: boolean
+          description: Whether the employee is active
+        sysCreatedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Creation timestamp (sortable)
+        sysModifiedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Last modification timestamp (sortable)
+        sysCreatedBy:
+          readOnly: true
+          description: User who created the record
+          allOf:
+          - $ref: '#/components/schemas/User'
+        sysModifiedBy:
+          readOnly: true
+          description: User who last modified the record
+          allOf:
+          - $ref: '#/components/schemas/User'
+      additionalProperties:
+        description: Custom fields (e.g. {field_name}_employees)
+    ListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+            pageSize:
+              type: integer
+        count:
+          type: integer
+          description: Total count (only when ?count=true)
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+    User:
+      type: object
+      description: 'Expanded object for lookups to the `users` module.
+
+        On list API, user lookups return `{id}` only unless `?expand=` includes that field.
+
+        When expanded (single-record GET, create/update responses, or list with `expand`): fixed set `id`, `name`, `email`, `phone` (see **Lookup fields in responses**).
+
+        '
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: User ID
+        name:
+          type: string
+          description: User's full name
+        email:
+          type: string
+          description: User's email address
+        phone:
+          type: string
+          description: Phone number when present
+  responses:
+    BadRequest:
+      description: Validation error — missing required fields, invalid field values, or malformed request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: VALIDATION_ERROR
+              message: 'Required field(s) missing: name'
+    Unauthorized:
+      description: Missing or invalid authentication credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Missing or invalid authentication credentials
+    NotFound:
+      description: Record or module not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: RECORD_NOT_FOUND
+              message: Record with the given ID was not found
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Personal access token
+    oauth2:
+      type: oauth2
+      description: Supports authorization_code and password grant types
+      flows:
+        authorizationCode:
+          authorizationUrl: https://us.facilioapis.com/identity/oauth2/authorize
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}
+        password:
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}

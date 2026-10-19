@@ -1,0 +1,1015 @@
+openapi: 3.2.0
+info:
+  title: Facilio REST Job Plans API
+  version: 5.0.0
+  description: 'The Facilio REST API gives you programmatic access to Facilio''s Connected CMMS — the unified platform for managing property operations at portfolio scale. Build integrations that connect Facilio with your ERP, accounting systems, BMS, IoT platforms, and other business tools. Automate work order creation from external triggers, synchronize asset data across systems, push tenant and vendor records from your CRM, or pull maintenance data into your reporting dashboards. **What you can do with this API:**
+
+    - **Work Orders & Service Requests** — Create, assign, track, and close maintenance tasks programmatically
+
+    - **Assets** — Manage your equipment registry, track asset lifecycle, and sync with external asset management systems
+
+    - **Portfolio (Sites, Buildings, Floors, Spaces)** — Maintain your facility hierarchy and space data
+
+    - **People (Tenants, Vendors, Clients)** — Synchronize contacts and stakeholder records
+
+    - **Inventory (Item Types, Tool Types, Items & Tools, Services, Storerooms)** — Master data, per-storeroom item/tool balances (read), per-bin quantities by item or tool record, quantity adjustments, and warehouse locations
+
+    - **Procurement (Quotes, Purchase Requests, Purchase Orders, Receivable receiving, Invoices)** — Procurement with line items; receive against a PO via receivable APIs
+
+    - **Credit Notes (Vendor Credits, Client Credits)** — Manage credit notes for refunds and transaction adjustments with line items
+
+    - **Inventory Requests** — Track material requisitions from work orders to storerooms
+
+    - **Custom Modules** — Manage your organization''s custom modules — record types you define for the data and workflows that are specific to your business
+
+    - **Schema Discovery** — List all accessible modules and inspect field schemas (name, type, required, readOnly, lookup target) via `GET /modules` and `GET /{moduleName}/metadata`
+
+    - **Attachments & Comments** — Attach documents, photos, and notes to work orders and service requests
+
+    - **Picklists** — Discover available values for status, priority, category, and other configurable fields
+
+
+    The API follows REST conventions with JSON request/response bodies, standard HTTP methods (GET, POST, PATCH, DELETE), and consistent error handling across all endpoints. ## Base URL
+
+
+    ```
+
+    https://{region}.facilioapis.com/{app_name}/api/v5
+
+    ```
+
+
+    | Variable | Description | Values |
+
+    |----------|-------------|--------|
+
+    | `region` | Your deployment region | `us`, `au`, `ae`, `uk`, `us-azure`, `sa` |
+
+    | `app_name` | `maintenance` for API Key auth, `developer` for OAuth2 auth | `maintenance`, `developer` |
+
+
+    ## Authentication
+
+
+    All API requests must be authenticated using one of the following methods:
+
+
+    ### API Key (Personal Access Token)
+
+    Generate an API key from your Facilio account settings and pass it in the `x-api-key` header. The key inherits the permissions of the user who created it. ```
+
+    x-api-key: your-api-key-here
+
+    ```
+
+
+    ### OAuth2
+
+    For developer app integrations. Supports **authorization_code** and **password** grant types. | Endpoint | URL |
+
+    |----------|-----|
+
+    | Authorize | `https://{region}.facilioapis.com/identity/oauth2/authorize` |
+
+    | Token | `https://{region}.facilioapis.com/identity/oauth2/token` |
+
+    | Refresh | `https://{region}.facilioapis.com/identity/oauth2/token` (with `grant_type=refresh_token`) |
+
+    | Revoke | `https://{region}.facilioapis.com/identity/oauth2/revoke` |
+
+
+    Pass the access token as:
+
+    ```
+
+    Authorization: Bearer oauth2
+
+    ```
+
+
+    ---
+
+
+    ## List Operations
+
+
+    All list endpoints (`GET /{module}`) support these query parameters:
+
+
+    | Parameter | Type | Default | Description |
+
+    |-----------|------|---------|-------------|
+
+    | `page` | integer | 1 | Page number (1-based) |
+
+    | `pageSize` | integer | 50 | Number of records per page. Maximum is 200. |
+
+    | `select` | string | — | Comma-separated field names to include in the response. If omitted, module default fields are returned. |
+
+    | `expand` | string | — | Comma-separated lookup field names to expand with full details (max 5).'
+  contact:
+    name: Facilio Support
+    url: https://facilio.com
+  license:
+    name: Proprietary
+servers:
+- url: https://{region}.facilioapis.com/{app_name}/api/v5
+  variables:
+    region:
+      description: Regional deployment
+      default: us
+      enum:
+      - us
+      - au
+      - ae
+      - uk
+      - us-azure
+      - sa
+    app_name:
+      description: '''maintenance'' for API Key, ''developer'' for OAuth2'
+      default: maintenance
+      enum:
+      - maintenance
+      - developer
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Job Plans
+  description: Job plans are reusable task templates — ordered checklists of work — that drive preventive maintenance and inspections. Each plan holds task sections with input-type tasks (readings, text, numeric, options) and is versioned through a revise → publish lifecycle.
+paths:
+  /jobplan:
+    get:
+      tags:
+      - Job Plans
+      summary: List job plans
+      description: 'Returns a paginated list of job plans. Only the current version of each plan is listed —
+
+        old (Revised) and in-progress (Pending Revision) versions are excluded. Supports filtering,
+
+        sorting, field selection, and saved views. Sections/tasks are not embedded in the list;
+
+        fetch a single plan to get them.'
+      operationId: listJobPlans
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/select'
+      - $ref: '#/components/parameters/search'
+      - $ref: '#/components/parameters/count'
+      - $ref: '#/components/parameters/view'
+      - name: sortBy
+        in: query
+        description: Field to sort by (only sortable fields accepted)
+        schema:
+          type: string
+          enum:
+          - id
+          - name
+          - jpStatus
+          - jobPlanVersion
+          - sysCreatedTime
+          - sysModifiedTime
+      - name: sortOrder
+        in: query
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: desc
+      responses:
+        '200':
+          description: Paginated list of job plans
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ListResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/JobPlan'
+              example:
+                success: true
+                data:
+                - id: 220
+                  name: AHU Monthly PM
+                  jobPlanCategory: Assets
+                  jpStatus: Active
+                  jobPlanVersion: 2
+                  unitOfMeasure: Each
+                  sysCreatedTime: '2026-02-01T09:00:00Z'
+                  sysCreatedBy:
+                    id: 1
+                    name: Alex Johnson
+                    email: alex.johnson@example.com
+                pagination:
+                  page: 1
+                  pageSize: 50
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags:
+      - Job Plans
+      summary: Create a job plan
+      description: 'Creates a job plan together with its task sections and tasks in a single call. Requires `name`
+
+        and `jobPlanCategory`. When `jobPlanCategory` is `Asset Category` or `Space Category`, the
+
+        matching `assetCategory` / `spaceCategory` lookup is also required. Each section must contain
+
+        at least one task. Task `inputType` accepts an enum name (`NONE`, `READING`, `TEXT`, `NUMBER`,
+
+        `RADIO`, `BOOLEAN`); a `RADIO` task''s choices are sent as a plain string list under `options`.
+
+        Use `GET /jobplan/taskmetadata` to discover valid task enum values (input types, frequencies,
+
+        criticalities, skill sets, metrics and their units). Lifecycle fields (`jpStatus`,
+
+        `jobPlanVersion`, `group`) are read-only.'
+      operationId: createJobPlan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  $ref: '#/components/schemas/JobPlan'
+            example:
+              data:
+                name: AHU Monthly PM
+                jobPlanCategory: Assets
+                unitOfMeasure: Each
+                jobplansection:
+                - name: Filters
+                  sequenceNumber: 1
+                  tasks:
+                  - name: Check filter differential pressure
+                    inputType: NUMBER
+                    metricId: PRESSURE
+                    unitId: PASCAL
+                    minSafeLimit: 0
+                    maxSafeLimit: 250
+                    createWoOnFailure: true
+                  - name: Filter condition
+                    inputType: RADIO
+                    options:
+                    - Good
+                    - Replace
+                - name: Belts
+                  sequenceNumber: 2
+                  tasks:
+                  - name: Inspect belt tension
+                    inputType: TEXT
+                    remarksRequired: true
+      responses:
+        '201':
+          description: Job plan created
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 221
+                  name: AHU Monthly PM
+                  jobPlanCategory: Assets
+                  jpStatus: Inactive
+                  jobPlanVersion: 1
+                  jobplansection:
+                  - id: 900
+                    name: Filters
+                    sequenceNumber: 1
+                    tasks:
+                    - id: 4001
+                      name: Check filter differential pressure
+                      sequenceNumber: 1
+                      inputType: NUMBER
+                      metricId: 3
+                      unitId: 21
+                      minSafeLimit: 0
+                      maxSafeLimit: 250
+                      createWoOnFailure: true
+                    - id: 4002
+                      name: Filter condition
+                      sequenceNumber: 2
+                      inputType: RADIO
+                      options:
+                      - Good
+                      - Replace
+                message: Record created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /jobplan/taskmetadata:
+    get:
+      tags:
+      - Job Plans
+      summary: Job plan task metadata
+      description: 'Returns the allowed values for the task-level enum fields — `inputType`, `taskFrequency`,
+
+        `taskCriticality`, `skillSet`, and `metrics` (each with its valid `units` nested). Use these
+
+        when building task payloads for create/update.'
+      operationId: getJobPlanTaskMetadata
+      responses:
+        '200':
+          description: Task enum metadata
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  inputType:
+                  - value: NONE
+                    label: NONE
+                    id: 1
+                  - value: READING
+                    label: READING
+                    id: 2
+                  - value: NUMBER
+                    label: NUMBER
+                    id: 4
+                  - value: RADIO
+                    label: RADIO
+                    id: 5
+                  taskFrequency:
+                  - value: DAILY
+                    label: Daily
+                    id: 1
+                  - value: WEEKLY
+                    label: Weekly
+                    id: 2
+                  taskCriticality:
+                  - value: LOW
+                    label: Low
+                    id: 1
+                  - value: HIGH
+                    label: High
+                    id: 3
+                  skillSet:
+                  - value: ELECTRICAL
+                    label: Electrical
+                    id: 1
+                  metrics:
+                  - value: PRESSURE
+                    label: Pressure
+                    id: 3
+                    units:
+                    - value: PASCAL
+                      label: Pascal
+                      id: 21
+                    - value: BAR
+                      label: Bar
+                      id: 22
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /jobplan/bulk:
+    post:
+      tags:
+      - Job Plans
+      summary: Bulk create job plans
+      description: 'Creates multiple job plans (each with its sections/tasks) in one request. Because each plan is
+
+        created via the full create path, this is **not** single-transaction all-or-nothing — a failure
+
+        on one record does not roll back plans already created earlier in the list. Capped at 200 records.'
+      operationId: bulkCreateJobPlans
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/JobPlan'
+            example:
+              data:
+              - name: Pump Weekly Check
+                jobPlanCategory: Assets
+                jobplansection:
+                - name: General
+                  tasks:
+                  - name: Visual inspection
+                    inputType: NONE
+      responses:
+        '201':
+          description: Job plans created
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 222
+                  name: Pump Weekly Check
+                message: Records created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /jobplan/{id}:
+    get:
+      tags:
+      - Job Plans
+      summary: Get a job plan
+      description: Returns a single job plan with its task sections and tasks embedded under `jobplansection`.
+      operationId: getJobPlan
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      - $ref: '#/components/parameters/select'
+      responses:
+        '200':
+          description: Job plan details
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 221
+                  name: AHU Monthly PM
+                  jobPlanCategory: Assets
+                  jpStatus: Active
+                  jobPlanVersion: 1
+                  group:
+                    id: 221
+                  jobplansection:
+                  - id: 900
+                    name: Filters
+                    sequenceNumber: 1
+                    tasks:
+                    - id: 4001
+                      name: Check filter differential pressure
+                      sequenceNumber: 1
+                      inputType: NUMBER
+                      minSafeLimit: 0
+                      maxSafeLimit: 250
+                  sysCreatedTime: '2026-02-01T09:00:00Z'
+                  sysCreatedBy:
+                    id: 1
+                    name: Alex Johnson
+                    email: alex.johnson@example.com
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+      - Job Plans
+      summary: Update a job plan
+      description: 'Updates a job plan. Include only the scalar fields you want to change. To modify sections/tasks,
+
+        send the full desired `jobplansection` array (it is a full replace, not a merge). A **published
+
+        (Active)** plan cannot be edited directly — revise it first (returns 400 with guidance).'
+      operationId: updateJobPlan
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  $ref: '#/components/schemas/JobPlan'
+            example:
+              data:
+                notes: Updated for Q2 schedule
+      responses:
+        '200':
+          description: Job plan updated (returns the record with embedded sections/tasks)
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 221
+                  name: AHU Monthly PM
+                  notes: Updated for Q2 schedule
+                message: Record updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Job Plans
+      summary: Delete a job plan
+      description: Permanently deletes a job plan. This action cannot be undone.
+      operationId: deleteJobPlan
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      responses:
+        '200':
+          description: Job plan deleted
+          content:
+            application/json:
+              example:
+                success: true
+                message: Record deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /jobplan/{id}/revise:
+    post:
+      tags:
+      - Job Plans
+      summary: Revise a job plan
+      description: 'Creates a new linked draft revision (status Pending Revision, version incremented, same lineage
+
+        `group`) from a published (Active) plan. Only one open revision may exist per lineage.'
+      operationId: reviseJobPlan
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      responses:
+        '200':
+          description: Revision created
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  jobPlanId: 230
+                  groupId: 221
+                  jobPlanVersion: 2
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /jobplan/{id}/publish:
+    post:
+      tags:
+      - Job Plans
+      summary: Publish a job plan
+      description: Makes a draft revision the Active version; the previously active version in the lineage becomes Revised.
+      operationId: publishJobPlan
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      responses:
+        '200':
+          description: Job plan published
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  jobPlanId: 230
+                  groupId: 221
+                  jobPlanVersion: 2
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /jobplan/{id}/clone:
+    post:
+      tags:
+      - Job Plans
+      summary: Clone a job plan
+      description: Creates an independent copy (lineage broken, name prefixed "Copy Of", version reset).
+      operationId: cloneJobPlan
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      responses:
+        '201':
+          description: Job plan cloned
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  jobPlanId: 231
+                  jobPlanVersion: 1
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /jobplan/{id}/versionHistory:
+    get:
+      tags:
+      - Job Plans
+      summary: Get job plan version history
+      description: Lists all revisions in the same lineage (`group`), newest first.
+      operationId: getJobPlanVersionHistory
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      responses:
+        '200':
+          description: Version history
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 230
+                  name: AHU Monthly PM
+                  jobPlanVersion: 2
+                  jpStatus: ACTIVE
+                  groupId: 221
+                - id: 221
+                  name: AHU Monthly PM
+                  jobPlanVersion: 1
+                  jpStatus: REVISED
+                  groupId: 221
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  parameters:
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
+    select:
+      name: select
+      in: query
+      description: Comma-separated field names to include in the response
+      schema:
+        type: string
+    view:
+      name: view
+      in: query
+      description: Saved view name
+      schema:
+        type: string
+    search:
+      name: search
+      in: query
+      description: Free-text search on the primary field (subject, name, etc.)
+      schema:
+        type: string
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
+    count:
+      name: count
+      in: query
+      description: Include total record count in response
+      schema:
+        type: boolean
+        default: false
+    pageSize:
+      name: pageSize
+      in: query
+      description: Records per page (max 200)
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+  schemas:
+    JobPlanTask:
+      type: object
+      description: A task within a job plan section. On write, `id`/`sequenceNumber` are server-managed (tasks are recreated and renumbered per section). Enum fields accept a name or numeric ID — discover valid values via `GET /jobplan/taskmetadata`.
+      required:
+      - name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: Task ID (server-assigned)
+        name:
+          type: string
+          description: Task title (stored as subject)
+        sequenceNumber:
+          type: integer
+          readOnly: true
+          description: Display order within the section (server-managed)
+        inputType:
+          type: string
+          enum:
+          - NONE
+          - READING
+          - TEXT
+          - NUMBER
+          - RADIO
+          - BOOLEAN
+          description: Task input type
+        options:
+          type: array
+          items:
+            type: string
+          description: Choices for a RADIO task (plain string list)
+        remarksRequired:
+          type: boolean
+          description: Require remarks when completing the task
+        attachmentRequired:
+          type: boolean
+          description: Require an attachment when completing the task
+        defaultValue:
+          type: string
+          description: Default value
+        failureValue:
+          type: string
+          description: Value that marks the task as failed
+        validation:
+          type: boolean
+          description: Enable safe-limit validation (NUMBER/READING)
+        minSafeLimit:
+          type: number
+          description: Minimum safe value (NUMBER/READING)
+        maxSafeLimit:
+          type: number
+          description: Maximum safe value (NUMBER/READING)
+        createWoOnFailure:
+          type: boolean
+          description: Raise a work order when the task fails
+        enableInput:
+          type: boolean
+          readOnly: true
+          description: Derived from inputType (true for Text/Numeric/Option tasks)
+        taskFrequency:
+          type: string
+          description: Task frequency — enum name or ID (see taskmetadata)
+        frequencyInterval:
+          type: integer
+          description: Interval count for the frequency
+        taskCriticality:
+          type: string
+          description: Criticality — enum name or ID (see taskmetadata)
+        skillSet:
+          type: string
+          description: Required skill set — enum name, ID, or {id} (see taskmetadata)
+        metricId:
+          type: string
+          description: Metric — enum name (e.g. PRESSURE) or ID; for READING/NUMBER tasks (see taskmetadata)
+        unitId:
+          type: string
+          description: Unit — enum name (e.g. PASCAL) or ID; must belong to the chosen metric (see taskmetadata)
+        notes:
+          type: string
+          description: Task notes
+        actionContent:
+          type: string
+          description: Action instructions
+    JobPlanSection:
+      type: object
+      description: A task section within a job plan.
+      required:
+      - name
+      - tasks
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: Section ID (server-assigned)
+        name:
+          type: string
+          description: Section name
+        sequenceNumber:
+          type: integer
+          description: Display order (defaults by array position when omitted)
+        inputType:
+          type: string
+          description: Optional section-level input type
+        tasks:
+          type: array
+          description: Tasks in the section (at least one required)
+          items:
+            $ref: '#/components/schemas/JobPlanTask'
+    ListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+            pageSize:
+              type: integer
+        count:
+          type: integer
+          description: Total count (only when ?count=true)
+    JobPlan:
+      type: object
+      description: 'Job plan — a reusable task template. Custom fields: `{field_name}_jobplan`. On create, `name` and `jobPlanCategory` are required; sections/tasks are sent under `jobplansection`. Lifecycle fields (`jpStatus`, `jobPlanVersion`, `group`) are read-only and managed by the revise/publish/clone actions.'
+      required:
+      - name
+      - jobPlanCategory
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+          description: Unique record ID
+        name:
+          type: string
+          description: Job plan name (required, sortable)
+        jobPlanCategory:
+          type: string
+          enum:
+          - Assets
+          - Spaces
+          - Asset Category
+          - Space Category
+          - Buildings
+          - Sites
+          - Floors
+          - General
+          description: Scope/assignment type (required). For 'Asset Category' / 'Space Category', also supply the matching assetCategory / spaceCategory.
+        assetCategory:
+          type: integer
+          description: Asset category ID — required when jobPlanCategory is 'Asset Category'. Returns {id, name} on GET.
+        spaceCategory:
+          type: integer
+          description: Space category ID — required when jobPlanCategory is 'Space Category'. Returns {id, name} on GET.
+        unitOfMeasure:
+          type: string
+          description: Unit of measure label
+        content:
+          type: string
+          description: Rich content / instructions
+        notes:
+          type: string
+          description: Free-text notes
+        jobplansection:
+          type: array
+          description: Ordered task sections. Sent on create/update (full replace) and embedded on single-record GET. Each section must contain at least one task.
+          items:
+            $ref: '#/components/schemas/JobPlanSection'
+        isSfg:
+          type: boolean
+          description: Whether this plan is sourced from SFG20
+        sfgType:
+          type: string
+          description: SFG20 type
+        sfgCode:
+          type: string
+          description: SFG20 schedule code
+        sfgVersion:
+          type: string
+          description: SFG20 version
+        sfgLegislations:
+          type: string
+          description: SFG20 legislation references
+        scheduleId:
+          type: string
+          description: SFG20 schedule identifier
+        regimeId:
+          type: string
+          description: SFG20 regime identifier
+        isTaskFrequencyType:
+          type: boolean
+          description: Whether tasks carry their own frequency
+        jpStatus:
+          type: string
+          readOnly: true
+          description: Lifecycle status (Inactive, Active, Pending Revision, Revised) — managed by the revise/publish actions (sortable)
+        jobPlanVersion:
+          type: integer
+          readOnly: true
+          description: Version number within the lineage (sortable)
+        group:
+          readOnly: true
+          description: Lineage reference shared across versions — returns {id}
+        sysCreatedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Creation timestamp (sortable)
+        sysModifiedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Last modification timestamp (sortable)
+        sysCreatedBy:
+          readOnly: true
+          description: User who created the plan
+          allOf:
+          - $ref: '#/components/schemas/User'
+        sysModifiedBy:
+          readOnly: true
+          description: User who last modified the plan
+          allOf:
+          - $ref: '#/components/schemas/User'
+      additionalProperties:
+        description: Custom fields (e.g. {field_name}_jobplan)
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+    User:
+      type: object
+      description: 'Expanded object for lookups to the `users` module.
+
+        On list API, user lookups return `{id}` only unless `?expand=` includes that field.
+
+        When expanded (single-record GET, create/update responses, or list with `expand`): fixed set `id`, `name`, `email`, `phone` (see **Lookup fields in responses**).
+
+        '
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: User ID
+        name:
+          type: string
+          description: User's full name
+        email:
+          type: string
+          description: User's email address
+        phone:
+          type: string
+          description: Phone number when present
+  responses:
+    BadRequest:
+      description: Validation error — missing required fields, invalid field values, or malformed request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: VALIDATION_ERROR
+              message: 'Required field(s) missing: name'
+    Unauthorized:
+      description: Missing or invalid authentication credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Missing or invalid authentication credentials
+    NotFound:
+      description: Record or module not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: RECORD_NOT_FOUND
+              message: Record with the given ID was not found
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Personal access token
+    oauth2:
+      type: oauth2
+      description: Supports authorization_code and password grant types
+      flows:
+        authorizationCode:
+          authorizationUrl: https://us.facilioapis.com/identity/oauth2/authorize
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}
+        password:
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}

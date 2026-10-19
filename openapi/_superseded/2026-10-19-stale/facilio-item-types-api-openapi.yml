@@ -1,0 +1,570 @@
+openapi: 3.2.0
+info:
+  title: Facilio REST Item Types API
+  version: 5.0.0
+  description: The Facilio REST API gives you programmatic access to Facilio's Connected CMMS — the unified platform for managing property operations at portfolio scale.
+  contact:
+    name: Facilio Support
+    url: https://facilio.com
+  license:
+    name: Proprietary
+servers:
+- url: https://{region}.facilioapis.com/{app_name}/api/v5
+  variables:
+    region:
+      description: Regional deployment
+      default: us
+      enum:
+      - us
+      - au
+      - ae
+      - uk
+      - us-azure
+      - sa
+    app_name:
+      description: '''maintenance'' for API Key, ''developer'' for OAuth2'
+      default: maintenance
+      enum:
+      - maintenance
+      - developer
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Item Types
+  description: Consumable materials in your inventory (filters, bulbs, fasteners). Manage costing, reorder thresholds, and pricing.
+paths:
+  /itemtypes:
+    get:
+      tags:
+      - Item Types
+      summary: List item types
+      operationId: listItemTypes
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/select'
+      - $ref: '#/components/parameters/search'
+      - $ref: '#/components/parameters/count'
+      - $ref: '#/components/parameters/changed'
+      - name: sortBy
+        in: query
+        schema:
+          type: string
+          enum:
+          - id
+          - name
+          - sysCreatedTime
+          - sysModifiedTime
+      - name: sortOrder
+        in: query
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: asc
+      responses:
+        '200':
+          description: List of item types
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 1
+                  name: Air Filter
+                  costType: FIFO
+                  quantity: 100.0
+                  minimumQuantity: 10.0
+                  sysCreatedTime: '2026-01-15T10:00:00Z'
+                - id: 2
+                  name: LED Bulb
+                  costType: FIFO
+                  quantity: 500.0
+                  minimumQuantity: 50.0
+                  sysCreatedTime: '2026-01-15T10:05:00Z'
+                pagination:
+                  page: 1
+                  pageSize: 50
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags:
+      - Item Types
+      summary: Create an item type
+      operationId: createItemType
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  $ref: '#/components/schemas/ItemType'
+            example:
+              data:
+                name: Air Filter
+                description: HVAC air filter 20x25
+                costType: FIFO
+                minimumQuantity: 10
+                sellingPrice: 15.0
+      responses:
+        '201':
+          description: Item type created
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 3
+                  name: Air Filter
+                message: Record created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /itemtypes/{id}:
+    get:
+      tags:
+      - Item Types
+      summary: Get an item type
+      operationId: getItemType
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      - $ref: '#/components/parameters/select'
+      responses:
+        '200':
+          description: Item type details
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 1
+                  name: Air Filter
+                  description: HVAC air filter 20x25
+                  costType: FIFO
+                  quantity: 100.0
+                  currentQuantity: 95.0
+                  minimumQuantity: 10.0
+                  sellingPrice: 15.0
+                  lastPurchasedPrice: 8.5
+                  lastPurchasedDate: '2026-03-01'
+                  isRotating: false
+                  isApprovalNeeded: true
+                  lotType: true
+                  sysCreatedTime: '2026-01-15T10:00:00Z'
+                  sysModifiedTime: '2026-03-01T14:30:00Z'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+      - Item Types
+      summary: Update an item type
+      operationId: updateItemType
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  $ref: '#/components/schemas/ItemType'
+            example:
+              data:
+                description: HVAC air filter 20x25x1
+                minimumQuantity: 20
+      responses:
+        '200':
+          description: Item type updated
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 1
+                  name: Air Filter
+                message: Record updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Item Types
+      summary: Delete an item type
+      operationId: deleteItemType
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              example:
+                success: true
+                message: Record deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /itemtypes/metadata:
+    get:
+      tags:
+      - Item Types
+      summary: Get item type field schema
+      description: Returns the field schema for the itemtypes module, including all declared system fields and any org-specific custom fields with their data type, required/readOnly flags, and lookup targets.
+      operationId: getItemTypeMetadata
+      parameters:
+      - $ref: '#/components/parameters/includeAllowedValues'
+      responses:
+        '200':
+          description: Field schema retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModuleMetaResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  parameters:
+    select:
+      name: select
+      in: query
+      description: Comma-separated field names to include in the response
+      schema:
+        type: string
+    search:
+      name: search
+      in: query
+      description: Free-text search on the primary field (subject, name, etc.)
+      schema:
+        type: string
+    changed:
+      name: changed
+      in: query
+      description: 'Delta sync: returns records created/modified after this UTC timestamp'
+      schema:
+        type: string
+        format: date-time
+    pageSize:
+      name: pageSize
+      in: query
+      description: Records per page (max 200)
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
+    includeAllowedValues:
+      name: includeAllowedValues
+      in: query
+      description: 'When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).
+
+        Default `false` keeps the original metadata payload (no enrichment, no extra DB calls).
+
+        Use this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.
+
+        '
+      schema:
+        type: boolean
+        default: false
+    count:
+      name: count
+      in: query
+      description: Include total record count in response
+      schema:
+        type: boolean
+        default: false
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
+  schemas:
+    ItemType:
+      type: object
+      description: Consumable material in inventory.
+      required:
+      - name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: Unique record ID
+        name:
+          type: string
+          maxLength: 255
+          description: Item type name (required, sortable)
+        description:
+          type: string
+          maxLength: 2000
+          description: Description
+        category:
+          type: integer
+          description: Inventory category ID (lookup). Returns {id, name} on GET.
+        quantity:
+          type: number
+          format: double
+          readOnly: true
+          description: Total quantity across storerooms
+        currentQuantity:
+          type: number
+          format: double
+          readOnly: true
+          description: Available quantity
+        minimumQuantity:
+          type: number
+          format: double
+          description: Reorder threshold
+        costType:
+          type: string
+          enum:
+          - FIFO
+          - LIFO
+          description: Costing method
+        sellingPrice:
+          type: number
+          format: double
+          description: Selling price per unit
+        lastPurchasedPrice:
+          type: number
+          format: double
+          readOnly: true
+          description: Last purchase price
+        lastIssuedDate:
+          type: string
+          format: date
+          readOnly: true
+          description: Last issued date
+        lastPurchasedDate:
+          type: string
+          format: date
+          readOnly: true
+          description: Last purchased date
+        isRotating:
+          type: boolean
+          description: Whether individually tracked (serialized)
+        isApprovalNeeded:
+          type: boolean
+          description: Whether issuance requires approval
+        isConsumable:
+          type: boolean
+          description: Whether consumed on use
+        lotType:
+          type: boolean
+          description: Whether tracked by lot
+        sysCreatedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Created (sortable)
+        sysModifiedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Modified (sortable)
+    ModuleMetaResponse:
+      type: object
+      description: Response body for GET /{moduleName}/metadata.
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            module:
+              $ref: '#/components/schemas/FacilioModule'
+            fields:
+              type: array
+              description: 'Ordered list of fields for the module.
+
+                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
+
+                Custom modules return all fields.
+
+                '
+              items:
+                $ref: '#/components/schemas/FacilioField'
+    FacilioModule:
+      type: object
+      description: A single entry in the module catalogue returned by GET /modules.
+      properties:
+        name:
+          type: string
+          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
+        displayName:
+          type: string
+          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
+        description:
+          type: string
+          description: Module description as configured in Facilio Setup. Omitted when blank.
+        isCustom:
+          type: boolean
+          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
+    FacilioField:
+      type: object
+      description: Schema descriptor for a single field within a module.
+      properties:
+        name:
+          type: string
+          description: Field name used in API requests and responses (e.g. `subject`, `po_reference_workorder`)
+        displayName:
+          type: string
+          description: Human-readable field label
+        dataType:
+          type: string
+          description: 'Field data type. Common values:
+
+            `STRING`, `NUMBER`, `DECIMAL`, `BOOLEAN`,
+
+            `DATE`, `DATE_TIME`,
+
+            `BIG_STRING` (large text, excluded from list responses),
+
+            `LOOKUP` (reference to another record — see `lookupModuleName`),
+
+            `MULTI_LOOKUP` (multi-reference — see `lookupModuleName`),
+
+            `ENUM`, `SYSTEM_ENUM`, `STRING_SYSTEM_ENUM` (picklist types)
+
+            '
+          example: STRING
+        required:
+          type: boolean
+          description: '`true` if this field must be provided on record creation'
+        readOnly:
+          type: boolean
+          description: '`true` if this field cannot be set or modified via the API (e.g. auto-generated system fields)'
+        isCustom:
+          type: boolean
+          description: '`true` for fields added by your organization; `false` for standard built-in fields'
+        sortable:
+          type: boolean
+          description: '`true` if this field can be used as a `sortBy` value on the list API'
+        lookupModuleName:
+          type: string
+          description: Present only on `LOOKUP` and `MULTI_LOOKUP` fields. The name of the target module (e.g. `site`, `users`, `ticketstatus`).
+        max_length:
+          type: integer
+          description: 'Maximum number of characters accepted by the V5 write API for text-style fields.
+
+            Present only when the field''s `dataType` is one of:
+
+            `STRING` (255), `LARGE_TEXT` (2000), `BIG_STRING` (32000).
+
+            Omitted for all other data types.
+
+            '
+          example: 255
+        allowed_values:
+          type: array
+          description: 'List of acceptable write values for picklist-capable fields. Present **only when the request includes `?includeAllowedValues=true`** AND the field is one of:
+
+            `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, or a `LOOKUP` targeting a system picklist module (e.g. `ticketstatus`, `ticketpriority`, `ticketcategory`, `tickettype`).
+
+            Each entry uses `{label, value}`; the `value` is the canonical form accepted by create/update payloads.
+
+            '
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+                description: Display label as shown in the UI
+              value:
+                type: string
+                description: Canonical value accepted by create/update for this field and filtering
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Missing or invalid authentication credentials
+    BadRequest:
+      description: Validation error — missing required fields, invalid field values, or malformed request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: VALIDATION_ERROR
+              message: 'Required field(s) missing: name'
+    NotFound:
+      description: Record or module not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: RECORD_NOT_FOUND
+              message: Record with the given ID was not found
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Personal access token
+    oauth2:
+      type: oauth2
+      description: Supports authorization_code and password grant types
+      flows:
+        authorizationCode:
+          authorizationUrl: https://us.facilioapis.com/identity/oauth2/authorize
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}
+        password:
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}

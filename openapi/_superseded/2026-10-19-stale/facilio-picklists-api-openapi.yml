@@ -1,0 +1,792 @@
+openapi: 3.2.0
+info:
+  title: Facilio REST Picklists API
+  version: 5.0.0
+  description: The Facilio REST API gives you programmatic access to Facilio's Connected CMMS — the unified platform for managing property operations at portfolio scale.
+  contact:
+    name: Facilio Support
+    url: https://facilio.com
+  license:
+    name: Proprietary
+servers:
+- url: https://{region}.facilioapis.com/{app_name}/api/v5
+  variables:
+    region:
+      description: Regional deployment
+      default: us
+      enum:
+      - us
+      - au
+      - ae
+      - uk
+      - us-azure
+      - sa
+    app_name:
+      description: '''maintenance'' for API Key, ''developer'' for OAuth2'
+      default: maintenance
+      enum:
+      - maintenance
+      - developer
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Picklists
+  description: 'Retrieve picklist values for enum and system lookup fields.
+
+    Use these to discover valid values for fields like status, priority, category, and type.
+
+    Custom picklist fields can also be queried using `GET /picklist/{module}/{fieldName}`.'
+paths:
+  /picklist/workorder/status:
+    get:
+      tags:
+      - Picklists
+      summary: Work order statuses
+      description: Returns all available status values for work orders.
+      operationId: getWorkOrderStatuses
+      parameters:
+      - $ref: '#/components/parameters/picklistSearch'
+      responses:
+        '200':
+          description: List of status values
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 9
+                  status: Submitted
+                  displayName: Submitted
+                - id: 10
+                  status: Assigned
+                  displayName: Assigned
+                - id: 11
+                  status: Work in Progress
+                  displayName: Work in Progress
+                - id: 12
+                  status: Resolved
+                  displayName: Resolved
+                - id: 13
+                  status: Closed
+                  displayName: Closed
+              schema:
+                $ref: '#/components/schemas/WorkOrderStatus'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /picklist/workorder/priority:
+    get:
+      tags:
+      - Picklists
+      summary: Work order priorities
+      description: Returns all available priority values for work orders.
+      operationId: getWorkOrderPriorities
+      parameters:
+      - $ref: '#/components/parameters/picklistSearch'
+      responses:
+        '200':
+          description: List of priority values
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 1
+                  priority: High
+                  displayName: High
+                - id: 2
+                  priority: Medium
+                  displayName: Medium
+                - id: 3
+                  priority: Low
+                  displayName: Low
+              schema:
+                $ref: '#/components/schemas/Priority'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /picklist/workorder/category:
+    get:
+      tags:
+      - Picklists
+      summary: Work order categories
+      description: Returns all available category values for work orders.
+      operationId: getWorkOrderCategories
+      parameters:
+      - $ref: '#/components/parameters/picklistSearch'
+      responses:
+        '200':
+          description: List of category values
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 6
+                  name: Energy
+                  displayName: Energy
+                - id: 7
+                  name: HVAC
+                  displayName: HVAC
+                - id: 8
+                  name: Plumbing
+                  displayName: Plumbing
+              schema:
+                $ref: '#/components/schemas/WorkOrderCategory'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /picklist/workorder/type:
+    get:
+      tags:
+      - Picklists
+      summary: Work order types
+      description: Returns all available type values for work orders.
+      operationId: getWorkOrderTypes
+      parameters:
+      - $ref: '#/components/parameters/picklistSearch'
+      responses:
+        '200':
+          description: List of type values
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 5
+                  name: Compliance
+                  displayName: Compliance
+                - id: 6
+                  name: Corrective
+                  displayName: Corrective
+                - id: 7
+                  name: Preventive
+                  displayName: Preventive
+              schema:
+                $ref: '#/components/schemas/WorkOrderType'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /picklist/servicerequest/moduleState:
+    get:
+      tags:
+      - Picklists
+      summary: Service request statuses
+      description: Returns all available status values for service requests.
+      operationId: getServiceRequestStatuses
+      parameters:
+      - $ref: '#/components/parameters/picklistSearch'
+      responses:
+        '200':
+          description: List of status values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceRequestStatus'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /picklist/servicerequest/urgency:
+    get:
+      tags:
+      - Picklists
+      summary: Service request urgency levels
+      description: Returns all available urgency levels for service requests (equivalent to priority).
+      operationId: getServiceRequestUrgencyLevels
+      parameters:
+      - $ref: '#/components/parameters/picklistSearch'
+      responses:
+        '200':
+          description: List of urgency values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Priority'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /picklist/asset/category:
+    get:
+      tags:
+      - Picklists
+      summary: Asset categories
+      description: Returns all available category values for assets.
+      operationId: getAssetCategories
+      parameters:
+      - $ref: '#/components/parameters/picklistSearch'
+      responses:
+        '200':
+          description: List of category values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetCategory'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /picklist/asset/type:
+    get:
+      tags:
+      - Picklists
+      summary: Asset types
+      description: Returns all available type values for assets.
+      operationId: getAssetTypes
+      parameters:
+      - $ref: '#/components/parameters/picklistSearch'
+      responses:
+        '200':
+          description: List of type values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetType'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /picklist/asset/department:
+    get:
+      tags:
+      - Picklists
+      summary: Asset departments
+      description: Returns all available department values for assets.
+      operationId: getAssetDepartments
+      parameters:
+      - $ref: '#/components/parameters/picklistSearch'
+      responses:
+        '200':
+          description: List of department values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetDepartment'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /picklist/space/spaceCategory:
+    get:
+      tags:
+      - Picklists
+      summary: Space categories
+      description: Returns all available category values for spaces.
+      operationId: getSpaceCategories
+      parameters:
+      - $ref: '#/components/parameters/picklistSearch'
+      responses:
+        '200':
+          description: List of category values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceCategory'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /picklist/quote/moduleState:
+    get:
+      tags:
+      - Picklists
+      summary: Quote statuses
+      description: Returns all available status values for quotes.
+      operationId: getQuoteStatuses
+      parameters:
+      - $ref: '#/components/parameters/picklistSearch'
+      responses:
+        '200':
+          description: List of status values
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 1
+                  status: Draft
+                  displayName: Draft
+                - id: 2
+                  status: Sent
+                  displayName: Sent
+                - id: 3
+                  status: Approved
+                  displayName: Approved
+                - id: 4
+                  status: Rejected
+                  displayName: Rejected
+                - id: 5
+                  status: Revised
+                  displayName: Revised
+              schema:
+                $ref: '#/components/schemas/CustomPicklistValues'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /picklist/invoice/invoiceStatus:
+    get:
+      tags:
+      - Picklists
+      summary: Invoice statuses
+      description: Returns all available status values for invoices.
+      operationId: getInvoiceStatuses
+      parameters:
+      - $ref: '#/components/parameters/picklistSearch'
+      responses:
+        '200':
+          description: List of status values
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 1
+                  displayName: Draft
+                - id: 2
+                  displayName: Invoice Delivered
+                - id: 3
+                  displayName: Invoice Rejected
+                - id: 4
+                  displayName: Invoice Approved
+                - id: 5
+                  displayName: Invoice Cancelled
+                - id: 6
+                  displayName: Payment Acknowledged
+                - id: 7
+                  displayName: Revised
+              schema:
+                $ref: '#/components/schemas/EnumPicklistValues'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /picklist/purchaserequest/moduleState:
+    get:
+      tags:
+      - Picklists
+      summary: Purchase request statuses
+      description: Returns all available status values for purchase requests.
+      operationId: getPurchaseRequestStatuses
+      parameters:
+      - $ref: '#/components/parameters/picklistSearch'
+      responses:
+        '200':
+          description: List of status values
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 1
+                  status: Requested
+                  displayName: Requested
+                - id: 2
+                  status: Approved
+                  displayName: Approved
+                - id: 3
+                  status: Ordered
+                  displayName: Ordered
+                - id: 4
+                  status: Rejected
+                  displayName: Rejected
+              schema:
+                $ref: '#/components/schemas/CustomPicklistValues'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /picklist/purchaseorder/moduleState:
+    get:
+      tags:
+      - Picklists
+      summary: Purchase order statuses
+      description: Returns all available status values for purchase orders.
+      operationId: getPurchaseOrderStatuses
+      parameters:
+      - $ref: '#/components/parameters/picklistSearch'
+      responses:
+        '200':
+          description: List of status values
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 1
+                  status: Requested
+                  displayName: Requested
+                - id: 2
+                  status: Approved
+                  displayName: Approved
+                - id: 3
+                  status: Received
+                  displayName: Received
+                - id: 4
+                  status: Rejected
+                  displayName: Rejected
+              schema:
+                $ref: '#/components/schemas/CustomPicklistValues'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /picklist/inventoryrequest/moduleState:
+    get:
+      tags:
+      - Picklists
+      summary: Inventory request statuses
+      description: Returns all available status values for inventory requests.
+      operationId: getInventoryRequestStatuses
+      parameters:
+      - $ref: '#/components/parameters/picklistSearch'
+      responses:
+        '200':
+          description: List of status values
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 1
+                  status: pending
+                  displayName: Pending
+                - id: 2
+                  status: fullyreserved
+                  displayName: Fully Reserved
+                - id: 3
+                  status: partiallyreserved
+                  displayName: Partially Reserved
+                - id: 4
+                  status: issued
+                  displayName: Issued
+              schema:
+                $ref: '#/components/schemas/CustomPicklistValues'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /picklist/vendorCredit/vendorCreditNoteStatus:
+    get:
+      tags:
+      - Picklists
+      summary: Vendor credit statuses
+      description: Returns all available status values for vendor credits.
+      operationId: getVendorCreditStatuses
+      parameters:
+      - $ref: '#/components/parameters/picklistSearch'
+      responses:
+        '200':
+          description: List of status values
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 1
+                  value: Awaiting Refund
+                  displayName: Awaiting Refund
+                - id: 2
+                  value: Refunded
+                  displayName: Refunded
+                - id: 3
+                  value: Credit Note Revised
+                  displayName: Credit Note Revised
+              schema:
+                $ref: '#/components/schemas/CustomPicklistValues'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /picklist/clientCredit/clientCreditNoteStatus:
+    get:
+      tags:
+      - Picklists
+      summary: Client credit statuses
+      description: Returns all available status values for client credits.
+      operationId: getClientCreditStatuses
+      parameters:
+      - $ref: '#/components/parameters/picklistSearch'
+      responses:
+        '200':
+          description: List of status values
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 1
+                  value: Awaiting Refund
+                  displayName: Awaiting Refund
+                - id: 2
+                  value: Refunded
+                  displayName: Refunded
+                - id: 3
+                  value: Credit Note Revised
+                  displayName: Credit Note Revised
+              schema:
+                $ref: '#/components/schemas/CustomPicklistValues'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /picklist/{moduleName}/{fieldName}:
+    get:
+      tags:
+      - Picklists
+      summary: Get picklist values for a custom field
+      description: 'Returns picklist values for custom enum or system picklist fields.
+
+        Only enum-type and system picklist lookup fields are supported.
+
+        For regular lookup fields (site, building, asset), use the module''s list API instead.'
+      operationId: getCustomPicklistValues
+      parameters:
+      - name: moduleName
+        in: path
+        required: true
+        description: Module name (e.g. `workorder`, `asset`)
+        schema:
+          type: string
+      - name: fieldName
+        in: path
+        required: true
+        description: Field name (e.g. `urgency`, `warranty_type_asset`)
+        schema:
+          type: string
+      - $ref: '#/components/parameters/picklistSearch'
+      responses:
+        '200':
+          description: List of picklist values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomPicklistValues'
+              example:
+                success: true
+                data:
+                - id: 1
+                  displayName: Option A
+                - id: 2
+                  displayName: Option B
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+components:
+  schemas:
+    AssetType:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+                description: Type name
+              displayName:
+                type: string
+    Priority:
+      type: object
+      description: Used for work order priority and service request urgency
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              priority:
+                type: string
+                description: Priority value (e.g. High, Medium, Low)
+              displayName:
+                type: string
+              colour:
+                type: string
+                description: 'Hex color code (e.g. #f00)'
+              sequenceNumber:
+                type: integer
+                description: Sort order
+    AssetDepartment:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+                description: Department name
+    WorkOrderCategory:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+                description: Category name
+              displayName:
+                type: string
+    WorkOrderStatus:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              status:
+                type: string
+                description: Status value (e.g. Submitted, Closed)
+              displayName:
+                type: string
+    CustomPicklistValues:
+      type: object
+      description: moduleState picklist values — returns {id, status, displayName} for each state
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              status:
+                type: string
+                description: Status value
+              displayName:
+                type: string
+    AssetCategory:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+                description: Category name (e.g. HVAC, Electrical)
+              displayName:
+                type: string
+    SpaceCategory:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+                description: Category name (e.g. Office, Conference Room)
+              displayName:
+                type: string
+    WorkOrderType:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+                description: Type name
+              displayName:
+                type: string
+    EnumPicklistValues:
+      type: object
+      description: Enum picklist values — returns {id, displayName} for each value
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              displayName:
+                type: string
+    ServiceRequestStatus:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              status:
+                type: string
+                description: Status value
+              displayName:
+                type: string
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+  parameters:
+    picklistSearch:
+      name: search
+      in: query
+      description: Filter picklist values by name
+      schema:
+        type: string
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Missing or invalid authentication credentials
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Personal access token
+    oauth2:
+      type: oauth2
+      description: Supports authorization_code and password grant types
+      flows:
+        authorizationCode:
+          authorizationUrl: https://us.facilioapis.com/identity/oauth2/authorize
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}
+        password:
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}

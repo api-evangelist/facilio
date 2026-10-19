@@ -1,0 +1,447 @@
+openapi: 3.2.0
+info:
+  title: Facilio REST Purchased Items API
+  version: 5.0.0
+  description: 'The Facilio REST API gives you programmatic access to Facilio''s Connected CMMS — the unified platform for managing property operations at portfolio scale. Build integrations that connect Facilio with your ERP, accounting systems, BMS, IoT platforms, and other business tools. Automate work order creation from external triggers, synchronize asset data across systems, push tenant and vendor records from your CRM, or pull maintenance data into your reporting dashboards. **What you can do with this API:**
+
+    - **Work Orders & Service Requests** — Create, assign, track, and close maintenance tasks programmatically
+
+    - **Assets** — Manage your equipment registry, track asset lifecycle, and sync with external asset management systems
+
+    - **Portfolio (Sites, Buildings, Floors, Spaces)** — Maintain your facility hierarchy and space data
+
+    - **People (Tenants, Vendors, Clients)** — Synchronize contacts and stakeholder records
+
+    - **Inventory (Item Types, Tool Types, Items & Tools, Services, Storerooms)** — Master data, per-storeroom item/tool balances (read), per-bin quantities by item or tool record, quantity adjustments, and warehouse locations
+
+    - **Procurement (Quotes, Purchase Requests, Purchase Orders, Receivable receiving, Invoices)** — Procurement with line items; receive against a PO via receivable APIs
+
+    - **Credit Notes (Vendor Credits, Client Credits)** — Manage credit notes for refunds and transaction adjustments with line items
+
+    - **Inventory Requests** — Track material requisitions from work orders to storerooms
+
+    - **Custom Modules** — Manage your organization''s custom modules — record types you define for the data and workflows that are specific to your business
+
+    - **Schema Discovery** — List all accessible modules and inspect field schemas (name, type, required, readOnly, lookup target) via `GET /modules` and `GET /{moduleName}/metadata`
+
+    - **Attachments & Comments** — Attach documents, photos, and notes to work orders and service requests
+
+    - **Picklists** — Discover available values for status, priority, category, and other configurable fields
+
+
+    The API follows REST conventions with JSON request/response bodies, standard HTTP methods (GET, POST, PATCH, DELETE), and consistent error handling across all endpoints. ## Base URL
+
+
+    ```
+
+    https://{region}.facilioapis.com/{app_name}/api/v5
+
+    ```
+
+
+    | Variable | Description | Values |
+
+    |----------|-------------|--------|
+
+    | `region` | Your deployment region | `us`, `au`, `ae`, `uk`, `us-azure`, `sa` |
+
+    | `app_name` | `maintenance` for API Key auth, `developer` for OAuth2 auth | `maintenance`, `developer` |
+
+
+    ## Authentication
+
+
+    All API requests must be authenticated using one of the following methods:
+
+
+    ### API Key (Personal Access Token)
+
+    Generate an API key from your Facilio account settings and pass it in the `x-api-key` header. The key inherits the permissions of the user who created it. ```
+
+    x-api-key: your-api-key-here
+
+    ```
+
+
+    ### OAuth2
+
+    For developer app integrations. Supports **authorization_code** and **password** grant types. | Endpoint | URL |
+
+    |----------|-----|
+
+    | Authorize | `https://{region}.facilioapis.com/identity/oauth2/authorize` |
+
+    | Token | `https://{region}.facilioapis.com/identity/oauth2/token` |
+
+    | Refresh | `https://{region}.facilioapis.com/identity/oauth2/token` (with `grant_type=refresh_token`) |
+
+    | Revoke | `https://{region}.facilioapis.com/identity/oauth2/revoke` |
+
+
+    Pass the access token as:
+
+    ```
+
+    Authorization: Bearer oauth2
+
+    ```
+
+
+    ---
+
+
+    ## List Operations
+
+
+    All list endpoints (`GET /{module}`) support these query parameters:
+
+
+    | Parameter | Type | Default | Description |
+
+    |-----------|------|---------|-------------|
+
+    | `page` | integer | 1 | Page number (1-based) |
+
+    | `pageSize` | integer | 50 | Number of records per page. Maximum is 200. |
+
+    | `select` | string | — | Comma-separated field names to include in the response. If omitted, module default fields are returned. |
+
+    | `expand` | string | — | Comma-separated lookup field names to expand with full details (max 5).'
+  contact:
+    name: Facilio Support
+    url: https://facilio.com
+  license:
+    name: Proprietary
+servers:
+- url: https://{region}.facilioapis.com/{app_name}/api/v5
+  variables:
+    region:
+      description: Regional deployment
+      default: us
+      enum:
+      - us
+      - au
+      - ae
+      - uk
+      - us-azure
+      - sa
+    app_name:
+      description: '''maintenance'' for API Key, ''developer'' for OAuth2'
+      default: maintenance
+      enum:
+      - maintenance
+      - developer
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Purchased Items
+  description: Read-only view of item purchase batches — per-batch quantity, remaining stock, unit cost, and serial tracking. Records are produced by the inventory receipt and purchase-order flows, not created directly.
+paths:
+  /purchaseditem:
+    get:
+      tags:
+      - Purchased Items
+      summary: List purchased items
+      description: 'Returns a paginated list of purchased-item batches (read-only). Each row is one purchase batch of
+
+        an inventory item, with its quantity, remaining quantity, unit cost, and serial/lot tracking.
+
+        Supports filtering, sorting, and field selection — e.g. filter to one item with `?item=`.'
+      operationId: listPurchasedItems
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/select'
+      - $ref: '#/components/parameters/expand'
+      - $ref: '#/components/parameters/count'
+      - name: sortBy
+        in: query
+        description: Field to sort by (only sortable fields accepted)
+        schema:
+          type: string
+          enum:
+          - id
+          - quantity
+          - currentQuantity
+          - unitcost
+          - costDate
+          - serialNumber
+          - sysCreatedTime
+          - sysModifiedTime
+      - name: sortOrder
+        in: query
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: desc
+      responses:
+        '200':
+          description: Paginated list of purchased items
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ListResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/PurchasedItem'
+              example:
+                success: true
+                data:
+                - id: 950
+                  item:
+                    id: 40
+                    name: Air Filter 20x20
+                  itemType:
+                    id: 12
+                    name: Air Filter
+                  bin:
+                    id: 3
+                    name: A-01
+                  quantity: 50
+                  currentQuantity: 32
+                  unitcost: 8.75
+                  costDate: '2026-03-15T00:00:00Z'
+                  serialNumber: AF-2026-0450
+                  isUsed: false
+                  sysCreatedTime: '2026-03-15T10:00:00Z'
+                pagination:
+                  page: 1
+                  pageSize: 50
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /purchaseditem/{id}:
+    get:
+      tags:
+      - Purchased Items
+      summary: Get a purchased item
+      description: Returns a single purchased-item batch (read-only).
+      operationId: getPurchasedItem
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      - $ref: '#/components/parameters/select'
+      - $ref: '#/components/parameters/expand'
+      responses:
+        '200':
+          description: Purchased item details
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 950
+                  item:
+                    id: 40
+                    name: Air Filter 20x20
+                  itemType:
+                    id: 12
+                    name: Air Filter
+                  bin:
+                    id: 3
+                    name: A-01
+                  lot:
+                    id: 7
+                    name: LOT-2026-03
+                  quantity: 50
+                  currentQuantity: 32
+                  unitcost: 8.75
+                  costDate: '2026-03-15T00:00:00Z'
+                  serialNumber: AF-2026-0450
+                  isUsed: false
+                  sysCreatedTime: '2026-03-15T10:00:00Z'
+                  sysModifiedTime: '2026-03-20T14:00:00Z'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  parameters:
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
+    select:
+      name: select
+      in: query
+      description: Comma-separated field names to include in the response
+      schema:
+        type: string
+    expand:
+      name: expand
+      in: query
+      description: 'Comma-separated lookup field names to expand on **list** endpoints (max 5).
+
+        Expanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).
+
+        '
+      schema:
+        type: string
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
+    count:
+      name: count
+      in: query
+      description: Include total record count in response
+      schema:
+        type: boolean
+        default: false
+    pageSize:
+      name: pageSize
+      in: query
+      description: Records per page (max 200)
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+  schemas:
+    PurchasedItem:
+      type: object
+      description: Read-only. One purchase batch of an inventory item, with quantity, remaining stock, unit cost, and serial/lot tracking. Created via the inventory receipt / purchase-order flows, not through this API.
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+          description: Unique record ID (sortable)
+        item:
+          readOnly: true
+          description: Inventory item — returns {id, name}
+        itemType:
+          readOnly: true
+          description: Item type — returns {id, name}
+        bin:
+          readOnly: true
+          description: Storeroom bin — returns {id, name}
+        lot:
+          readOnly: true
+          description: Lot (when lot-tracked) — returns {id, name}
+        quantity:
+          type: number
+          format: double
+          readOnly: true
+          description: Quantity purchased in this batch (sortable)
+        currentQuantity:
+          type: number
+          format: double
+          readOnly: true
+          description: Quantity remaining from this batch (sortable)
+        unitcost:
+          type: number
+          format: double
+          readOnly: true
+          description: Unit cost for this batch (sortable)
+        costDate:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Cost/purchase date (sortable)
+        serialNumber:
+          type: string
+          readOnly: true
+          description: Serial number when serial-tracked (sortable)
+        isUsed:
+          type: boolean
+          readOnly: true
+          description: Whether the batch has been consumed
+        sysCreatedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Creation timestamp (sortable)
+        sysModifiedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Last modification timestamp (sortable)
+    ListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+            pageSize:
+              type: integer
+        count:
+          type: integer
+          description: Total count (only when ?count=true)
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Missing or invalid authentication credentials
+    NotFound:
+      description: Record or module not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: RECORD_NOT_FOUND
+              message: Record with the given ID was not found
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Personal access token
+    oauth2:
+      type: oauth2
+      description: Supports authorization_code and password grant types
+      flows:
+        authorizationCode:
+          authorizationUrl: https://us.facilioapis.com/identity/oauth2/authorize
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}
+        password:
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}

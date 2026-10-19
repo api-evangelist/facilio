@@ -1,0 +1,412 @@
+openapi: 3.2.0
+info:
+  title: Facilio REST Job Plan Comments API
+  version: 5.0.0
+  description: 'The Facilio REST API gives you programmatic access to Facilio''s Connected CMMS — the unified platform for managing property operations at portfolio scale. Build integrations that connect Facilio with your ERP, accounting systems, BMS, IoT platforms, and other business tools. Automate work order creation from external triggers, synchronize asset data across systems, push tenant and vendor records from your CRM, or pull maintenance data into your reporting dashboards. **What you can do with this API:**
+
+    - **Work Orders & Service Requests** — Create, assign, track, and close maintenance tasks programmatically
+
+    - **Assets** — Manage your equipment registry, track asset lifecycle, and sync with external asset management systems
+
+    - **Portfolio (Sites, Buildings, Floors, Spaces)** — Maintain your facility hierarchy and space data
+
+    - **People (Tenants, Vendors, Clients)** — Synchronize contacts and stakeholder records
+
+    - **Inventory (Item Types, Tool Types, Items & Tools, Services, Storerooms)** — Master data, per-storeroom item/tool balances (read), per-bin quantities by item or tool record, quantity adjustments, and warehouse locations
+
+    - **Procurement (Quotes, Purchase Requests, Purchase Orders, Receivable receiving, Invoices)** — Procurement with line items; receive against a PO via receivable APIs
+
+    - **Credit Notes (Vendor Credits, Client Credits)** — Manage credit notes for refunds and transaction adjustments with line items
+
+    - **Inventory Requests** — Track material requisitions from work orders to storerooms
+
+    - **Custom Modules** — Manage your organization''s custom modules — record types you define for the data and workflows that are specific to your business
+
+    - **Schema Discovery** — List all accessible modules and inspect field schemas (name, type, required, readOnly, lookup target) via `GET /modules` and `GET /{moduleName}/metadata`
+
+    - **Attachments & Comments** — Attach documents, photos, and notes to work orders and service requests
+
+    - **Picklists** — Discover available values for status, priority, category, and other configurable fields
+
+
+    The API follows REST conventions with JSON request/response bodies, standard HTTP methods (GET, POST, PATCH, DELETE), and consistent error handling across all endpoints. ## Base URL
+
+
+    ```
+
+    https://{region}.facilioapis.com/{app_name}/api/v5
+
+    ```
+
+
+    | Variable | Description | Values |
+
+    |----------|-------------|--------|
+
+    | `region` | Your deployment region | `us`, `au`, `ae`, `uk`, `us-azure`, `sa` |
+
+    | `app_name` | `maintenance` for API Key auth, `developer` for OAuth2 auth | `maintenance`, `developer` |
+
+
+    ## Authentication
+
+
+    All API requests must be authenticated using one of the following methods:
+
+
+    ### API Key (Personal Access Token)
+
+    Generate an API key from your Facilio account settings and pass it in the `x-api-key` header. The key inherits the permissions of the user who created it. ```
+
+    x-api-key: your-api-key-here
+
+    ```
+
+
+    ### OAuth2
+
+    For developer app integrations. Supports **authorization_code** and **password** grant types. | Endpoint | URL |
+
+    |----------|-----|
+
+    | Authorize | `https://{region}.facilioapis.com/identity/oauth2/authorize` |
+
+    | Token | `https://{region}.facilioapis.com/identity/oauth2/token` |
+
+    | Refresh | `https://{region}.facilioapis.com/identity/oauth2/token` (with `grant_type=refresh_token`) |
+
+    | Revoke | `https://{region}.facilioapis.com/identity/oauth2/revoke` |
+
+
+    Pass the access token as:
+
+    ```
+
+    Authorization: Bearer oauth2
+
+    ```
+
+
+    ---
+
+
+    ## List Operations
+
+
+    All list endpoints (`GET /{module}`) support these query parameters:
+
+
+    | Parameter | Type | Default | Description |
+
+    |-----------|------|---------|-------------|
+
+    | `page` | integer | 1 | Page number (1-based) |
+
+    | `pageSize` | integer | 50 | Number of records per page. Maximum is 200. |
+
+    | `select` | string | — | Comma-separated field names to include in the response. If omitted, module default fields are returned. |
+
+    | `expand` | string | — | Comma-separated lookup field names to expand with full details (max 5).'
+  contact:
+    name: Facilio Support
+    url: https://facilio.com
+  license:
+    name: Proprietary
+servers:
+- url: https://{region}.facilioapis.com/{app_name}/api/v5
+  variables:
+    region:
+      description: Regional deployment
+      default: us
+      enum:
+      - us
+      - au
+      - ae
+      - uk
+      - us-azure
+      - sa
+    app_name:
+      description: '''maintenance'' for API Key, ''developer'' for OAuth2'
+      default: maintenance
+      enum:
+      - maintenance
+      - developer
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Job Plan Comments
+  description: Notes and discussion on a job plan.
+paths:
+  /jobplan/{id}/comments:
+    get:
+      tags:
+      - Job Plan Comments
+      summary: List job plan comments
+      operationId: listJobPlanComments
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      responses:
+        '200':
+          description: List of comments
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 710
+                  body: Aligned with manufacturer service interval
+                  bodyHTML: <p>Aligned with manufacturer service interval</p>
+                  createdTime: '2026-02-01T09:30:00Z'
+                  createdBy:
+                    id: 1
+                    name: Alex Johnson
+                    email: alex.johnson@example.com
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags:
+      - Job Plan Comments
+      summary: Add job plan comment
+      operationId: addJobPlanComment
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  $ref: '#/components/schemas/JobPlanComment'
+            example:
+              data:
+                body: Reviewed for Q2
+      responses:
+        '201':
+          description: Comment added
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 711
+                  body: Reviewed for Q2
+                  createdTime: '2026-02-01T09:45:00Z'
+                  createdBy:
+                    id: 1
+                    name: Alex Johnson
+                    email: alex.johnson@example.com
+                message: Comment added successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /jobplan/{id}/comments/{commentId}:
+    patch:
+      tags:
+      - Job Plan Comments
+      summary: Update job plan comment
+      operationId: updateJobPlanComment
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      - $ref: '#/components/parameters/commentId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  type: object
+                  required:
+                  - body
+                  properties:
+                    body:
+                      type: string
+            example:
+              data:
+                body: Reviewed and approved for Q2
+      responses:
+        '200':
+          description: Comment updated
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 711
+                  body: Reviewed and approved for Q2
+                message: Comment updated successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Job Plan Comments
+      summary: Delete job plan comment
+      operationId: deleteJobPlanComment
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      - $ref: '#/components/parameters/commentId'
+      responses:
+        '200':
+          description: Comment deleted
+          content:
+            application/json:
+              example:
+                success: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  parameters:
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
+    commentId:
+      name: commentId
+      in: path
+      required: true
+      description: Comment ID
+      schema:
+        type: integer
+        format: int64
+  schemas:
+    JobPlanComment:
+      type: object
+      description: Job plan comment/note.
+      required:
+      - body
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: Comment ID
+        body:
+          type: string
+          description: Comment text content (required on create)
+        bodyHTML:
+          type: string
+          readOnly: true
+          description: HTML-formatted comment body
+        externalId:
+          type: string
+          description: Your external reference ID
+        createdTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Creation timestamp
+        createdBy:
+          readOnly: true
+          description: User who posted the comment
+          allOf:
+          - $ref: '#/components/schemas/User'
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+    User:
+      type: object
+      description: 'Expanded object for lookups to the `users` module.
+
+        On list API, user lookups return `{id}` only unless `?expand=` includes that field.
+
+        When expanded (single-record GET, create/update responses, or list with `expand`): fixed set `id`, `name`, `email`, `phone` (see **Lookup fields in responses**).
+
+        '
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: User ID
+        name:
+          type: string
+          description: User's full name
+        email:
+          type: string
+          description: User's email address
+        phone:
+          type: string
+          description: Phone number when present
+  responses:
+    BadRequest:
+      description: Validation error — missing required fields, invalid field values, or malformed request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: VALIDATION_ERROR
+              message: 'Required field(s) missing: name'
+    Unauthorized:
+      description: Missing or invalid authentication credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Missing or invalid authentication credentials
+    NotFound:
+      description: Record or module not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: RECORD_NOT_FOUND
+              message: Record with the given ID was not found
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Personal access token
+    oauth2:
+      type: oauth2
+      description: Supports authorization_code and password grant types
+      flows:
+        authorizationCode:
+          authorizationUrl: https://us.facilioapis.com/identity/oauth2/authorize
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}
+        password:
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}

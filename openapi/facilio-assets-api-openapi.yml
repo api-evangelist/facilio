@@ -2,7 +2,111 @@ openapi: 3.2.0
 info:
   title: Facilio REST Assets API
   version: 5.0.0
-  description: The Facilio REST API gives you programmatic access to Facilio's Connected CMMS — the unified platform for managing property operations at portfolio scale.
+  description: 'The Facilio REST API gives you programmatic access to Facilio''s Connected CMMS — the unified platform for managing property operations at portfolio scale. Build integrations that connect Facilio with your ERP, accounting systems, BMS, IoT platforms, and other business tools. Automate work order creation from external triggers, synchronize asset data across systems, push tenant and vendor records from your CRM, or pull maintenance data into your reporting dashboards. **What you can do with this API:**
+
+    - **Work Orders & Service Requests** — Create, assign, track, and close maintenance tasks programmatically
+
+    - **Assets** — Manage your equipment registry, track asset lifecycle, and sync with external asset management systems
+
+    - **Portfolio (Sites, Buildings, Floors, Spaces)** — Maintain your facility hierarchy and space data
+
+    - **People (Tenants, Vendors, Clients)** — Synchronize contacts and stakeholder records
+
+    - **Inventory (Item Types, Tool Types, Items & Tools, Services, Storerooms)** — Master data, per-storeroom item/tool balances (read), per-bin quantities by item or tool record, quantity adjustments, and warehouse locations
+
+    - **Procurement (Quotes, Purchase Requests, Purchase Orders, Receivable receiving, Invoices)** — Procurement with line items; receive against a PO via receivable APIs
+
+    - **Credit Notes (Vendor Credits, Client Credits)** — Manage credit notes for refunds and transaction adjustments with line items
+
+    - **Inventory Requests** — Track material requisitions from work orders to storerooms
+
+    - **Custom Modules** — Manage your organization''s custom modules — record types you define for the data and workflows that are specific to your business
+
+    - **Schema Discovery** — List all accessible modules and inspect field schemas (name, type, required, readOnly, lookup target) via `GET /modules` and `GET /{moduleName}/metadata`
+
+    - **Attachments & Comments** — Attach documents, photos, and notes to work orders and service requests
+
+    - **Picklists** — Discover available values for status, priority, category, and other configurable fields
+
+
+    The API follows REST conventions with JSON request/response bodies, standard HTTP methods (GET, POST, PATCH, DELETE), and consistent error handling across all endpoints. ## Base URL
+
+
+    ```
+
+    https://{region}.facilioapis.com/{app_name}/api/v5
+
+    ```
+
+
+    | Variable | Description | Values |
+
+    |----------|-------------|--------|
+
+    | `region` | Your deployment region | `us`, `au`, `ae`, `uk`, `us-azure`, `sa` |
+
+    | `app_name` | `maintenance` for API Key auth, `developer` for OAuth2 auth | `maintenance`, `developer` |
+
+
+    ## Authentication
+
+
+    All API requests must be authenticated using one of the following methods:
+
+
+    ### API Key (Personal Access Token)
+
+    Generate an API key from your Facilio account settings and pass it in the `x-api-key` header. The key inherits the permissions of the user who created it. ```
+
+    x-api-key: your-api-key-here
+
+    ```
+
+
+    ### OAuth2
+
+    For developer app integrations. Supports **authorization_code** and **password** grant types. | Endpoint | URL |
+
+    |----------|-----|
+
+    | Authorize | `https://{region}.facilioapis.com/identity/oauth2/authorize` |
+
+    | Token | `https://{region}.facilioapis.com/identity/oauth2/token` |
+
+    | Refresh | `https://{region}.facilioapis.com/identity/oauth2/token` (with `grant_type=refresh_token`) |
+
+    | Revoke | `https://{region}.facilioapis.com/identity/oauth2/revoke` |
+
+
+    Pass the access token as:
+
+    ```
+
+    Authorization: Bearer oauth2
+
+    ```
+
+
+    ---
+
+
+    ## List Operations
+
+
+    All list endpoints (`GET /{module}`) support these query parameters:
+
+
+    | Parameter | Type | Default | Description |
+
+    |-----------|------|---------|-------------|
+
+    | `page` | integer | 1 | Page number (1-based) |
+
+    | `pageSize` | integer | 50 | Number of records per page. Maximum is 200. |
+
+    | `select` | string | — | Comma-separated field names to include in the response. If omitted, module default fields are returned. |
+
+    | `expand` | string | — | Comma-separated lookup field names to expand with full details (max 5).'
   contact:
     name: Facilio Support
     url: https://facilio.com
@@ -269,85 +373,6 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 components:
-  parameters:
-    pageSize:
-      name: pageSize
-      in: query
-      description: Records per page (max 200)
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
-    page:
-      name: page
-      in: query
-      description: Page number (1-based)
-      schema:
-        type: integer
-        default: 1
-    select:
-      name: select
-      in: query
-      description: Comma-separated field names to include in the response
-      schema:
-        type: string
-    recordId:
-      name: id
-      in: path
-      required: true
-      description: Record ID
-      schema:
-        type: integer
-        format: int64
-    includeAllowedValues:
-      name: includeAllowedValues
-      in: query
-      description: 'When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).
-
-        Default `false` keeps the original metadata payload (no enrichment, no extra DB calls).
-
-        Use this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.
-
-        '
-      schema:
-        type: boolean
-        default: false
-    view:
-      name: view
-      in: query
-      description: Saved view name
-      schema:
-        type: string
-    search:
-      name: search
-      in: query
-      description: Free-text search on the primary field (subject, name, etc.)
-      schema:
-        type: string
-    changed:
-      name: changed
-      in: query
-      description: 'Delta sync: returns records created/modified after this UTC timestamp'
-      schema:
-        type: string
-        format: date-time
-    count:
-      name: count
-      in: query
-      description: Include total record count in response
-      schema:
-        type: boolean
-        default: false
-    expand:
-      name: expand
-      in: query
-      description: 'Comma-separated lookup field names to expand on **list** endpoints (max 5).
-
-        Expanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).
-
-        '
-      schema:
-        type: string
   schemas:
     ModuleMetaResponse:
       type: object
@@ -371,79 +396,29 @@ components:
                 '
               items:
                 $ref: '#/components/schemas/FacilioField'
-    FacilioField:
+    User:
       type: object
-      description: Schema descriptor for a single field within a module.
+      description: 'Expanded object for lookups to the `users` module.
+
+        On list API, user lookups return `{id}` only unless `?expand=` includes that field.
+
+        When expanded (single-record GET, create/update responses, or list with `expand`): fixed set `id`, `name`, `email`, `phone` (see **Lookup fields in responses**).
+
+        '
       properties:
+        id:
+          type: integer
+          format: int64
+          description: User ID
         name:
           type: string
-          description: Field name used in API requests and responses (e.g. `subject`, `po_reference_workorder`)
-        displayName:
+          description: User's full name
+        email:
           type: string
-          description: Human-readable field label
-        dataType:
+          description: User's email address
+        phone:
           type: string
-          description: 'Field data type. Common values:
-
-            `STRING`, `NUMBER`, `DECIMAL`, `BOOLEAN`,
-
-            `DATE`, `DATE_TIME`,
-
-            `BIG_STRING` (large text, excluded from list responses),
-
-            `LOOKUP` (reference to another record — see `lookupModuleName`),
-
-            `MULTI_LOOKUP` (multi-reference — see `lookupModuleName`),
-
-            `ENUM`, `SYSTEM_ENUM`, `STRING_SYSTEM_ENUM` (picklist types)
-
-            '
-          example: STRING
-        required:
-          type: boolean
-          description: '`true` if this field must be provided on record creation'
-        readOnly:
-          type: boolean
-          description: '`true` if this field cannot be set or modified via the API (e.g. auto-generated system fields)'
-        isCustom:
-          type: boolean
-          description: '`true` for fields added by your organization; `false` for standard built-in fields'
-        sortable:
-          type: boolean
-          description: '`true` if this field can be used as a `sortBy` value on the list API'
-        lookupModuleName:
-          type: string
-          description: Present only on `LOOKUP` and `MULTI_LOOKUP` fields. The name of the target module (e.g. `site`, `users`, `ticketstatus`).
-        max_length:
-          type: integer
-          description: 'Maximum number of characters accepted by the V5 write API for text-style fields.
-
-            Present only when the field''s `dataType` is one of:
-
-            `STRING` (255), `LARGE_TEXT` (2000), `BIG_STRING` (32000).
-
-            Omitted for all other data types.
-
-            '
-          example: 255
-        allowed_values:
-          type: array
-          description: 'List of acceptable write values for picklist-capable fields. Present **only when the request includes `?includeAllowedValues=true`** AND the field is one of:
-
-            `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, or a `LOOKUP` targeting a system picklist module (e.g. `ticketstatus`, `ticketpriority`, `ticketcategory`, `tickettype`).
-
-            Each entry uses `{label, value}`; the `value` is the canonical form accepted by create/update payloads.
-
-            '
-          items:
-            type: object
-            properties:
-              label:
-                type: string
-                description: Display label as shown in the UI
-              value:
-                type: string
-                description: Canonical value accepted by create/update for this field and filtering
+          description: Phone number when present
     Error:
       type: object
       description: Error response
@@ -460,6 +435,22 @@ components:
             message:
               type: string
               description: Human-readable error message
+    FacilioModule:
+      type: object
+      description: A single entry in the module catalogue returned by GET /modules.
+      properties:
+        name:
+          type: string
+          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
+        displayName:
+          type: string
+          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
+        description:
+          type: string
+          description: Module description as configured in Facilio Setup. Omitted when blank.
+        isCustom:
+          type: boolean
+          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
     Asset:
       type: object
       description: 'Asset. Custom fields: `{field_name}_asset`.'
@@ -545,57 +536,159 @@ components:
           - $ref: '#/components/schemas/User'
       additionalProperties:
         description: Custom fields (e.g. warranty_info_asset)
-    User:
+    FacilioField:
       type: object
-      description: 'Expanded object for lookups to the `users` module.
-
-        On list API, user lookups return `{id}` only unless `?expand=` includes that field.
-
-        When expanded (single-record GET, create/update responses, or list with `expand`): fixed set `id`, `name`, `email`, `phone` (see **Lookup fields in responses**).
-
-        '
-      properties:
-        id:
-          type: integer
-          format: int64
-          description: User ID
-        name:
-          type: string
-          description: User's full name
-        email:
-          type: string
-          description: User's email address
-        phone:
-          type: string
-          description: Phone number when present
-    FacilioModule:
-      type: object
-      description: A single entry in the module catalogue returned by GET /modules.
+      description: Schema descriptor for a single field within a module.
       properties:
         name:
           type: string
-          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
+          description: Field name used in API requests and responses (e.g. `subject`, `po_reference_workorder`)
         displayName:
           type: string
-          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
-        description:
+          description: Human-readable field label
+        dataType:
           type: string
-          description: Module description as configured in Facilio Setup. Omitted when blank.
+          description: 'Field data type. Common values:
+
+            `STRING`, `NUMBER`, `DECIMAL`, `BOOLEAN`,
+
+            `DATE`, `DATE_TIME`,
+
+            `BIG_STRING` (large text, excluded from list responses),
+
+            `LOOKUP` (reference to another record — see `lookupModuleName`),
+
+            `MULTI_LOOKUP` (multi-reference — see `lookupModuleName`),
+
+            `ENUM`, `SYSTEM_ENUM`, `STRING_SYSTEM_ENUM` (picklist types)
+
+            '
+          example: STRING
+        required:
+          type: boolean
+          description: '`true` if this field must be provided on record creation'
+        readOnly:
+          type: boolean
+          description: '`true` if this field cannot be set or modified via the API (e.g. auto-generated system fields)'
         isCustom:
           type: boolean
-          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
+          description: '`true` for fields added by your organization; `false` for standard built-in fields'
+        sortable:
+          type: boolean
+          description: '`true` if this field can be used as a `sortBy` value on the list API'
+        lookupModuleName:
+          type: string
+          description: Present only on `LOOKUP` and `MULTI_LOOKUP` fields. The name of the target module (e.g. `site`, `users`, `ticketstatus`).
+        max_length:
+          type: integer
+          description: 'Maximum number of characters accepted by the V5 write API for text-style fields.
+
+            Present only when the field''s `dataType` is one of:
+
+            `STRING` (255), `LARGE_TEXT` (2000), `BIG_STRING` (32000).
+
+            Omitted for all other data types.
+
+            '
+          example: 255
+        allowed_values:
+          type: array
+          description: 'List of acceptable write values for picklist-capable fields. Present **only when the request includes `?includeAllowedValues=true`** AND the field is one of:
+
+            `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, or a `LOOKUP` targeting a system picklist module (e.g. `ticketstatus`, `ticketpriority`, `ticketcategory`, `tickettype`).
+
+            Each entry uses `{label, value}`; the `value` is the canonical form accepted by create/update payloads.
+
+            '
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+                description: Display label as shown in the UI
+              value:
+                type: string
+                description: Canonical value accepted by create/update for this field and filtering
+  parameters:
+    select:
+      name: select
+      in: query
+      description: Comma-separated field names to include in the response
+      schema:
+        type: string
+    search:
+      name: search
+      in: query
+      description: Free-text search on the primary field (subject, name, etc.)
+      schema:
+        type: string
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
+    pageSize:
+      name: pageSize
+      in: query
+      description: Records per page (max 200)
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
+    changed:
+      name: changed
+      in: query
+      description: 'Delta sync: returns records created/modified after this UTC timestamp'
+      schema:
+        type: string
+        format: date-time
+    includeAllowedValues:
+      name: includeAllowedValues
+      in: query
+      description: 'When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).
+
+        Default `false` keeps the original metadata payload (no enrichment, no extra DB calls).
+
+        Use this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.
+
+        '
+      schema:
+        type: boolean
+        default: false
+    expand:
+      name: expand
+      in: query
+      description: 'Comma-separated lookup field names to expand on **list** endpoints (max 5).
+
+        Expanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).
+
+        '
+      schema:
+        type: string
+    view:
+      name: view
+      in: query
+      description: Saved view name
+      schema:
+        type: string
+    count:
+      name: count
+      in: query
+      description: Include total record count in response
+      schema:
+        type: boolean
+        default: false
   responses:
-    NotFound:
-      description: Record or module not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            success: false
-            error:
-              code: RECORD_NOT_FOUND
-              message: Record with the given ID was not found
     BadRequest:
       description: Validation error — missing required fields, invalid field values, or malformed request body
       content:
@@ -607,6 +700,17 @@ components:
             error:
               code: VALIDATION_ERROR
               message: 'Required field(s) missing: name'
+    NotFound:
+      description: Record or module not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: RECORD_NOT_FOUND
+              message: Record with the given ID was not found
     Unauthorized:
       description: Missing or invalid authentication credentials
       content:

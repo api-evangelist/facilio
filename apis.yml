@@ -559,6 +559,306 @@ apis:
     url: openapi/facilio-work-orders-api-openapi.yml
   - type: APIReference
     url: https://facilio.com/developers/docs/api-reference/
+- aid: facilio:facilio-amenities-api
+  name: Facilio Amenities API
+  description: >-
+    Amenities are the perks a facility offers (projector, catering, whiteboard, ...), referenced from
+    a facility's `amenities` list.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Amenities
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-amenities-api-openapi.yml
+- aid: facilio:facilio-deliveries-api
+  name: Facilio Deliveries API
+  description: >-
+    Deliveries track packages received on-site for employees, including carrier, tracking number, and
+    delivery status.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Deliveries
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-deliveries-api-openapi.yml
+- aid: facilio:facilio-delivery-areas-api
+  name: Facilio Delivery Areas API
+  description: >-
+    Delivery areas are the drop-off locations packages are received at, referenced by deliveries.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Delivery Areas
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-delivery-areas-api-openapi.yml
+- aid: facilio:facilio-departments-api
+  name: Facilio Departments API
+  description: >-
+    Departments are organizational units used to group employees and desks, with rollup counts of each.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Departments
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-departments-api-openapi.yml
+- aid: facilio:facilio-desks-api
+  name: Facilio Desks API
+  description: >-
+    Desks are individual workstations within a space, assignable to employees and departments for hot-desking
+    or fixed seating.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Desks
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-desks-api-openapi.yml
+- aid: facilio:facilio-employee-attachments-api
+  name: Facilio Employee Attachments API
+  description: Attach documents and photos to an employee record.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Employee Attachments
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-employee-attachments-api-openapi.yml
+- aid: facilio:facilio-employee-comments-api
+  name: Facilio Employee Comments API
+  description: Notes on an employee record.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Employee Comments
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-employee-comments-api-openapi.yml
+- aid: facilio:facilio-employees-api
+  name: Facilio Employees API
+  description: >-
+    Employee records — your internal staff (a People-extended module) with name, contact details, designation,
+    and department — used for assignment and directory lookups.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Employees
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-employees-api-openapi.yml
+- aid: facilio:facilio-facilities-api
+  name: Facilio Facilities API
+  description: >-
+    Facilities are bookable resources configured for slot-based booking — conference rooms, hot-desk pools,
+    or parking areas — with pricing, capacity, and availability rules.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Facilities
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-facilities-api-openapi.yml
+- aid: facilio:facilio-facility-bookings-api
+  name: Facilio Facility Bookings API
+  description: >-
+    Facility bookings reserve one or more facility slots, with attendee tracking, cancellation, and an
+    approval/state-flow lifecycle.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Facility Bookings
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-facility-bookings-api-openapi.yml
+- aid: facilio:facilio-facility-slots-api
+  name: Facilio Facility Slots API
+  description: >-
+    Facility slots are the pre-generated, bookable time windows for a facility, produced by a scheduled
+    job. Read-only — browse availability, then reference a slot when creating a facility booking.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Facility Slots
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-facility-slots-api-openapi.yml
+- aid: facilio:facilio-facility-special-availability-api
+  name: Facilio Facility Special Availability API
+  description: >-
+    Date-range overrides on a facility's normal availability — an extra window or a blackout, optionally
+    at a special cost.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Facility Special Availability
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-facility-special-availability-api-openapi.yml
+- aid: facilio:facilio-facility-weekday-availability-api
+  name: Facilio Facility Weekday Availability API
+  description: >-
+    A facility's recurring weekly availability windows (e.g. "Mondays 9am-5pm"), used with the nightly
+    slot-generation job to produce bookable slots.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Facility Weekday Availability
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-facility-weekday-availability-api-openapi.yml
+- aid: facilio:facilio-indoor-floor-plans-api
+  name: Facilio Indoor Floor Plans API
+  description: >-
+    Indoor floor plans are the visual maps of a floor, mapping desks, rooms, and other spaces to on-screen
+    coordinates for the floor plan viewer and booking UI.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Indoor Floor Plans
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-indoor-floor-plans-api-openapi.yml
+- aid: facilio:facilio-job-plan-attachments-api
+  name: Facilio Job Plan Attachments API
+  description: Attach reference documents, SOPs, and diagrams to a job plan.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Job Plan Attachments
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-job-plan-attachments-api-openapi.yml
+- aid: facilio:facilio-job-plan-comments-api
+  name: Facilio Job Plan Comments API
+  description: Notes and discussion on a job plan.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Job Plan Comments
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-job-plan-comments-api-openapi.yml
+- aid: facilio:facilio-job-plans-api
+  name: Facilio Job Plans API
+  description: >-
+    Job plans are reusable task templates — ordered checklists of work — that drive preventive maintenance
+    and inspections. Each plan holds task sections with input-type tasks (readings, text, numeric, options)
+    and is versioned through a revise → publish lifecycle.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Job Plans
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-job-plans-api-openapi.yml
+- aid: facilio:facilio-lockers-api
+  name: Facilio Lockers API
+  description: Lockers are storage units within a space, assignable to employees.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Lockers
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-lockers-api-openapi.yml
+- aid: facilio:facilio-parking-stalls-api
+  name: Facilio Parking Stalls API
+  description: >-
+    Parking stalls are individual parking spaces within a site, categorized by parking type and mode,
+    and optionally assignable to employees.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Parking Stalls
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-parking-stalls-api-openapi.yml
+- aid: facilio:facilio-purchased-items-api
+  name: Facilio Purchased Items API
+  description: >-
+    Read-only view of item purchase batches — per-batch quantity, remaining stock, unit cost, and serial
+    tracking. Records are produced by the inventory receipt and purchase-order flows, not created directly.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Purchased Items
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-purchased-items-api-openapi.yml
+- aid: facilio:facilio-rooms-api
+  name: Facilio Rooms API
+  description: >-
+    Rooms are a specialized space type — meeting rooms, phone rooms, wellness rooms, and more — categorized
+    by room type.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Rooms
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-rooms-api-openapi.yml
+- aid: facilio:facilio-space-bookings-api
+  name: Facilio Space Bookings API
+  description: >-
+    Space bookings reserve a space, desk, or parking stall for a time window, with attendee tracking and
+    a booking lifecycle (pending, booked, checked in, checked out, cancelled).
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Space Bookings
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-space-bookings-api-openapi.yml
+- aid: facilio:facilio-work-permit-attachments-api
+  name: Facilio Work Permit Attachments API
+  description: >-
+    Attach method statements, risk assessments, photos, and supporting documents to a work permit.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Work Permit Attachments
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-work-permit-attachments-api-openapi.yml
+- aid: facilio:facilio-work-permit-checklists-api
+  name: Facilio Work Permit Checklists API
+  description: >-
+    The safety checklist items on a permit — filled and reviewed through its lifecycle — plus the read-only
+    permit-type checklist templates and categories they are generated from.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Work Permit Checklists
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-work-permit-checklists-api-openapi.yml
+- aid: facilio:facilio-work-permit-comments-api
+  name: Facilio Work Permit Comments API
+  description: >-
+    Notes and the communication trail on a work permit between requesters, issuers, and reviewers.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Work Permit Comments
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-work-permit-comments-api-openapi.yml
+- aid: facilio:facilio-work-permits-api
+  name: Facilio Work Permits API
+  description: >-
+    Work permits authorize and control high-risk work (hot work, confined space, working at height, and
+    similar). A permit is raised against a permit type, auto-populated with a safety checklist, and advanced
+    through a pre/post-requisite validation lifecycle before and after the work is carried out.
+  humanURL: https://facilio.com/developers/docs/api-reference/
+  baseURL: https://us.facilioapis.com/maintenance/api/v5
+  tags:
+  - Work Permits
+  properties:
+  - type: OpenAPI
+    url: openapi/facilio-work-permits-api-openapi.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com

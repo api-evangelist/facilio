@@ -1,0 +1,304 @@
+openapi: 3.2.0
+info:
+  title: Facilio REST Service Request Comments API
+  version: 5.0.0
+  description: The Facilio REST API gives you programmatic access to Facilio's Connected CMMS — the unified platform for managing property operations at portfolio scale.
+  contact:
+    name: Facilio Support
+    url: https://facilio.com
+  license:
+    name: Proprietary
+servers:
+- url: https://{region}.facilioapis.com/{app_name}/api/v5
+  variables:
+    region:
+      description: Regional deployment
+      default: us
+      enum:
+      - us
+      - au
+      - ae
+      - uk
+      - us-azure
+      - sa
+    app_name:
+      description: '''maintenance'' for API Key, ''developer'' for OAuth2'
+      default: maintenance
+      enum:
+      - maintenance
+      - developer
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Service Request Comments
+  description: Add notes and status updates to service requests to keep requesters and assignees informed.
+paths:
+  /servicerequest/{id}/comments:
+    get:
+      tags:
+      - Service Request Comments
+      summary: List service request comments
+      description: Returns all comments for the specified service request.
+      operationId: listServiceRequestComments
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      responses:
+        '200':
+          description: List of comments
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 401
+                  body: Assigned to HVAC team
+                  createdTime: '2026-02-10T10:00:00Z'
+                  createdBy:
+                    id: 1
+                    name: Alex Johnson
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags:
+      - Service Request Comments
+      summary: Add service request comment
+      operationId: addServiceRequestComment
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  $ref: '#/components/schemas/ServiceRequestComment'
+            example:
+              data:
+                body: Issue has been resolved
+      responses:
+        '201':
+          description: Comment added
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 402
+                  body: Issue has been resolved
+                  createdTime: '2026-02-14T15:00:00Z'
+                  createdBy:
+                    id: 1
+                    name: Alex Johnson
+                    email: alex.johnson@example.com
+                message: Comment added successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /servicerequest/{id}/comments/{commentId}:
+    patch:
+      tags:
+      - Service Request Comments
+      summary: Update service request comment
+      operationId: updateServiceRequestComment
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      - $ref: '#/components/parameters/commentId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  type: object
+                  required:
+                  - body
+                  properties:
+                    body:
+                      type: string
+            example:
+              data:
+                body: Updated comment text
+      responses:
+        '200':
+          description: Comment updated
+          content:
+            application/json:
+              example:
+                success: true
+                message: Comment updated successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Service Request Comments
+      summary: Delete service request comment
+      operationId: deleteServiceRequestComment
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      - $ref: '#/components/parameters/commentId'
+      responses:
+        '200':
+          description: Comment deleted
+          content:
+            application/json:
+              example:
+                success: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  schemas:
+    ServiceRequestComment:
+      type: object
+      description: Service request comment/note.
+      required:
+      - body
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: Comment ID
+        body:
+          type: string
+          description: Comment text content (required on create)
+        bodyHTML:
+          type: string
+          readOnly: true
+          description: HTML-formatted comment body
+        externalId:
+          type: string
+          description: Your external reference ID
+        createdTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Creation timestamp
+        createdBy:
+          readOnly: true
+          description: User who posted the comment
+          allOf:
+          - $ref: '#/components/schemas/User'
+    User:
+      type: object
+      description: 'Expanded object for lookups to the `users` module.
+
+        On list API, user lookups return `{id}` only unless `?expand=` includes that field.
+
+        When expanded (single-record GET, create/update responses, or list with `expand`): fixed set `id`, `name`, `email`, `phone` (see **Lookup fields in responses**).
+
+        '
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: User ID
+        name:
+          type: string
+          description: User's full name
+        email:
+          type: string
+          description: User's email address
+        phone:
+          type: string
+          description: Phone number when present
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+  parameters:
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
+    commentId:
+      name: commentId
+      in: path
+      required: true
+      description: Comment ID
+      schema:
+        type: integer
+        format: int64
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Missing or invalid authentication credentials
+    BadRequest:
+      description: Validation error — missing required fields, invalid field values, or malformed request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: VALIDATION_ERROR
+              message: 'Required field(s) missing: name'
+    NotFound:
+      description: Record or module not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: RECORD_NOT_FOUND
+              message: Record with the given ID was not found
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Personal access token
+    oauth2:
+      type: oauth2
+      description: Supports authorization_code and password grant types
+      flows:
+        authorizationCode:
+          authorizationUrl: https://us.facilioapis.com/identity/oauth2/authorize
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}
+        password:
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}

@@ -1,0 +1,516 @@
+openapi: 3.2.0
+info:
+  title: Facilio REST Items API
+  version: 5.0.0
+  description: The Facilio REST API gives you programmatic access to Facilio's Connected CMMS — the unified platform for managing property operations at portfolio scale.
+  contact:
+    name: Facilio Support
+    url: https://facilio.com
+  license:
+    name: Proprietary
+servers:
+- url: https://{region}.facilioapis.com/{app_name}/api/v5
+  variables:
+    region:
+      description: Regional deployment
+      default: us
+      enum:
+      - us
+      - au
+      - ae
+      - uk
+      - us-azure
+      - sa
+    app_name:
+      description: '''maintenance'' for API Key, ''developer'' for OAuth2'
+      default: maintenance
+      enum:
+      - maintenance
+      - developer
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Items
+  description: Item balances per storeroom (read-only list, detail, and bin list); non-rotating quantity changes use the item adjustment endpoint.
+paths:
+  /item:
+    get:
+      tags:
+      - Items
+      summary: List items
+      description: Item balances per storeroom (read-only). Standard list filters apply (e.g. by `storeRoom`, `itemType`).
+      operationId: listStockedItems
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/select'
+      - $ref: '#/components/parameters/expand'
+      - $ref: '#/components/parameters/search'
+      - $ref: '#/components/parameters/count'
+      - $ref: '#/components/parameters/changed'
+      - name: sortBy
+        in: query
+        schema:
+          type: string
+          enum:
+          - id
+          - quantity
+          - currentQuantity
+          - rate
+          - sysCreatedTime
+          - sysModifiedTime
+      - name: sortOrder
+        in: query
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: desc
+      responses:
+        '200':
+          description: List of item records
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 1
+                  itemType:
+                    id: 1
+                  storeRoom:
+                    id: 1
+                  currentQuantity: 100.0
+                  quantity: 100.0
+                pagination:
+                  page: 1
+                  pageSize: 50
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /item/{id}:
+    get:
+      tags:
+      - Items
+      summary: Get an item
+      operationId: getStockedItem
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      - $ref: '#/components/parameters/select'
+      - $ref: '#/components/parameters/expand'
+      responses:
+        '200':
+          description: Item record
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 1
+                  itemType:
+                    id: 1
+                  storeRoom:
+                    id: 1
+                  currentQuantity: 100.0
+                  defaultBin:
+                    id: 2
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /item/adjustment:
+    post:
+      tags:
+      - Items
+      summary: Adjust item quantity (non-rotating types)
+      description: 'Posts an **adjustment increase** or **decrease** via item transactions. **Rotating** item types are rejected.
+
+        If no item row exists for the given **itemType** + **storeRoom**, one may be created as part of the operation.
+
+        Optional **`executeWorkflows`** query. Requires **UPDATE** on the item module.'
+      operationId: itemAdjustment
+      parameters:
+      - name: executeWorkflows
+        in: query
+        schema:
+          type: boolean
+          default: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  $ref: '#/components/schemas/ItemAdjustment'
+            example:
+              data:
+                adjustmentType: increase
+                quantity: 5
+                itemType: 2
+                storeRoom: 1
+                bin: A-1
+                unitCost: 3.5
+      responses:
+        '200':
+          description: Adjustment applied
+          content:
+            application/json:
+              example:
+                success: true
+                message: Adjustment posted
+                data:
+                  id: 1
+                  itemType:
+                    id: 2
+                  storeRoom:
+                    id: 1
+                  currentQuantity: 105.31
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /item/{id}/bin:
+    get:
+      tags:
+      - Items
+      summary: List bins and on-hand quantities for an item
+      description: Returns bins with quantities for the item id in the path (the same id as `GET /item/{id}`).
+      operationId: listItemBins
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Item record id (not item type id).
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Bin rows
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 3
+                  name: Shelf-A
+                  quantity: 0.25
+                  isVirtualBin: false
+                - id: 2
+                  name: Virtual
+                  quantity: 104.06
+                  isVirtualBin: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /item/metadata:
+    get:
+      tags:
+      - Items
+      summary: Get item field schema
+      operationId: getStockedItemMetadata
+      parameters:
+      - $ref: '#/components/parameters/includeAllowedValues'
+      responses:
+        '200':
+          description: Field schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModuleMetaResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  parameters:
+    select:
+      name: select
+      in: query
+      description: Comma-separated field names to include in the response
+      schema:
+        type: string
+    search:
+      name: search
+      in: query
+      description: Free-text search on the primary field (subject, name, etc.)
+      schema:
+        type: string
+    changed:
+      name: changed
+      in: query
+      description: 'Delta sync: returns records created/modified after this UTC timestamp'
+      schema:
+        type: string
+        format: date-time
+    pageSize:
+      name: pageSize
+      in: query
+      description: Records per page (max 200)
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
+    includeAllowedValues:
+      name: includeAllowedValues
+      in: query
+      description: 'When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).
+
+        Default `false` keeps the original metadata payload (no enrichment, no extra DB calls).
+
+        Use this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.
+
+        '
+      schema:
+        type: boolean
+        default: false
+    count:
+      name: count
+      in: query
+      description: Include total record count in response
+      schema:
+        type: boolean
+        default: false
+    expand:
+      name: expand
+      in: query
+      description: 'Comma-separated lookup field names to expand on **list** endpoints (max 5).
+
+        Expanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).
+
+        '
+      schema:
+        type: string
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
+  schemas:
+    ModuleMetaResponse:
+      type: object
+      description: Response body for GET /{moduleName}/metadata.
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            module:
+              $ref: '#/components/schemas/FacilioModule'
+            fields:
+              type: array
+              description: 'Ordered list of fields for the module.
+
+                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
+
+                Custom modules return all fields.
+
+                '
+              items:
+                $ref: '#/components/schemas/FacilioField'
+    ItemAdjustment:
+      type: object
+      required:
+      - adjustmentType
+      - quantity
+      - itemType
+      - storeRoom
+      properties:
+        adjustmentType:
+          type: string
+          description: '`increase` or `decrease` (case-insensitive)'
+        quantity:
+          type: number
+          format: double
+          exclusiveMinimum: 0
+        itemType:
+          description: Item type id — pass the number directly (object with `id` is also accepted).
+        storeRoom:
+          description: Storeroom id — pass the number directly (object with `id` is also accepted).
+        bin:
+          description: Optional bin — pass the bin name as a string, the bin id as a number, or an object with `id` or `name`.
+        unitCost:
+          type: number
+          format: double
+          description: Increase only — purchased item unit cost
+        unitPrice:
+          type: number
+          format: double
+          description: Alias of `unitCost` on increase
+        purchasedDate:
+          description: Epoch ms (number) or ISO date string — `costDate` on purchased item (increase)
+        remarks:
+          type: string
+    FacilioModule:
+      type: object
+      description: A single entry in the module catalogue returned by GET /modules.
+      properties:
+        name:
+          type: string
+          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
+        displayName:
+          type: string
+          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
+        description:
+          type: string
+          description: Module description as configured in Facilio Setup. Omitted when blank.
+        isCustom:
+          type: boolean
+          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
+    FacilioField:
+      type: object
+      description: Schema descriptor for a single field within a module.
+      properties:
+        name:
+          type: string
+          description: Field name used in API requests and responses (e.g. `subject`, `po_reference_workorder`)
+        displayName:
+          type: string
+          description: Human-readable field label
+        dataType:
+          type: string
+          description: 'Field data type. Common values:
+
+            `STRING`, `NUMBER`, `DECIMAL`, `BOOLEAN`,
+
+            `DATE`, `DATE_TIME`,
+
+            `BIG_STRING` (large text, excluded from list responses),
+
+            `LOOKUP` (reference to another record — see `lookupModuleName`),
+
+            `MULTI_LOOKUP` (multi-reference — see `lookupModuleName`),
+
+            `ENUM`, `SYSTEM_ENUM`, `STRING_SYSTEM_ENUM` (picklist types)
+
+            '
+          example: STRING
+        required:
+          type: boolean
+          description: '`true` if this field must be provided on record creation'
+        readOnly:
+          type: boolean
+          description: '`true` if this field cannot be set or modified via the API (e.g. auto-generated system fields)'
+        isCustom:
+          type: boolean
+          description: '`true` for fields added by your organization; `false` for standard built-in fields'
+        sortable:
+          type: boolean
+          description: '`true` if this field can be used as a `sortBy` value on the list API'
+        lookupModuleName:
+          type: string
+          description: Present only on `LOOKUP` and `MULTI_LOOKUP` fields. The name of the target module (e.g. `site`, `users`, `ticketstatus`).
+        max_length:
+          type: integer
+          description: 'Maximum number of characters accepted by the V5 write API for text-style fields.
+
+            Present only when the field''s `dataType` is one of:
+
+            `STRING` (255), `LARGE_TEXT` (2000), `BIG_STRING` (32000).
+
+            Omitted for all other data types.
+
+            '
+          example: 255
+        allowed_values:
+          type: array
+          description: 'List of acceptable write values for picklist-capable fields. Present **only when the request includes `?includeAllowedValues=true`** AND the field is one of:
+
+            `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, or a `LOOKUP` targeting a system picklist module (e.g. `ticketstatus`, `ticketpriority`, `ticketcategory`, `tickettype`).
+
+            Each entry uses `{label, value}`; the `value` is the canonical form accepted by create/update payloads.
+
+            '
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+                description: Display label as shown in the UI
+              value:
+                type: string
+                description: Canonical value accepted by create/update for this field and filtering
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Missing or invalid authentication credentials
+    BadRequest:
+      description: Validation error — missing required fields, invalid field values, or malformed request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: VALIDATION_ERROR
+              message: 'Required field(s) missing: name'
+    NotFound:
+      description: Record or module not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: RECORD_NOT_FOUND
+              message: Record with the given ID was not found
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Personal access token
+    oauth2:
+      type: oauth2
+      description: Supports authorization_code and password grant types
+      flows:
+        authorizationCode:
+          authorizationUrl: https://us.facilioapis.com/identity/oauth2/authorize
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}
+        password:
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}

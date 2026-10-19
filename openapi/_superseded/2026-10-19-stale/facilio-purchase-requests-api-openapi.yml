@@ -1,0 +1,715 @@
+openapi: 3.2.0
+info:
+  title: Facilio REST Purchase Requests API
+  version: 5.0.0
+  description: The Facilio REST API gives you programmatic access to Facilio's Connected CMMS — the unified platform for managing property operations at portfolio scale.
+  contact:
+    name: Facilio Support
+    url: https://facilio.com
+  license:
+    name: Proprietary
+servers:
+- url: https://{region}.facilioapis.com/{app_name}/api/v5
+  variables:
+    region:
+      description: Regional deployment
+      default: us
+      enum:
+      - us
+      - au
+      - ae
+      - uk
+      - us-azure
+      - sa
+    app_name:
+      description: '''maintenance'' for API Key, ''developer'' for OAuth2'
+      default: maintenance
+      enum:
+      - maintenance
+      - developer
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Purchase Requests
+  description: Internal requisitions for materials or services, with line items. Line items on PATCH represent the full desired state.
+paths:
+  /purchaserequest:
+    get:
+      tags:
+      - Purchase Requests
+      summary: List purchase requests
+      operationId: listPurchaseRequests
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/select'
+      - $ref: '#/components/parameters/expand'
+      - $ref: '#/components/parameters/search'
+      - $ref: '#/components/parameters/count'
+      - $ref: '#/components/parameters/changed'
+      - name: sortBy
+        in: query
+        schema:
+          type: string
+          enum:
+          - id
+          - localId
+          - name
+          - requestedTime
+          - requiredTime
+          - sysCreatedTime
+          - sysModifiedTime
+      - name: sortOrder
+        in: query
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: desc
+      responses:
+        '200':
+          description: List of purchase requests
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 1
+                  localId: 1
+                  name: PR-001
+                  vendor:
+                    id: 1
+                  storeRoom:
+                    id: 1
+                  requestedTime: '2026-03-10'
+                  subTotal: 500.0
+                  sysCreatedTime: '2026-03-10T10:00:00Z'
+                pagination:
+                  page: 1
+                  pageSize: 50
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags:
+      - Purchase Requests
+      summary: Create a purchase request
+      description: Creates a new purchase request. `name` is required.
+      operationId: createPurchaseRequest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  $ref: '#/components/schemas/PurchaseRequest'
+            example:
+              data:
+                name: PR-Filters
+                vendor:
+                  id: 1
+                storeRoom:
+                  id: 1
+                lineItems:
+                - inventoryType: Item
+                  itemType:
+                    id: 1
+                  quantity: 50
+                  unitPrice: 8.5
+                  cost: 425.0
+                - inventoryType: Tool
+                  toolType:
+                    id: 1
+                  quantity: 2
+                  unitPrice: 120.0
+                  cost: 240.0
+      responses:
+        '201':
+          description: Purchase request created
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 2
+                  localId: 2
+                  name: PR-Filters
+                message: Record created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /purchaserequest/{id}:
+    get:
+      tags:
+      - Purchase Requests
+      summary: Get a purchase request
+      description: Returns a single purchase request with all fields and line items.
+      operationId: getPurchaseRequest
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      - $ref: '#/components/parameters/select'
+      - $ref: '#/components/parameters/expand'
+      responses:
+        '200':
+          description: Purchase request details with line items
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 1
+                  localId: 1
+                  name: PR-001
+                  vendor:
+                    id: 1
+                    name: Supplier 1
+                  storeRoom:
+                    id: 1
+                    name: Warehouse-1
+                  requestedBy:
+                    id: 1
+                    name: Alex Johnson
+                    email: alex@example.com
+                  requestedTime: '2026-03-10'
+                  subTotal: 500.0
+                  totalCost: 500.0
+                  totalTaxAmount: 0.0
+                  sysCreatedBy:
+                    id: 1
+                    name: Alex Johnson
+                    email: alex@example.com
+                  sysCreatedTime: '2026-03-10T10:00:00Z'
+                  sysModifiedTime: '2026-03-10T10:00:00Z'
+                  lineItems:
+                  - id: 1
+                    inventoryType: Item
+                    itemType:
+                      id: 1
+                    quantity: 50.0
+                    unitPrice: 8.5
+                    cost: 425.0
+                    taxAmount: 0.0
+                  - id: 2
+                    inventoryType: Tool
+                    toolType:
+                      id: 1
+                    quantity: 2.0
+                    unitPrice: 120.0
+                    cost: 240.0
+                    taxAmount: 0.0
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+      - Purchase Requests
+      summary: Update a purchase request
+      description: 'Updates a purchase request. When `lineItems` is included, it represents the full desired state.
+
+        Existing line items not in the array are deleted. Include `id` to update an existing line item.'
+      operationId: updatePurchaseRequest
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  $ref: '#/components/schemas/PurchaseRequest'
+            example:
+              data:
+                description: Urgent filter order
+                lineItems:
+                - id: 1
+                  quantity: 100
+                  unitPrice: 8.5
+                  cost: 850.0
+                - inventoryType: Service
+                  service:
+                    id: 1
+                  quantity: 1
+                  unitPrice: 100.0
+                  cost: 100.0
+      responses:
+        '200':
+          description: Purchase request updated
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 1
+                  localId: 1
+                  name: PR-001
+                message: Record updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Purchase Requests
+      summary: Delete a purchase request
+      operationId: deletePurchaseRequest
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              example:
+                success: true
+                message: Record deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /purchaserequest/metadata:
+    get:
+      tags:
+      - Purchase Requests
+      summary: Get purchase request field schema
+      description: Returns the field schema for the purchaserequest module, including all declared system fields and any org-specific custom fields with their data type, required/readOnly flags, and lookup targets.
+      operationId: getPurchaseRequestMetadata
+      parameters:
+      - $ref: '#/components/parameters/includeAllowedValues'
+      responses:
+        '200':
+          description: Field schema retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModuleMetaResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  schemas:
+    PurchaseRequest:
+      type: object
+      description: Purchase request with line items.
+      required:
+      - name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: Unique record ID
+        localId:
+          type: integer
+          readOnly: true
+          description: Sequential number (sortable)
+        name:
+          type: string
+          maxLength: 255
+          description: PR name (required, sortable)
+        description:
+          type: string
+          maxLength: 2000
+          description: Description
+        moduleState:
+          type: string
+          description: Status — pass `status` value (e.g. 'Draft', 'Approved') or numeric ID. Use `GET /picklist/purchaserequest/moduleState` for valid values.
+        vendor:
+          type: integer
+          description: Vendor ID
+        storeRoom:
+          type: integer
+          description: Storeroom ID
+        requestedBy:
+          type: integer
+          description: Requester user ID
+        requestedTime:
+          type: string
+          format: date
+          description: Request date (sortable)
+        requiredTime:
+          type: string
+          format: date
+          description: Required by date (sortable)
+        subTotal:
+          type: number
+          format: double
+          readOnly: true
+          description: Subtotal before tax
+        totalCost:
+          type: number
+          format: double
+          readOnly: true
+          description: Total cost including tax
+        totalTaxAmount:
+          type: number
+          format: double
+          readOnly: true
+          description: Total tax amount
+        isPoCreated:
+          type: boolean
+          readOnly: true
+          description: Whether a PO has been created
+        lineItems:
+          type: array
+          description: 'Line items. `inventoryType` values: Item, Tool, Service, Others.'
+          items:
+            $ref: '#/components/schemas/PurchaseRequestLineItem'
+        sysCreatedBy:
+          readOnly: true
+          allOf:
+          - $ref: '#/components/schemas/User'
+        sysCreatedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Created (sortable)
+        sysModifiedBy:
+          readOnly: true
+          allOf:
+          - $ref: '#/components/schemas/User'
+        sysModifiedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Modified (sortable)
+    ModuleMetaResponse:
+      type: object
+      description: Response body for GET /{moduleName}/metadata.
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            module:
+              $ref: '#/components/schemas/FacilioModule'
+            fields:
+              type: array
+              description: 'Ordered list of fields for the module.
+
+                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
+
+                Custom modules return all fields.
+
+                '
+              items:
+                $ref: '#/components/schemas/FacilioField'
+    FacilioField:
+      type: object
+      description: Schema descriptor for a single field within a module.
+      properties:
+        name:
+          type: string
+          description: Field name used in API requests and responses (e.g. `subject`, `po_reference_workorder`)
+        displayName:
+          type: string
+          description: Human-readable field label
+        dataType:
+          type: string
+          description: 'Field data type. Common values:
+
+            `STRING`, `NUMBER`, `DECIMAL`, `BOOLEAN`,
+
+            `DATE`, `DATE_TIME`,
+
+            `BIG_STRING` (large text, excluded from list responses),
+
+            `LOOKUP` (reference to another record — see `lookupModuleName`),
+
+            `MULTI_LOOKUP` (multi-reference — see `lookupModuleName`),
+
+            `ENUM`, `SYSTEM_ENUM`, `STRING_SYSTEM_ENUM` (picklist types)
+
+            '
+          example: STRING
+        required:
+          type: boolean
+          description: '`true` if this field must be provided on record creation'
+        readOnly:
+          type: boolean
+          description: '`true` if this field cannot be set or modified via the API (e.g. auto-generated system fields)'
+        isCustom:
+          type: boolean
+          description: '`true` for fields added by your organization; `false` for standard built-in fields'
+        sortable:
+          type: boolean
+          description: '`true` if this field can be used as a `sortBy` value on the list API'
+        lookupModuleName:
+          type: string
+          description: Present only on `LOOKUP` and `MULTI_LOOKUP` fields. The name of the target module (e.g. `site`, `users`, `ticketstatus`).
+        max_length:
+          type: integer
+          description: 'Maximum number of characters accepted by the V5 write API for text-style fields.
+
+            Present only when the field''s `dataType` is one of:
+
+            `STRING` (255), `LARGE_TEXT` (2000), `BIG_STRING` (32000).
+
+            Omitted for all other data types.
+
+            '
+          example: 255
+        allowed_values:
+          type: array
+          description: 'List of acceptable write values for picklist-capable fields. Present **only when the request includes `?includeAllowedValues=true`** AND the field is one of:
+
+            `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, or a `LOOKUP` targeting a system picklist module (e.g. `ticketstatus`, `ticketpriority`, `ticketcategory`, `tickettype`).
+
+            Each entry uses `{label, value}`; the `value` is the canonical form accepted by create/update payloads.
+
+            '
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+                description: Display label as shown in the UI
+              value:
+                type: string
+                description: Canonical value accepted by create/update for this field and filtering
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+    PurchaseRequestLineItem:
+      type: object
+      description: Purchase request line item.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: Line item ID. Include on PATCH to update; omit to create new.
+        inventoryType:
+          type: string
+          enum:
+          - Item
+          - Tool
+          - Service
+          - Others
+          description: Inventory type
+        description:
+          type: string
+          maxLength: 2000
+          description: Line item description
+        quantity:
+          type: number
+          format: double
+          description: Quantity
+        unitPrice:
+          type: number
+          format: double
+          description: Unit price
+        cost:
+          type: number
+          format: double
+          description: Total cost (quantity x unitPrice)
+        taxAmount:
+          type: number
+          format: double
+          description: Tax amount
+        unitOfMeasure:
+          type: string
+          maxLength: 255
+          description: Unit of measure
+        itemType:
+          type: object
+          description: '{id} — required when inventoryType is Item'
+        toolType:
+          type: object
+          description: '{id} — required when inventoryType is Tool'
+        service:
+          type: object
+          description: '{id} — required when inventoryType is Service'
+        tax:
+          type: object
+          description: '{id} — tax group reference'
+    User:
+      type: object
+      description: 'Expanded object for lookups to the `users` module.
+
+        On list API, user lookups return `{id}` only unless `?expand=` includes that field.
+
+        When expanded (single-record GET, create/update responses, or list with `expand`): fixed set `id`, `name`, `email`, `phone` (see **Lookup fields in responses**).
+
+        '
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: User ID
+        name:
+          type: string
+          description: User's full name
+        email:
+          type: string
+          description: User's email address
+        phone:
+          type: string
+          description: Phone number when present
+    FacilioModule:
+      type: object
+      description: A single entry in the module catalogue returned by GET /modules.
+      properties:
+        name:
+          type: string
+          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
+        displayName:
+          type: string
+          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
+        description:
+          type: string
+          description: Module description as configured in Facilio Setup. Omitted when blank.
+        isCustom:
+          type: boolean
+          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
+  parameters:
+    pageSize:
+      name: pageSize
+      in: query
+      description: Records per page (max 200)
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
+    select:
+      name: select
+      in: query
+      description: Comma-separated field names to include in the response
+      schema:
+        type: string
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
+    includeAllowedValues:
+      name: includeAllowedValues
+      in: query
+      description: 'When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).
+
+        Default `false` keeps the original metadata payload (no enrichment, no extra DB calls).
+
+        Use this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.
+
+        '
+      schema:
+        type: boolean
+        default: false
+    search:
+      name: search
+      in: query
+      description: Free-text search on the primary field (subject, name, etc.)
+      schema:
+        type: string
+    changed:
+      name: changed
+      in: query
+      description: 'Delta sync: returns records created/modified after this UTC timestamp'
+      schema:
+        type: string
+        format: date-time
+    count:
+      name: count
+      in: query
+      description: Include total record count in response
+      schema:
+        type: boolean
+        default: false
+    expand:
+      name: expand
+      in: query
+      description: 'Comma-separated lookup field names to expand on **list** endpoints (max 5).
+
+        Expanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).
+
+        '
+      schema:
+        type: string
+  responses:
+    NotFound:
+      description: Record or module not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: RECORD_NOT_FOUND
+              message: Record with the given ID was not found
+    BadRequest:
+      description: Validation error — missing required fields, invalid field values, or malformed request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: VALIDATION_ERROR
+              message: 'Required field(s) missing: name'
+    Unauthorized:
+      description: Missing or invalid authentication credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Missing or invalid authentication credentials
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Personal access token
+    oauth2:
+      type: oauth2
+      description: Supports authorization_code and password grant types
+      flows:
+        authorizationCode:
+          authorizationUrl: https://us.facilioapis.com/identity/oauth2/authorize
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}
+        password:
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}

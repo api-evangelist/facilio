@@ -1,0 +1,233 @@
+openapi: 3.2.0
+info:
+  title: Facilio REST Common API
+  version: 5.0.0
+  description: The Facilio REST API gives you programmatic access to Facilio's Connected CMMS — the unified platform for managing property operations at portfolio scale.
+  contact:
+    name: Facilio Support
+    url: https://facilio.com
+  license:
+    name: Proprietary
+servers:
+- url: https://{region}.facilioapis.com/{app_name}/api/v5
+  variables:
+    region:
+      description: Regional deployment
+      default: us
+      enum:
+      - us
+      - au
+      - ae
+      - uk
+      - us-azure
+      - sa
+    app_name:
+      description: '''maintenance'' for API Key, ''developer'' for OAuth2'
+      default: maintenance
+      enum:
+      - maintenance
+      - developer
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Common
+  description: User profile and utility endpoints
+paths:
+  /profile:
+    get:
+      tags:
+      - Common
+      summary: Get current user profile
+      description: Returns the authenticated user's profile information including name, email, timezone, role, and organization details.
+      operationId: getProfile
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Profile'
+              example:
+                success: true
+                data:
+                  user:
+                    id: 1
+                    name: Alex Johnson
+                    email: alex.johnson@example.com
+                    timezone: Asia/Kolkata
+                    role:
+                      id: 10
+                      name: Administrator
+                  org:
+                    id: 100
+                    name: Facilio Inc
+                    domain: facilio
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /modules:
+    get:
+      tags:
+      - Common
+      summary: List all accessible modules
+      description: 'Returns a catalogue of every module accessible via the V5 API for the current org:
+
+
+        - **System modules** — standard Facilio modules available in every org (workorder, asset, site, etc.)
+
+        - **Custom modules** — modules created by your organization via Facilio Setup
+
+
+        Use this endpoint to discover which module names are valid for other V5 API calls, and to determine whether a given module is a system module or an org-created custom module.
+
+
+        Pass `?custom=true` to scope the response to only custom modules created by your organization. The default response returns both system and custom modules.
+
+
+        Each entry includes a `description` field when one is configured for the module.'
+      operationId: listModules
+      parameters:
+      - name: custom
+        in: query
+        description: 'When `true`, return only org-created custom modules (modules where `isCustom = true`).
+
+          Default `false` (or absent) returns the full system + custom catalogue — this preserves the previous default behavior.
+
+          '
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: Module catalogue retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FacilioModule'
+              example:
+                success: true
+                data:
+                - name: workorder
+                  displayName: Work Orders
+                  description: Standard work order tracking
+                  isCustom: false
+                - name: asset
+                  displayName: Assets
+                  description: Equipment and asset records
+                  isCustom: false
+                - name: custom_employees
+                  displayName: Employees
+                  description: Custom employee records
+                  isCustom: true
+                - name: custom_projects
+                  displayName: Projects
+                  isCustom: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+components:
+  schemas:
+    FacilioModule:
+      type: object
+      description: A single entry in the module catalogue returned by GET /modules.
+      properties:
+        name:
+          type: string
+          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
+        displayName:
+          type: string
+          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
+        description:
+          type: string
+          description: Module description as configured in Facilio Setup. Omitted when blank.
+        isCustom:
+          type: boolean
+          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+    Profile:
+      type: object
+      properties:
+        user:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            email:
+              type: string
+            timezone:
+              type: string
+            role:
+              type: object
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+        org:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            domain:
+              type: string
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Missing or invalid authentication credentials
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Personal access token
+    oauth2:
+      type: oauth2
+      description: Supports authorization_code and password grant types
+      flows:
+        authorizationCode:
+          authorizationUrl: https://us.facilioapis.com/identity/oauth2/authorize
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}
+        password:
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}

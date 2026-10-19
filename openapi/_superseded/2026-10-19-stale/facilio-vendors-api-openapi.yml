@@ -1,0 +1,522 @@
+openapi: 3.2.0
+info:
+  title: Facilio REST Vendors API
+  version: 5.0.0
+  description: The Facilio REST API gives you programmatic access to Facilio's Connected CMMS — the unified platform for managing property operations at portfolio scale.
+  contact:
+    name: Facilio Support
+    url: https://facilio.com
+  license:
+    name: Proprietary
+servers:
+- url: https://{region}.facilioapis.com/{app_name}/api/v5
+  variables:
+    region:
+      description: Regional deployment
+      default: us
+      enum:
+      - us
+      - au
+      - ae
+      - uk
+      - us-azure
+      - sa
+    app_name:
+      description: '''maintenance'' for API Key, ''developer'' for OAuth2'
+      default: maintenance
+      enum:
+      - maintenance
+      - developer
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Vendors
+  description: Vendors are the external service providers and contractors who perform work at your facilities. Manage their contact details and associate them with work orders.
+paths:
+  /vendors:
+    get:
+      tags:
+      - Vendors
+      summary: List vendors
+      operationId: listVendors
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/select'
+      - $ref: '#/components/parameters/search'
+      - $ref: '#/components/parameters/count'
+      responses:
+        '200':
+          description: List of vendors
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 70
+                  name: CleanPro Services
+                  primaryContactEmail: mike@cleanpro.com
+                pagination:
+                  page: 1
+                  pageSize: 50
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags:
+      - Vendors
+      summary: Create a vendor
+      description: Creates a new vendor. Requires `name`, `primaryContactEmail`, and `primaryContactPhone`.
+      operationId: createVendor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  $ref: '#/components/schemas/Vendor'
+            example:
+              data:
+                name: CleanPro Services
+                primaryContactName: Mike Johnson
+                primaryContactEmail: mike@cleanpro.com
+                primaryContactPhone: +1-555-0300
+      responses:
+        '201':
+          description: Vendor created
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 71
+                  name: CleanPro Services
+                message: Record created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /vendors/{id}:
+    get:
+      tags:
+      - Vendors
+      summary: Get a vendor
+      operationId: getVendor
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      responses:
+        '200':
+          description: Vendor details
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 70
+                  name: CleanPro Services
+                  primaryContactName: Mike Johnson
+                  primaryContactEmail: mike@cleanpro.com
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+      - Vendors
+      summary: Update a vendor
+      operationId: updateVendor
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  $ref: '#/components/schemas/Vendor'
+            example:
+              data:
+                primaryContactPhone: +1-555-0400
+      responses:
+        '200':
+          description: Vendor updated
+          content:
+            application/json:
+              example:
+                success: true
+                message: Record updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Vendors
+      summary: Delete a vendor
+      operationId: deleteVendor
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      responses:
+        '200':
+          description: Vendor deleted
+          content:
+            application/json:
+              example:
+                success: true
+                message: Record deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /vendors/metadata:
+    get:
+      tags:
+      - Vendors
+      summary: Get vendor field schema
+      description: Returns the field schema for the vendors module, including all declared system fields and any org-specific custom fields with their data type, required/readOnly flags, and lookup targets.
+      operationId: getVendorMetadata
+      parameters:
+      - $ref: '#/components/parameters/includeAllowedValues'
+      responses:
+        '200':
+          description: Field schema retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModuleMetaResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  schemas:
+    Vendor:
+      type: object
+      description: Vendor or supplier organization.
+      required:
+      - name
+      - primaryContactEmail
+      - primaryContactPhone
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: Unique record ID
+        name:
+          type: string
+          description: Vendor name (required on create, sortable)
+        description:
+          type: string
+          description: Description
+        primaryContactName:
+          type: string
+          description: Primary contact name
+        primaryContactEmail:
+          type: string
+          description: Primary contact email (required on create)
+        primaryContactPhone:
+          type: string
+          description: Primary contact phone (required on create)
+        address:
+          description: Vendor address
+          allOf:
+          - $ref: '#/components/schemas/Address'
+        moduleState:
+          type: string
+          description: Status — pass `status` value or numeric ID. Use `GET /picklist/vendors/moduleState` for valid values.
+        sysCreatedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Creation timestamp (sortable)
+        sysModifiedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Last modified (sortable)
+    Address:
+      type: object
+      description: Postal address. Used for site/building locations, storeroom locations, vendor/client/tenant addresses, and quote/invoice billing & shipping addresses.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: Address record ID
+        name:
+          type: string
+          maxLength: 255
+          description: Location name
+        street:
+          type: string
+          maxLength: 255
+          description: Street address
+        city:
+          type: string
+          maxLength: 100
+          description: City
+        state:
+          type: string
+          maxLength: 100
+          description: State or province
+        zip:
+          type: string
+          maxLength: 20
+          description: Postal / ZIP code
+        country:
+          type: string
+          maxLength: 100
+          description: Country code (e.g. IN, US)
+        lat:
+          type: number
+          format: double
+          description: Latitude
+        lng:
+          type: number
+          format: double
+          description: Longitude
+    ModuleMetaResponse:
+      type: object
+      description: Response body for GET /{moduleName}/metadata.
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            module:
+              $ref: '#/components/schemas/FacilioModule'
+            fields:
+              type: array
+              description: 'Ordered list of fields for the module.
+
+                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
+
+                Custom modules return all fields.
+
+                '
+              items:
+                $ref: '#/components/schemas/FacilioField'
+    FacilioModule:
+      type: object
+      description: A single entry in the module catalogue returned by GET /modules.
+      properties:
+        name:
+          type: string
+          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
+        displayName:
+          type: string
+          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
+        description:
+          type: string
+          description: Module description as configured in Facilio Setup. Omitted when blank.
+        isCustom:
+          type: boolean
+          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
+    FacilioField:
+      type: object
+      description: Schema descriptor for a single field within a module.
+      properties:
+        name:
+          type: string
+          description: Field name used in API requests and responses (e.g. `subject`, `po_reference_workorder`)
+        displayName:
+          type: string
+          description: Human-readable field label
+        dataType:
+          type: string
+          description: 'Field data type. Common values:
+
+            `STRING`, `NUMBER`, `DECIMAL`, `BOOLEAN`,
+
+            `DATE`, `DATE_TIME`,
+
+            `BIG_STRING` (large text, excluded from list responses),
+
+            `LOOKUP` (reference to another record — see `lookupModuleName`),
+
+            `MULTI_LOOKUP` (multi-reference — see `lookupModuleName`),
+
+            `ENUM`, `SYSTEM_ENUM`, `STRING_SYSTEM_ENUM` (picklist types)
+
+            '
+          example: STRING
+        required:
+          type: boolean
+          description: '`true` if this field must be provided on record creation'
+        readOnly:
+          type: boolean
+          description: '`true` if this field cannot be set or modified via the API (e.g. auto-generated system fields)'
+        isCustom:
+          type: boolean
+          description: '`true` for fields added by your organization; `false` for standard built-in fields'
+        sortable:
+          type: boolean
+          description: '`true` if this field can be used as a `sortBy` value on the list API'
+        lookupModuleName:
+          type: string
+          description: Present only on `LOOKUP` and `MULTI_LOOKUP` fields. The name of the target module (e.g. `site`, `users`, `ticketstatus`).
+        max_length:
+          type: integer
+          description: 'Maximum number of characters accepted by the V5 write API for text-style fields.
+
+            Present only when the field''s `dataType` is one of:
+
+            `STRING` (255), `LARGE_TEXT` (2000), `BIG_STRING` (32000).
+
+            Omitted for all other data types.
+
+            '
+          example: 255
+        allowed_values:
+          type: array
+          description: 'List of acceptable write values for picklist-capable fields. Present **only when the request includes `?includeAllowedValues=true`** AND the field is one of:
+
+            `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, or a `LOOKUP` targeting a system picklist module (e.g. `ticketstatus`, `ticketpriority`, `ticketcategory`, `tickettype`).
+
+            Each entry uses `{label, value}`; the `value` is the canonical form accepted by create/update payloads.
+
+            '
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+                description: Display label as shown in the UI
+              value:
+                type: string
+                description: Canonical value accepted by create/update for this field and filtering
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+  parameters:
+    select:
+      name: select
+      in: query
+      description: Comma-separated field names to include in the response
+      schema:
+        type: string
+    search:
+      name: search
+      in: query
+      description: Free-text search on the primary field (subject, name, etc.)
+      schema:
+        type: string
+    pageSize:
+      name: pageSize
+      in: query
+      description: Records per page (max 200)
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
+    includeAllowedValues:
+      name: includeAllowedValues
+      in: query
+      description: 'When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).
+
+        Default `false` keeps the original metadata payload (no enrichment, no extra DB calls).
+
+        Use this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.
+
+        '
+      schema:
+        type: boolean
+        default: false
+    count:
+      name: count
+      in: query
+      description: Include total record count in response
+      schema:
+        type: boolean
+        default: false
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Missing or invalid authentication credentials
+    BadRequest:
+      description: Validation error — missing required fields, invalid field values, or malformed request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: VALIDATION_ERROR
+              message: 'Required field(s) missing: name'
+    NotFound:
+      description: Record or module not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: RECORD_NOT_FOUND
+              message: Record with the given ID was not found
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Personal access token
+    oauth2:
+      type: oauth2
+      description: Supports authorization_code and password grant types
+      flows:
+        authorizationCode:
+          authorizationUrl: https://us.facilioapis.com/identity/oauth2/authorize
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}
+        password:
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}

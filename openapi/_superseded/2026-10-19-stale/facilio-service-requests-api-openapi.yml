@@ -1,0 +1,647 @@
+openapi: 3.2.0
+info:
+  title: Facilio REST Service Requests API
+  version: 5.0.0
+  description: The Facilio REST API gives you programmatic access to Facilio's Connected CMMS — the unified platform for managing property operations at portfolio scale.
+  contact:
+    name: Facilio Support
+    url: https://facilio.com
+  license:
+    name: Proprietary
+servers:
+- url: https://{region}.facilioapis.com/{app_name}/api/v5
+  variables:
+    region:
+      description: Regional deployment
+      default: us
+      enum:
+      - us
+      - au
+      - ae
+      - uk
+      - us-azure
+      - sa
+    app_name:
+      description: '''maintenance'' for API Key, ''developer'' for OAuth2'
+      default: maintenance
+      enum:
+      - maintenance
+      - developer
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Service Requests
+  description: Service requests capture facility issues reported by occupants, tenants, or staff. They typically flow through triage, assignment, and resolution — and can be converted into work orders when maintenance action is needed.
+paths:
+  /servicerequest:
+    get:
+      tags:
+      - Service Requests
+      summary: List service requests
+      description: Returns a paginated list of service requests. Supports filtering, sorting, and field selection.
+      operationId: listServiceRequests
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/select'
+      - $ref: '#/components/parameters/expand'
+      - $ref: '#/components/parameters/search'
+      - $ref: '#/components/parameters/count'
+      - $ref: '#/components/parameters/view'
+      - $ref: '#/components/parameters/changed'
+      - name: sortBy
+        in: query
+        schema:
+          type: string
+          enum:
+          - id
+          - subject
+          - dueDate
+          - responseDueDate
+          - reportedDate
+          - actualStartDate
+          - actualFinishDate
+          - sysCreatedTime
+          - sysModifiedTime
+      - name: sortOrder
+        in: query
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: desc
+      responses:
+        '200':
+          description: Paginated list of service requests
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 5
+                  subject: AC not working in Room 204
+                  moduleState: Submitted
+                  urgency: High
+                  requester:
+                    id: 3
+                  sysCreatedTime: '2026-02-10T09:00:00Z'
+                - id: 6
+                  subject: Broken window in Lobby
+                  moduleState: Assigned
+                  urgency: Medium
+                  sysCreatedTime: '2026-02-11T14:00:00Z'
+                pagination:
+                  page: 1
+                  pageSize: 50
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags:
+      - Service Requests
+      summary: Create a service request
+      description: Creates a new service request. Requires `subject` and `site`.
+      operationId: createServiceRequest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  $ref: '#/components/schemas/ServiceRequest'
+            example:
+              data:
+                subject: AC not working in Room 204
+                site: 10
+                urgency: High
+                description: Temperature above 30C since morning
+                requester: 3
+      responses:
+        '201':
+          description: Service request created
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 7
+                  subject: AC not working in Room 204
+                  moduleState: Submitted
+                  urgency: High
+                  sysCreatedTime: '2026-02-14T10:00:00Z'
+                message: Record created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /servicerequest/{id}:
+    get:
+      tags:
+      - Service Requests
+      summary: Get a service request
+      description: Returns a single service request with all fields including custom fields.
+      operationId: getServiceRequest
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      - $ref: '#/components/parameters/select'
+      - $ref: '#/components/parameters/expand'
+      responses:
+        '200':
+          description: Service request details
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 5
+                  subject: AC not working in Room 204
+                  description: Temperature above 30C since morning
+                  moduleState: Submitted
+                  urgency: High
+                  siteId:
+                    id: 10
+                    name: Headquarters
+                  requester:
+                    id: 3
+                    name: Bob Wilson
+                    email: bob@company.com
+                  assignedTo:
+                    id: 5
+                    name: John Smith
+                    email: john@facilio.com
+                  dueDate: '2026-02-15T17:00:00Z'
+                  sysCreatedTime: '2026-02-10T09:00:00Z'
+                  sysCreatedBy:
+                    id: 3
+                    name: Bob Wilson
+                    email: bob@company.com
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+      - Service Requests
+      summary: Update a service request
+      description: Updates an existing service request. Only included fields are changed.
+      operationId: updateServiceRequest
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  $ref: '#/components/schemas/ServiceRequest'
+            example:
+              data:
+                urgency: Low
+                assignedTo: 7
+      responses:
+        '200':
+          description: Service request updated
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  id: 5
+                  urgency: Low
+                  assignedTo:
+                    id: 7
+                    name: Jane Doe
+                    email: jane@facilio.com
+                message: Record updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Service Requests
+      summary: Delete a service request
+      description: Permanently deletes a service request.
+      operationId: deleteServiceRequest
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      responses:
+        '200':
+          description: Service request deleted
+          content:
+            application/json:
+              example:
+                success: true
+                message: Record deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /servicerequest/metadata:
+    get:
+      tags:
+      - Service Requests
+      summary: Get service request field schema
+      description: Returns the field schema for the servicerequest module, including all declared system fields and any org-specific custom fields with their data type, required/readOnly flags, and lookup targets.
+      operationId: getServiceRequestMetadata
+      parameters:
+      - $ref: '#/components/parameters/includeAllowedValues'
+      responses:
+        '200':
+          description: Field schema retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModuleMetaResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  parameters:
+    pageSize:
+      name: pageSize
+      in: query
+      description: Records per page (max 200)
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+    page:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        default: 1
+    select:
+      name: select
+      in: query
+      description: Comma-separated field names to include in the response
+      schema:
+        type: string
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
+    includeAllowedValues:
+      name: includeAllowedValues
+      in: query
+      description: 'When `true`, the metadata response adds `allowed_values` ([{label, value}]) on every picklist-capable field — `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, and `LOOKUP` fields targeting system picklist modules (status, priority, category, type, ...).
+
+        Default `false` keeps the original metadata payload (no enrichment, no extra DB calls).
+
+        Use this to discover acceptable write values without round-tripping `GET /picklist/{moduleName}/{fieldName}` for every picklist field.
+
+        '
+      schema:
+        type: boolean
+        default: false
+    view:
+      name: view
+      in: query
+      description: Saved view name
+      schema:
+        type: string
+    search:
+      name: search
+      in: query
+      description: Free-text search on the primary field (subject, name, etc.)
+      schema:
+        type: string
+    changed:
+      name: changed
+      in: query
+      description: 'Delta sync: returns records created/modified after this UTC timestamp'
+      schema:
+        type: string
+        format: date-time
+    count:
+      name: count
+      in: query
+      description: Include total record count in response
+      schema:
+        type: boolean
+        default: false
+    expand:
+      name: expand
+      in: query
+      description: 'Comma-separated lookup field names to expand on **list** endpoints (max 5).
+
+        Expanded objects follow the same rules as single-record GET (see **Lookup fields in responses** in the API overview).
+
+        '
+      schema:
+        type: string
+  schemas:
+    ServiceRequest:
+      type: object
+      description: 'Service request. Custom fields: `{field_name}_serviceRequest`. On create, `subject` and `site` are required. Send `site` in the body (not `siteId`); responses may still show site under `siteId`.'
+      required:
+      - subject
+      - site
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: Unique record ID
+        subject:
+          type: string
+          description: Request title (required on create, sortable)
+        description:
+          type: string
+          description: Detailed description
+        moduleState:
+          type: string
+          description: Status — pass `status` value (e.g. 'Submitted', 'Assigned') or numeric ID. Use `GET /picklist/servicerequest/moduleState` for valid values.
+        requester:
+          type: integer
+          description: Requester user ID. Expanded per `users` when returned on GET/create/update.
+        urgency:
+          type: string
+          description: Urgency level — display name or ID
+        site:
+          description: Site for this request (required on create). Pass the site id as a number, or an object with `id`.
+        siteId:
+          readOnly: true
+          description: In responses the site is often serialized under this key (lookup expansion). Do not use for create/update; send `site` instead.
+        resource:
+          type: integer
+          description: Asset or space ID
+        assignedTo:
+          type: integer
+          description: Assigned user ID
+        assignmentGroup:
+          type: integer
+          description: Assigned team ID
+        dueDate:
+          type: string
+          format: date-time
+          description: Due date (sortable)
+        responseDueDate:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Response SLA due date (sortable)
+        reportedDate:
+          type: string
+          format: date-time
+          description: Date reported (sortable)
+        actualStartDate:
+          type: string
+          format: date-time
+          description: Actual start date (sortable)
+        actualFinishDate:
+          type: string
+          format: date-time
+          description: Actual finish date (sortable)
+        sourceType:
+          type: string
+          readOnly: true
+          description: How the request was created
+        requestType:
+          type: string
+          description: Request type
+        mode:
+          type: string
+          description: Request mode
+        sysCreatedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Creation timestamp (sortable)
+        sysCreatedBy:
+          readOnly: true
+          description: Created by
+          allOf:
+          - $ref: '#/components/schemas/User'
+        sysModifiedTime:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Last modified timestamp (sortable)
+        sysModifiedBy:
+          readOnly: true
+          description: Modified by
+          allOf:
+          - $ref: '#/components/schemas/User'
+      additionalProperties:
+        description: Custom fields
+    ModuleMetaResponse:
+      type: object
+      description: Response body for GET /{moduleName}/metadata.
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            module:
+              $ref: '#/components/schemas/FacilioModule'
+            fields:
+              type: array
+              description: 'Ordered list of fields for the module.
+
+                Standard Facilio modules return built-in fields first, followed by any fields your organization added.
+
+                Custom modules return all fields.
+
+                '
+              items:
+                $ref: '#/components/schemas/FacilioField'
+    FacilioField:
+      type: object
+      description: Schema descriptor for a single field within a module.
+      properties:
+        name:
+          type: string
+          description: Field name used in API requests and responses (e.g. `subject`, `po_reference_workorder`)
+        displayName:
+          type: string
+          description: Human-readable field label
+        dataType:
+          type: string
+          description: 'Field data type. Common values:
+
+            `STRING`, `NUMBER`, `DECIMAL`, `BOOLEAN`,
+
+            `DATE`, `DATE_TIME`,
+
+            `BIG_STRING` (large text, excluded from list responses),
+
+            `LOOKUP` (reference to another record — see `lookupModuleName`),
+
+            `MULTI_LOOKUP` (multi-reference — see `lookupModuleName`),
+
+            `ENUM`, `SYSTEM_ENUM`, `STRING_SYSTEM_ENUM` (picklist types)
+
+            '
+          example: STRING
+        required:
+          type: boolean
+          description: '`true` if this field must be provided on record creation'
+        readOnly:
+          type: boolean
+          description: '`true` if this field cannot be set or modified via the API (e.g. auto-generated system fields)'
+        isCustom:
+          type: boolean
+          description: '`true` for fields added by your organization; `false` for standard built-in fields'
+        sortable:
+          type: boolean
+          description: '`true` if this field can be used as a `sortBy` value on the list API'
+        lookupModuleName:
+          type: string
+          description: Present only on `LOOKUP` and `MULTI_LOOKUP` fields. The name of the target module (e.g. `site`, `users`, `ticketstatus`).
+        max_length:
+          type: integer
+          description: 'Maximum number of characters accepted by the V5 write API for text-style fields.
+
+            Present only when the field''s `dataType` is one of:
+
+            `STRING` (255), `LARGE_TEXT` (2000), `BIG_STRING` (32000).
+
+            Omitted for all other data types.
+
+            '
+          example: 255
+        allowed_values:
+          type: array
+          description: 'List of acceptable write values for picklist-capable fields. Present **only when the request includes `?includeAllowedValues=true`** AND the field is one of:
+
+            `ENUM`, `SYSTEM_ENUM`, `MULTI_ENUM`, `STRING_SYSTEM_ENUM`, or a `LOOKUP` targeting a system picklist module (e.g. `ticketstatus`, `ticketpriority`, `ticketcategory`, `tickettype`).
+
+            Each entry uses `{label, value}`; the `value` is the canonical form accepted by create/update payloads.
+
+            '
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+                description: Display label as shown in the UI
+              value:
+                type: string
+                description: Canonical value accepted by create/update for this field and filtering
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+    User:
+      type: object
+      description: 'Expanded object for lookups to the `users` module.
+
+        On list API, user lookups return `{id}` only unless `?expand=` includes that field.
+
+        When expanded (single-record GET, create/update responses, or list with `expand`): fixed set `id`, `name`, `email`, `phone` (see **Lookup fields in responses**).
+
+        '
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: User ID
+        name:
+          type: string
+          description: User's full name
+        email:
+          type: string
+          description: User's email address
+        phone:
+          type: string
+          description: Phone number when present
+    FacilioModule:
+      type: object
+      description: A single entry in the module catalogue returned by GET /modules.
+      properties:
+        name:
+          type: string
+          description: Module name used in all API paths (e.g. `workorder`, `custom_employees`)
+        displayName:
+          type: string
+          description: Human-readable module label (e.g. `Work Orders`, `Employees`)
+        description:
+          type: string
+          description: Module description as configured in Facilio Setup. Omitted when blank.
+        isCustom:
+          type: boolean
+          description: '`true` for modules created by your organization; `false` for standard Facilio modules'
+  responses:
+    NotFound:
+      description: Record or module not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: RECORD_NOT_FOUND
+              message: Record with the given ID was not found
+    BadRequest:
+      description: Validation error — missing required fields, invalid field values, or malformed request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: VALIDATION_ERROR
+              message: 'Required field(s) missing: name'
+    Unauthorized:
+      description: Missing or invalid authentication credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Missing or invalid authentication credentials
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Personal access token
+    oauth2:
+      type: oauth2
+      description: Supports authorization_code and password grant types
+      flows:
+        authorizationCode:
+          authorizationUrl: https://us.facilioapis.com/identity/oauth2/authorize
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}
+        password:
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}

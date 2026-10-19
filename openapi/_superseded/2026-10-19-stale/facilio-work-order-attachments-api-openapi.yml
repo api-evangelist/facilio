@@ -1,0 +1,242 @@
+openapi: 3.2.0
+info:
+  title: Facilio REST Work Order Attachments API
+  version: 5.0.0
+  description: The Facilio REST API gives you programmatic access to Facilio's Connected CMMS — the unified platform for managing property operations at portfolio scale.
+  contact:
+    name: Facilio Support
+    url: https://facilio.com
+  license:
+    name: Proprietary
+servers:
+- url: https://{region}.facilioapis.com/{app_name}/api/v5
+  variables:
+    region:
+      description: Regional deployment
+      default: us
+      enum:
+      - us
+      - au
+      - ae
+      - uk
+      - us-azure
+      - sa
+    app_name:
+      description: '''maintenance'' for API Key, ''developer'' for OAuth2'
+      default: maintenance
+      enum:
+      - maintenance
+      - developer
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Work Order Attachments
+  description: Attach photos, documents, invoices, and other files to work orders. Useful for before/after photos, inspection reports, and supporting documentation.
+paths:
+  /workorder/{id}/attachments:
+    get:
+      tags:
+      - Work Order Attachments
+      summary: List work order attachments
+      description: Returns all file attachments for the specified work order.
+      operationId: listWorkOrderAttachments
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      responses:
+        '200':
+          description: List of attachments
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 101
+                  fileName: photo.jpg
+                  fileSize: 204800
+                  contentType: image/jpeg
+                  createdTime: '2026-02-12T17:00:00Z'
+                  createdBy:
+                    id: 1
+                    name: Alex Johnson
+                    email: alex.johnson@example.com
+                - id: 102
+                  fileName: report.pdf
+                  fileSize: 1048576
+                  contentType: application/pdf
+                  externalId: ext-att-001
+                  createdTime: '2026-02-13T09:00:00Z'
+                  createdBy:
+                    id: 5
+                    name: John Smith
+                    email: john@facilio.com
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags:
+      - Work Order Attachments
+      summary: Add work order attachment
+      description: Uploads a file attachment to the specified work order. Use multipart/form-data.
+      operationId: addWorkOrderAttachment
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                attachment:
+                  type: string
+                  format: binary
+                  description: The file to upload
+      responses:
+        '201':
+          description: Attachment uploaded
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                - id: 103
+                  fileName: invoice.pdf
+                  fileSize: 512000
+                  contentType: application/pdf
+                  createdTime: '2026-02-14T10:30:00Z'
+                message: Attachment(s) added successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /workorder/{id}/attachments/{attachmentId}:
+    delete:
+      tags:
+      - Work Order Attachments
+      summary: Delete work order attachment
+      description: Deletes a specific attachment from the work order.
+      operationId: deleteWorkOrderAttachment
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      - $ref: '#/components/parameters/attachmentId'
+      responses:
+        '200':
+          description: Attachment deleted
+          content:
+            application/json:
+              example:
+                success: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /workorder/{id}/attachments/{attachmentId}/download:
+    get:
+      tags:
+      - Work Order Attachments
+      summary: Download work order attachment
+      description: Downloads the file content of a specific attachment. Returns the raw file with appropriate Content-Type and Content-Disposition headers.
+      operationId: downloadWorkOrderAttachment
+      parameters:
+      - $ref: '#/components/parameters/recordId'
+      - $ref: '#/components/parameters/attachmentId'
+      responses:
+        '200':
+          description: File download
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  parameters:
+    attachmentId:
+      name: attachmentId
+      in: path
+      required: true
+      description: Attachment ID
+      schema:
+        type: integer
+        format: int64
+    recordId:
+      name: id
+      in: path
+      required: true
+      description: Record ID
+      schema:
+        type: integer
+        format: int64
+  responses:
+    BadRequest:
+      description: Validation error — missing required fields, invalid field values, or malformed request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: VALIDATION_ERROR
+              message: 'Required field(s) missing: name'
+    Unauthorized:
+      description: Missing or invalid authentication credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Missing or invalid authentication credentials
+    NotFound:
+      description: Record or module not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: RECORD_NOT_FOUND
+              message: Record with the given ID was not found
+  schemas:
+    Error:
+      type: object
+      description: Error response
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error message
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Personal access token
+    oauth2:
+      type: oauth2
+      description: Supports authorization_code and password grant types
+      flows:
+        authorizationCode:
+          authorizationUrl: https://us.facilioapis.com/identity/oauth2/authorize
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}
+        password:
+          tokenUrl: https://us.facilioapis.com/identity/oauth2/token
+          refreshUrl: https://us.facilioapis.com/identity/oauth2/token
+          scopes: {}
