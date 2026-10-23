@@ -981,3 +981,9 @@ components:
           tokenUrl: https://us.facilioapis.com/identity/oauth2/token
           refreshUrl: https://us.facilioapis.com/identity/oauth2/token
           scopes: {}
+x-provenance:
+  method: harvested
+  publisher: Facilio
+  source: https://static.facilio.com/developers/api/v5/openapi.yaml
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
